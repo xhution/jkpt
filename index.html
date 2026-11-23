@@ -102,7 +102,9 @@ h3{font-weight:700;font-size:26px}
 .login .btn{background:var(--on);color:var(--acc);border-color:var(--on);align-self:flex-start;min-height:56px;font-size:19px}
 .login small{font-size:14px;opacity:.8}
 .about{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:48px;align-items:center}
-.about img{width:100%;max-width:380px;display:block;margin:0 auto}
+.me{position:relative;max-width:360px;width:100%;margin:0 auto}
+.me>img:first-child{width:100%;height:auto;display:block;border-radius:22px;border:3px solid var(--acc);box-shadow:0 20px 60px rgba(182,247,0,.12)}
+.mebadge{position:absolute;right:-14px;bottom:-14px;width:96px;height:96px}
 .about p{font-size:19px;color:#d6d8cf;margin:18px 0 0}
 .chipsr{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
 .chipsr span{border:1px solid var(--acc);color:var(--acc);border-radius:20px;padding:5px 12px;font-weight:600;font-size:15px}
@@ -116,7 +118,7 @@ footer{padding:34px 0 calc(34px + env(safe-area-inset-bottom,0px));color:var(--m
 footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center}
 footer img{width:36px;height:36px;vertical-align:middle;margin-right:10px}
 @media (max-width:900px){.links a:not(.btn){display:none}.steps,.svc{grid-template-columns:minmax(0,1fr)}.feat{grid-template-columns:minmax(0,1fr)}}
-@media (max-width:760px){.hero .wrap,.app,.about,.contact{grid-template-columns:minmax(0,1fr)}.stage{min-height:560px}.about img{max-width:240px}.brand span{display:none}}
+@media (max-width:760px){.hero .wrap,.app,.about,.contact{grid-template-columns:minmax(0,1fr)}.stage{min-height:560px}.me{max-width:300px}.brand span{display:none}}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 </style>
 </head>
@@ -217,7 +219,7 @@ footer img{width:36px;height:36px;vertical-align:middle;margin-right:10px}
 
 <section class="band" id="om-mig">
   <div class="wrap about">
-    <img src="logo.webp" alt="JoachimKantola PT, personlig tränare">
+    <div class="me"><img src="joachim.webp" alt="Joachim Kantola, personlig tränare" width="413" height="579"><img class="mebadge" src="logo.webp" alt=""></div>
     <div>
       <h2>Hej, jag är <span class="acc">Joachim</span></h2>
       <p>Jag är utbildad personlig tränare och kostrådgivare, och tränar mina klienter på Nordic Wellness i Upplands Väsby. Utöver gymmet blir det även en del brottning.</p>
