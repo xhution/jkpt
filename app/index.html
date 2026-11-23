@@ -208,7 +208,14 @@ summary::-webkit-details-marker{display:none}
 .cd b.tm{background:#fff;border-radius:2px}
 .tabs button{font-size:12px}
 .logob{border:0;background:none;padding:0;cursor:pointer;border-radius:50%;flex:none}
-button.sync{border:0;background:none;cursor:pointer;font:inherit;font-size:13px;text-align:right;max-width:46%}
+.who{display:flex;align-items:center;gap:8px;border:0;background:var(--card);color:var(--ink);border-radius:24px;padding:5px 12px 5px 5px;cursor:pointer;font:inherit;max-width:52%;text-align:left}
+.wt{display:flex;flex-direction:column;line-height:1.2;min-width:0}
+.wt b{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wt .sync{font-size:11px;padding:0;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.av{width:34px;height:34px;border-radius:50%;flex:none;display:grid;place-items:center;font:800 17px "Barlow Condensed",sans-serif;background:var(--line);color:var(--mut)}
+.av.on{background:var(--acc);color:var(--on-acc)}
+.signed{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:14px;padding:12px}
+.signed .av{width:46px;height:46px;font-size:22px}
 .tsel{font:700 17px Barlow,sans-serif;color:var(--acc);margin:-2px 0 10px;background:var(--card)}
 .code{font:800 26px "Barlow Condensed",sans-serif;letter-spacing:.12em;color:var(--acc)}
 .auth{position:fixed;inset:0;z-index:30;background:var(--bg);overflow-y:auto;display:flex;justify-content:center;padding:calc(env(safe-area-inset-top,0px) + 36px) 20px 40px}
@@ -264,7 +271,7 @@ body.locked #app{visibility:hidden}
 </head>
 <body>
 <div id="app">
-  <header class="top"><div><button class="logob" data-act="acct" aria-label="Konto"><img class="logo" src="img/logo.webp" alt="JoachimKantola PT"></button><h1 id="ttl">Idag</h1></div><button id="sync" class="sync" data-act="acct">Laddar…</button></header>
+  <header class="top"><div><button class="logob" data-act="acct" aria-label="Konto"><img class="logo" src="img/logo.webp" alt="JoachimKantola PT"></button><h1 id="ttl">Idag</h1></div><button class="who" data-act="acct" aria-label="Konto och inloggning"><span class="av" id="av" aria-hidden="true">?</span><span class="wt"><b id="whoN">Inte inloggad</b><span id="sync" class="sync">Laddar…</span></span></button></header>
   <div id="scroll"><main id="main"></main></div>
   <div id="rest" aria-live="polite"><div class="fill" id="restFill"></div><div class="in"><div><div class="sm">Vila</div><div class="t" id="restT">1:30</div></div><div class="row"><button class="btn" data-act="restAdj" data-v="-15">−15</button><button class="btn" data-act="restAdj" data-v="15">+15</button><button class="btn" data-act="restStop">Hoppa över</button></div></div></div>
   <nav class="tabs" aria-label="Flikar">
@@ -503,6 +510,8 @@ let sb=null,ME=null,PROF=null,syncK='wait',fT=null,writing=false,dirty=false,TEA
 let PEND={w:[],wd:[]},lastState='',lastTeam='',lastTS={};
 const SYNC={ok:'Sparat på ditt konto',wait:'Ansluter…',off:'Offline, sparas när nätet är tillbaka',local:'Sparas i den här telefonen',err:'Kunde inte spara, försöker igen'};
 function setSync(k){syncK=k;const el=$('#sync');if(!el)return;el.textContent=SYNC[k]||'';el.className='sync'+(k==='err'||k==='off'?' err':'')}
+const dispName=()=>{if(!ME)return '';const n=(PROF&&PROF.name)||(ME.email||'').split('@')[0];const em=(ME.email||'').split('@')[0];const base=n&&n!==em?n:em.split(/[._-]/)[0];return base?base.charAt(0).toUpperCase()+base.slice(1):''};
+function showWho(){const n=dispName();$('#whoN').textContent=ME?n:'Inte inloggad';$('#av').textContent=ME?(n[0]||'?').toUpperCase():'?';$('#av').classList.toggle('on',!!ME)}
 const UK=k=>'jk.'+(ME?ME.id:'anon')+'.'+k;
 const lsGet=(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}};
 const lsSet=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
@@ -552,7 +561,7 @@ async function teamPull(force){
 }
 async function loadTeams(){const r=await sb.from('teams').select('id,name,join_code,owner,created_at').order('created_at');if(r.error)throw r.error;TEAMS=r.data||[];return TEAMS}
 async function afterLogin(user){
-  ME=user;hideAuth();lsSet('jk.last',{id:user.id,email:user.email});
+  ME=user;hideAuth();lsSet('jk.last',{id:user.id,email:user.email});PROF=PROF||lsGet(UK('prof'),null);showWho();
   const cS=lsGet(UK('state'),null),cH=lsGet(UK('sessions'),null),cs=lsGet(UK('sync'),{});
   PEND=lsGet(UK('pend'),{w:[],wd:[]});lastState=cs.lastState||'';lastTeam=cs.lastTeam||'';lastTS=cs.lastTS||{};TID=cs.TID||null;
   const legacy=!cS?{S:lsGet('lyft.state',null),H:lsGet('lyft.sessions',[])}:null;
@@ -561,7 +570,7 @@ async function afterLogin(user){
   setSync('wait');
   try{
     const [pr,sr,wr]=await Promise.all([sb.from('profiles').select('id,email,name,role').eq('id',ME.id).maybeSingle(),sb.from('user_state').select('data').eq('user_id',ME.id).maybeSingle(),sb.from('workouts').select('id,data').eq('user_id',ME.id).order('date',{ascending:false}).limit(5000)]);
-    ck(pr);ck(sr);ck(wr);PROF=pr.data||{role:'client',email:ME.email,name:(ME.email||'').split('@')[0]};
+    ck(pr);ck(sr);ck(wr);PROF=pr.data||{role:'client',email:ME.email,name:(ME.email||'').split('@')[0]};lsSet(UK('prof'),PROF);showWho();
     const team=S.team;
     if(sr.data&&sr.data.data&&Array.isArray(sr.data.data.plan)){const la=S.active;S=Object.assign(defState(),sr.data.data);if(!S.active&&la&&PEND.w.length)S.active=la;lastState=JSON.stringify(stateOut())}
     else if(legacy&&legacy.S&&Array.isArray(legacy.S.plan)){S=Object.assign(defState(),legacy.S);if(legacy.S.team)S._legacyTeam=legacy.S.team;lastState=''}
@@ -609,13 +618,13 @@ setInterval(()=>{if(document.visibilityState==='visible'&&ME&&TID&&(tab==='lag'|
 /* konto */
 async function acctSheet(){
   if(!ME)return;const p=PROF||{};
-  openSheet('Konto',`<div class="stack"><label class="pf"><span>Namn</span><input id="accn" value="${esc(p.name||'')}"></label><p class="mut" style="margin:0">${esc(ME.email||'')} · ${p.role==='admin'?'Admin':p.role==='coach'?'Tränare':'Klient'}</p><p class="mut sm" style="margin:0">${SYNC[syncK]||''}</p><button class="btn" data-act="logout">Logga ut</button></div>${p.role==='admin'?`<h3 style="margin:20px 0 6px">Dina klienter</h3><p class="mut sm" style="margin:0 0 8px">Nya konton skapar du i Supabase: Authentication → Users → Add user → Create new user. Kryssa i Auto Confirm User.</p><div id="clist"><p class="mut">Laddar…</p></div>`:''}`);
+  openSheet('Konto',`<div class="stack"><div class="signed"><span class="av on">${esc((dispName()[0]||'?').toUpperCase())}</span><span><b>Inloggad som ${esc(dispName())}</b><br><span class="mut sm">${esc(ME.email||'')}</span></span></div><label class="pf"><span>Namn</span><input id="accn" value="${esc(p.name||'')}"></label><p class="mut" style="margin:0">Roll: ${p.role==='admin'?'Admin':p.role==='coach'?'Tränare':'Klient'}</p><p class="mut sm" style="margin:0">${SYNC[syncK]||''}</p><button class="btn" data-act="logout">Logga ut</button></div>${p.role==='admin'?`<h3 style="margin:20px 0 6px">Dina klienter</h3><p class="mut sm" style="margin:0 0 8px">Nya konton skapar du i Supabase: Authentication → Users → Add user → Create new user. Kryssa i Auto Confirm User.</p><div id="clist"><p class="mut">Laddar…</p></div>`:''}`);
   if(p.role==='admin'){const r=await sb.rpc('admin_clients');const el=$('#clist');if(!el)return;if(r.error){el.innerHTML='<p class="mut">Kunde inte hämta klienter.</p>';return}
     el.innerHTML=r.data.length?r.data.map(c=>`<button class="pick" data-act="client" data-id="${esc(c.id)}" data-n="${esc(c.name||c.email)}"><span>${esc(c.name||c.email)}<br><span class="mut sm">${esc(c.email||'')}</span></span><span>${c.n30} pass / 30 d<br>${c.last_workout?fdate(c.last_workout):'Inget pass än'}</span></button>`).join(''):'<p class="mut">Inga klienter än.</p>'}
 }
 async function clientSheet(id,n){openSheet(n,'<p class="mut">Laddar…</p>');const r=await sb.from('workouts').select('data').eq('user_id',id).order('date',{ascending:false}).limit(20);if(r.error){$('#shB').innerHTML='<p class="mut">Kunde inte hämta passen.</p>';return}
   const ws=r.data.map(x=>x.data);$('#shB').innerHTML=ws.length?`<p class="mut sm" style="margin-top:0">De senaste ${ws.length} passen</p>`+ws.map(sessCard).join(''):'<p class="mut">Inga pass loggade än.</p>'}
-document.addEventListener('change',async e=>{if(e.target.id==='accn'&&sb&&ME){const n=e.target.value.trim();const r=await sb.from('profiles').update({name:n}).eq('id',ME.id);if(!r.error){PROF.name=n;toast('Namnet är sparat')}}});
+document.addEventListener('change',async e=>{if(e.target.id==='accn'&&sb&&ME){const n=e.target.value.trim();const r=await sb.from('profiles').update({name:n}).eq('id',ME.id);if(!r.error){PROF.name=n;lsSet(UK('prof'),PROF);showWho();toast('Namnet är sparat')}}});
 /* lag i molnet */
 function noTeamView(){
   const adm=PROF&&PROF.role==='admin',lg=S._legacyTeam;
