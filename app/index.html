@@ -226,6 +226,31 @@ summary::-webkit-details-marker{display:none}
 .pf1{display:flex;flex-direction:column;gap:6px;font-weight:600}
 .amsg{color:var(--acc);min-height:1.3em;margin:0;font-weight:600}
 body.locked #app{visibility:hidden}
+.dwrap{aspect-ratio:100/60;overflow:hidden;background:#14472a}
+.dwrap svg,.dth svg{display:block;width:100%;height:100%}
+.dth{overflow:hidden;padding:0;background:#14472a}
+.mdr .dwrap{aspect-ratio:16/9}
+.diag .dz{fill:rgba(255,255,255,.04);stroke:rgba(255,255,255,.7);stroke-width:.35;stroke-dasharray:1.5 1}
+.diag .dg{fill:none;stroke:#fff;stroke-width:.7}
+.diag .dr{stroke:#fff;stroke-width:.5;stroke-dasharray:1.4 1}
+.diag .ds{stroke:#ffd21f;stroke-width:.6}
+.diag .dh{stroke:#ff6a3d;stroke-width:.9}
+.diag .dd{fill:none;stroke:#b6f700;stroke-width:.5}
+.diag .dl{fill:#fff;font:600 3.2px Barlow,sans-serif;paint-order:stroke;stroke:#14472a;stroke-width:.8px}
+.diag .dk{font:800 3px Barlow,sans-serif;text-anchor:middle;fill:#111}
+.cpts{background:var(--bg);border-radius:10px;padding:8px 12px;border:1px solid var(--line)}
+.cpts b{color:var(--acc);font-size:14px}
+.cpts ul{margin:4px 0 0;padding-left:18px}
+.rtag{font:700 11px Barlow,sans-serif;border-radius:6px;padding:1px 6px;vertical-align:2px;white-space:nowrap;margin-left:auto}
+.rtag.admin{background:var(--acc);color:var(--on-acc)}
+.rtag.coach{background:#fff;color:#111}
+.rtag.client{background:var(--line);color:var(--ink)}
+.wt .rtag{margin-left:4px}
+.urow{display:grid;grid-template-columns:minmax(0,1fr) 7.5em;gap:8px;align-items:center;border-top:1px solid var(--line)}
+.urow .pick{border-top:0}
+.urow select{font-size:15px;padding:6px 8px}
+.invbox{display:flex;flex-direction:column;gap:6px;background:var(--bg);border:1px solid var(--acc);border-radius:12px;padding:12px}
+.code.sm2{font-size:18px}
 .vh{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden}
 .imr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,11em);gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
 .btn[disabled]{opacity:.5}
@@ -511,7 +536,7 @@ let PEND={w:[],wd:[]},lastState='',lastTeam='',lastTS={};
 const SYNC={ok:'Sparat på ditt konto',wait:'Ansluter…',off:'Offline, sparas när nätet är tillbaka',local:'Sparas i den här telefonen',err:'Kunde inte spara, försöker igen'};
 function setSync(k){syncK=k;const el=$('#sync');if(!el)return;el.textContent=SYNC[k]||'';el.className='sync'+(k==='err'||k==='off'?' err':'')}
 const dispName=()=>{if(!ME)return '';const n=(PROF&&PROF.name)||(ME.email||'').split('@')[0];const em=(ME.email||'').split('@')[0];const base=n&&n!==em?n:em.split(/[._-]/)[0];return base?base.charAt(0).toUpperCase()+base.slice(1):''};
-function showWho(){const n=dispName();$('#whoN').textContent=ME?n:'Inte inloggad';$('#av').textContent=ME?(n[0]||'?').toUpperCase():'?';$('#av').classList.toggle('on',!!ME)}
+function showWho(){const n=dispName();$('#whoN').innerHTML=ME?esc(n)+(PROF&&PROF.role&&PROF.role!=='client'?` <span class="rtag ${PROF.role}">${ROLE[PROF.role]}</span>`:''):'Inte inloggad';$('#av').textContent=ME?(n[0]||'?').toUpperCase():'?';$('#av').classList.toggle('on',!!ME)}
 const UK=k=>'jk.'+(ME?ME.id:'anon')+'.'+k;
 const lsGet=(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}};
 const lsSet=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
@@ -589,17 +614,22 @@ async function afterLogin(user){
   }catch(e){console.warn(e);setSync(navigator.onLine===false?'off':'err')}
 }
 /* inloggningsruta */
-let authMode='login';
+let authMode='login';const INVITE=((location.hash.match(/^#kod-([A-Z0-9]+)/i)||[])[1]||'').toUpperCase();
 function showAuth(mode,msg){authMode=mode||'login';const a=$('#auth');a.hidden=false;document.body.classList.add('locked');
   $('#aform').innerHTML=authMode==='recover'?`<h1>Nytt lösenord</h1><p class="mut" style="margin:0">Välj ett nytt lösenord för ditt konto.</p><label class="pf1"><span>Nytt lösenord</span><input id="anp" type="password" autocomplete="new-password" minlength="8" required></label><button class="btn pri big" type="submit">Spara lösenord</button>`
+  :authMode==='signup'?`<h1>Skapa konto</h1><p class="mut" style="margin:0">Du behöver en inbjudningskod från Joachim.</p><label class="pf1"><span>Inbjudningskod</span><input id="ac" autocapitalize="characters" autocomplete="off" required value="${esc(INVITE)}"></label><label class="pf1"><span>Namn</span><input id="an" autocomplete="name"></label><label class="pf1"><span>E-post</span><input id="ae" type="email" autocomplete="username" inputmode="email" required></label><label class="pf1"><span>Välj lösenord (minst 8 tecken)</span><input id="ap" type="password" autocomplete="new-password" minlength="8" required></label><button class="btn pri big" type="submit">Skapa konto</button><button class="btn txt" type="button" data-act="alogin">Har redan konto? Logga in</button>`
   :authMode==='forgot'?`<h1>Glömt lösenord</h1><p class="mut" style="margin:0">Skriv din e-post så skickar vi en länk där du väljer ett nytt lösenord.</p><label class="pf1"><span>E-post</span><input id="ae" type="email" autocomplete="username" required value="${esc(lsGet('jk.last',{}).email||'')}"></label><button class="btn pri big" type="submit">Skicka länk</button><button class="btn txt" type="button" data-act="alogin">Tillbaka till inloggning</button>`
-  :`<h1>Logga in</h1><label class="pf1"><span>E-post</span><input id="ae" type="email" autocomplete="username" inputmode="email" required value="${esc(lsGet('jk.last',{}).email||'')}"></label><label class="pf1"><span>Lösenord</span><input id="ap" type="password" autocomplete="current-password" required></label><button class="btn pri big" type="submit">Logga in</button><button class="btn txt" type="button" data-act="aforgot">Glömt lösenord?</button>`;
+  :`<h1>Logga in</h1><label class="pf1"><span>E-post</span><input id="ae" type="email" autocomplete="username" inputmode="email" required value="${esc(lsGet('jk.last',{}).email||'')}"></label><label class="pf1"><span>Lösenord</span><input id="ap" type="password" autocomplete="current-password" required></label><button class="btn pri big" type="submit">Logga in</button><button class="btn txt" type="button" data-act="aforgot">Glömt lösenord?</button><button class="btn" type="button" data-act="asignup">Har du en inbjudningskod? Skapa konto</button>`;
   $('#amsg').textContent=msg||'';}
 function hideAuth(){$('#auth').hidden=true;document.body.classList.remove('locked')}
 $('#aform').addEventListener('submit',async e=>{e.preventDefault();const m=$('#amsg'),btn=$('#aform button[type=submit]');m.textContent='';btn.disabled=true;
   try{
     if(!sb)throw new Error('Kan inte nå servern. Kontrollera nätet och ladda om.');
     if(authMode==='login'){const r=await sb.auth.signInWithPassword({email:$('#ae').value.trim(),password:$('#ap').value});if(r.error)throw new Error(/invalid/i.test(r.error.message)?'Fel e-post eller lösenord.':r.error.message);await afterLogin(r.data.user)}
+    else if(authMode==='signup'){const pw=$('#ap').value;if(pw.length<8)throw new Error('Lösenordet måste vara minst 8 tecken.');const r=await sb.auth.signUp({email:$('#ae').value.trim(),password:pw,options:{data:{invite:$('#ac').value.trim().toUpperCase(),name:$('#an').value.trim()},emailRedirectTo:APPURL()}});
+      if(r.error)throw new Error(/database|saving new user|inbjudningskod/i.test(r.error.message)?'Ogiltig eller redan använd inbjudningskod.':/registered|exists/i.test(r.error.message)?'Det finns redan ett konto med den e-posten. Logga in i stället.':/signups? not allowed|disabled/i.test(r.error.message)?'Registrering är avstängd i Supabase. Be Joachim slå på den.':r.error.message);
+      history.replaceState(null,'',location.pathname);
+      if(r.data.session)await afterLogin(r.data.user);else{showAuth('login','Kontot är skapat! Bekräfta via länken i din e-post och logga sedan in.')}}
     else if(authMode==='forgot'){const r=await sb.auth.resetPasswordForEmail($('#ae').value.trim(),{redirectTo:location.origin+location.pathname});if(r.error)throw r.error;m.textContent='Klart! Kolla din e-post och följ länken.'}
     else{const r=await sb.auth.updateUser({password:$('#anp').value});if(r.error)throw r.error;toast('Lösenordet är bytt');history.replaceState(null,'',location.pathname);await afterLogin(r.data.user)}
   }catch(err){m.textContent=err.message||'Något gick fel, försök igen.'}btn.disabled=false});
@@ -610,24 +640,31 @@ async function boot(){
   sb.auth.onAuthStateChange((ev)=>{if(ev==='PASSWORD_RECOVERY'){recovering=true;showAuth('recover')}});
   const {data}=await sb.auth.getSession();
   if(recovering){showAuth('recover');return}
-  if(data&&data.session)afterLogin(data.session.user);else showAuth('login');
+  if(data&&data.session)afterLogin(data.session.user);else showAuth(INVITE?'signup':'login');
 }
 window.addEventListener('online',()=>flush());
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&ME){flush().then(()=>teamPull())}});
 setInterval(()=>{if(document.visibilityState==='visible'&&ME&&TID&&(tab==='lag'||tab==='hist'))teamPull()},45000);
 /* konto */
+const ROLE={admin:'Admin',coach:'Tränare',client:'Klient'};
+const APPURL=()=>location.origin+location.pathname;
 async function acctSheet(){
-  if(!ME)return;const p=PROF||{};
-  openSheet('Konto',`<div class="stack"><div class="signed"><span class="av on">${esc((dispName()[0]||'?').toUpperCase())}</span><span><b>Inloggad som ${esc(dispName())}</b><br><span class="mut sm">${esc(ME.email||'')}</span></span></div><label class="pf"><span>Namn</span><input id="accn" value="${esc(p.name||'')}"></label><p class="mut" style="margin:0">Roll: ${p.role==='admin'?'Admin':p.role==='coach'?'Tränare':'Klient'}</p><p class="mut sm" style="margin:0">${SYNC[syncK]||''}</p><button class="btn" data-act="logout">Logga ut</button></div>${p.role==='admin'?`<h3 style="margin:20px 0 6px">Dina klienter</h3><p class="mut sm" style="margin:0 0 8px">Nya konton skapar du i Supabase: Authentication → Users → Add user → Create new user. Kryssa i Auto Confirm User.</p><div id="clist"><p class="mut">Laddar…</p></div>`:''}`);
-  if(p.role==='admin'){const r=await sb.rpc('admin_clients');const el=$('#clist');if(!el)return;if(r.error){el.innerHTML='<p class="mut">Kunde inte hämta klienter.</p>';return}
-    el.innerHTML=r.data.length?r.data.map(c=>`<button class="pick" data-act="client" data-id="${esc(c.id)}" data-n="${esc(c.name||c.email)}"><span>${esc(c.name||c.email)}<br><span class="mut sm">${esc(c.email||'')}</span></span><span>${c.n30} pass / 30 d<br>${c.last_workout?fdate(c.last_workout):'Inget pass än'}</span></button>`).join(''):'<p class="mut">Inga klienter än.</p>'}
+  if(!ME)return;const p=PROF||{},adm=p.role==='admin';
+  openSheet('Konto',`<div class="stack"><div class="signed"><span class="av on">${esc((dispName()[0]||'?').toUpperCase())}</span><span><b>Inloggad som ${esc(dispName())}</b><br><span class="mut sm">${esc(ME.email||'')}</span></span><span class="rtag ${esc(p.role||'client')}">${ROLE[p.role]||'Klient'}</span></div>${adm?'<p class="mut sm" style="margin:0">Du är admin, den högsta behörigheten. Du kan bjuda in personer, ändra roller och se alla klienters träning.</p>':''}<label class="pf"><span>Namn</span><input id="accn" value="${esc(p.name||'')}"></label><p class="mut sm" style="margin:0">${SYNC[syncK]||''}</p><button class="btn" data-act="logout">Logga ut</button></div>${adm?`<h3 style="margin:22px 0 6px">Bjud in en person</h3><div class="card stack" style="padding:12px"><label class="pf"><span>Behörighet</span><select id="invr"><option value="client">Klient</option><option value="coach">Tränare</option><option value="admin">Admin</option></select></label><input id="invn" placeholder="Namn, t.ex. Anna (valfritt)" aria-label="Namn"><button class="btn pri" data-act="invnew">Skapa inbjudan</button><div id="invout"></div><p class="mut sm" style="margin:0"><b>Klient:</b> sin egen träning. <b>Tränare:</b> kan även skapa och dela lag. <b>Admin:</b> allt, även användare och roller.</p></div><h3 style="margin:22px 0 6px">Väntande inbjudningar</h3><div id="invlist"><p class="mut">Laddar…</p></div><h3 style="margin:22px 0 6px">Användare</h3><div id="ulist"><p class="mut">Laddar…</p></div>`:''}`);
+  if(adm){loadUsers();loadInvites()}
 }
+async function loadUsers(){const r=await sb.rpc('admin_clients');const el=$('#ulist');if(!el)return;if(r.error){el.innerHTML='<p class="mut">Kunde inte hämta användare. Har du kört databaskod del 2?</p>';return}
+  el.innerHTML=r.data.map(c=>`<div class="urow"><button class="pick" data-act="client" data-id="${esc(c.id)}" data-n="${esc(c.name||c.email)}"><span>${esc(c.name||c.email)}${c.id===ME.id?' (du)':''}<br><span class="mut sm">${esc(c.email||'')}</span></span><span class="mut sm">${c.n30} pass / 30 d<br>${c.last_workout?fdate(c.last_workout):'Inget pass än'}</span></button><select data-role="${esc(c.id)}" aria-label="Behörighet för ${esc(c.name||c.email)}">${Object.entries(ROLE).map(([k,l])=>`<option value="${k}"${c.role===k?' selected':''}>${l}</option>`).join('')}</select></div>`).join('')||'<p class="mut">Inga användare.</p>'}
+async function loadInvites(){const r=await sb.from('invites').select('code,role,note,created_at').is('used_by',null).order('created_at',{ascending:false});const el=$('#invlist');if(!el)return;if(r.error){el.innerHTML='<p class="mut">Kör databaskod del 2 för att kunna bjuda in.</p>';return}
+  el.innerHTML=r.data.length?r.data.map(v=>`<div class="prow"><span><b class="code sm2">${esc(v.code)}</b> ${esc(v.note||'')}</span><span class="mut sm">${ROLE[v.role]}</span><button class="x" data-act="invdel" data-c="${esc(v.code)}" aria-label="Ta bort inbjudan">×</button></div>`).join(''):'<p class="mut">Inga väntande.</p>'}
+const invText=(c,n)=>`Hej${n?' '+n:''}! Skapa ditt konto i JoachimKantola PT här: ${APPURL()}#kod-${c} (inbjudningskod ${c})`;
 async function clientSheet(id,n){openSheet(n,'<p class="mut">Laddar…</p>');const r=await sb.from('workouts').select('data').eq('user_id',id).order('date',{ascending:false}).limit(20);if(r.error){$('#shB').innerHTML='<p class="mut">Kunde inte hämta passen.</p>';return}
   const ws=r.data.map(x=>x.data);$('#shB').innerHTML=ws.length?`<p class="mut sm" style="margin-top:0">De senaste ${ws.length} passen</p>`+ws.map(sessCard).join(''):'<p class="mut">Inga pass loggade än.</p>'}
-document.addEventListener('change',async e=>{if(e.target.id==='accn'&&sb&&ME){const n=e.target.value.trim();const r=await sb.from('profiles').update({name:n}).eq('id',ME.id);if(!r.error){PROF.name=n;lsSet(UK('prof'),PROF);showWho();toast('Namnet är sparat')}}});
+document.addEventListener('change',async e=>{if(e.target.dataset&&e.target.dataset.role&&sb){const r=await sb.rpc('set_role',{uid:e.target.dataset.role,new_role:e.target.value});if(r.error){toast(/minst en admin/.test(r.error.message)?'Det måste finnas minst en admin':'Kunde inte ändra roll');loadUsers()}else{toast('Behörigheten är ändrad');if(e.target.dataset.role===ME.id){PROF.role=e.target.value;showWho()}}return}
+ if(e.target.id==='accn'&&sb&&ME){const n=e.target.value.trim();const r=await sb.from('profiles').update({name:n}).eq('id',ME.id);if(!r.error){PROF.name=n;lsSet(UK('prof'),PROF);showWho();toast('Namnet är sparat')}}});
 /* lag i molnet */
 function noTeamView(){
-  const adm=PROF&&PROF.role==='admin',lg=S._legacyTeam;
+  const adm=PROF&&(PROF.role==='admin'||PROF.role==='coach'),lg=S._legacyTeam;
   return `<div class="card nextc" style="margin-top:6px"><h2 style="margin:0 0 6px">Gå med i ett lag</h2><p class="mut" style="margin:0 0 12px">Skriv lagkoden du fått av lagets ansvarige tränare.</p><div class="row nowrap"><input id="jcode" placeholder="T.ex. A1B2C3" autocapitalize="characters" autocomplete="off" aria-label="Lagkod"><button class="btn pri" data-act="tjoin">Gå med</button></div></div>
 ${adm?`<div class="card" style="margin-top:12px"><h2 style="margin:0 0 6px">Skapa ett lag</h2><p class="mut" style="margin:0 0 12px">${lg?'Ditt lag från den här telefonen, med spelare och planerade pass, flyttas med.':'Du blir lagets ägare och kan bjuda in andra tränare med en kod.'}</p><div class="row nowrap"><input id="tnew" value="${esc(lg?lg.name:'BSK F2019')}" aria-label="Lagets namn"><button class="btn pri" data-act="tcreate">Skapa</button></div></div>`:''}`;
 }
@@ -809,6 +846,120 @@ function drawStats(){
   lineChart($('#bwFig'),SD.bw,{goal:SD.goal,u:'kg',col:'var(--blue)',empty:'Väg dig några dagar så ritas kurvan här'});
   lineChart($('#exFig'),SD.ex,{u:SD.exU,col:'var(--acc)',empty:'Behöver minst två pass med övningen'});
 }
+/* ---------- fotbollsövningar ---------- */
+const FCATS=['Uppvärmning','Dribbling','Passning','Mottagning','Avslut','Försvar','Smålagsspel','Matchspel','Lekar','Målvakt','Koordination'];
+const F=(id,n,cat,lvl,min,pl,eq,st,cp,d)=>({id:'f_'+id,n,tag:cat,cat,kind:'fb',lvl,min,pl,eq,st,cp,d,p:0});
+const FDR=[
+/* Uppvärmning */
+F('rorl','Rörlighetsbanan','Uppvärmning','Alla',8,'Hela laget',['Koner'],['Ställ upp två rader koner med 5 meters mellanrum','Jogga till första konen och tillbaka','Nästa varv: höga knän, hälspark, sidledes och baklänges','Avsluta med en kort sprint'],['Lugnt tempo i början, öka successivt','Rak rygg och aktiva armar'],'c 15 20;c 35 20;c 55 20;c 75 20;c 15 40;c 35 40;c 55 40;c 75 40;p 8 20;p 8 40;r 10 20 33 20;r 10 40 33 40;l 45 12 5_m'),
+F('rutan','Boll i rutan','Uppvärmning','Alla',8,'Hela laget',['Koner','En boll per spelare'],['Alla dribblar fritt i en ruta','Tränaren ropar en signal: byt fot, stoppa med sulan, vänd','På ”Byt!” lämnar alla sin boll och tar en annan'],['Huvudet uppe, se var det finns plats','Många små tillslag'],'z 20 10 80 50;p 30 20;b 32 21;p 55 18;b 57 19;p 45 35;b 47 36;p 68 40;b 70 41;p 30 44;b 32 45;d 30 20 40 28;d 55 18 64 26;t 50 54'),
+F('follj','Följa John med boll','Uppvärmning','Knatte 5–8',6,'Två och två',['En boll per spelare'],['Två och två med varsin boll','Den första dribblar och gör rörelser, den andra härmar','Byt ledare efter en minut'],['Hitta på svårare saker efter hand','Håll bollen nära foten'],'z 15 10 85 50;p 35 30;b 37 31;p 25 30;b 27 31;d 37 30 55 22;r 27 30 45 24;p 60 42;b 62 43;p 50 44;b 52 45;d 62 42 75 34'),
+F('trafik','Trafikljuset','Uppvärmning','Knatte 5–8',6,'Hela laget',['En boll per spelare'],['Alla dribblar i en ruta','Grönt: dribbla snabbt','Gult: dribbla långsamt med sulan','Rött: stopp, foten på bollen'],['Lyssna och reagera snabbt','Bollen ska lyda dig'],'z 20 10 80 50;p 32 22;b 34 23;p 60 20;b 62 21;p 42 40;b 44 41;p 66 38;b 68 39;t 50 54;l 22 8 Grönt_gult_rött'),
+F('passgata','Passningsgatan','Uppvärmning','Alla',8,'Två köer',['Koner','Bollar'],['Två köer mittemot varandra, 10–15 meter isär','Passa till spelaren mittemot och spring efter din passning','Ställ dig sist i den andra kön'],['Passa med insidan','Mottagning och passning med två tillslag'],'c 20 30;c 80 30;p 15 30;p 10 30;p 85 30;p 90 30;b 18 32;s 20 28 78 28;r 20 33 78 33'),
+F('hopp','Hopp och dribbling','Uppvärmning','Barn 9–12',8,'Två köer',['Koner','Låga hinder','Bollar'],['Hoppa jämfota över fyra låga hinder','Ta en boll och dribbla runt konen','Passa tillbaka till nästa i kön'],['Mjuka landningar','Snabb första touch efter hoppen'],'c 20 30;c 28 30;c 36 30;c 44 30;b 55 32;c 80 30;p 10 30;r 14 28 50 28;d 56 31 78 31;s 78 34 14 34'),
+/* Dribbling */
+F('slalom','Tät konslalom','Dribbling','Alla',8,'Köer om 3–4',['Koner','Bollar'],['Ställ 6–8 koner med 1,5 meters mellanrum','Dribbla slalom in med höger, ut med vänster','Tävla: vilken kö blir först klar?'],['Små, täta tillslag','Använd in- och utsida'],'c 25 20;c 33 20;c 41 20;c 49 20;c 57 20;c 65 20;c 25 40;c 33 40;c 41 40;c 49 40;c 57 40;c 65 40;p 12 20;b 15 21;p 12 40;b 15 41;d 15 20 70 20;d 15 40 70 40'),
+F('portar','Konportarna','Dribbling','Alla',8,'Hela laget',['Koner','En boll per spelare'],['Ställ ut många portar om två koner i en ruta','Dribbla genom så många portar du kan på 60 sekunder','Samma port får inte tas två gånger i rad'],['Titta upp och hitta lediga portar','Byt riktning efter porten'],'z 15 8 85 52;c 30 18;c 30 24;c 55 15;c 61 15;c 72 30;c 72 36;c 40 40;c 46 40;c 25 45;c 25 39;p 20 30;b 22 31;d 22 30 30 21;d 30 21 58 15;d 58 15 72 33'),
+F('vand','Vändningar','Dribbling','Alla',10,'Köer om 3–4',['Koner','Bollar'],['Dribbla fram till linjen','Vänd med insidan, utsidan eller sulan','Dribbla snabbt tillbaka','Tränaren ropar vilken vändning'],['Bromsa in innan vändningen','Accelerera direkt efter'],'c 15 15;c 15 45;c 70 15;c 70 45;p 10 30;b 13 31;d 14 30 68 30;r 68 34 20 34;l 72 30 Vänd!'),
+F('1mot1linje','1 mot 1 till linje','Dribbling','Alla',10,'Par',['Koner','Bollar'],['En anfallare och en försvarare i en korridor','Anfallaren försöker dribbla över försvararens linje','Försvararen vinner bollen och försöker kontra'],['Våga utmana med fart','Byt riktning när försvararen kommer nära'],'z 15 15 85 45;p 20 30;b 23 31;o 70 30;d 23 30 52 22;d 52 22 82 26;l 85 30 Linje'),
+F('finta','Fintbanan','Dribbling','Barn 9–12',10,'Köer om 3–4',['Koner','Bollar'],['Dribbla mot en kon som är ”försvarare”','Gör en finta vid konen: kroppsfint, överstegsfint eller dra-tillbaka','Accelerera förbi och avsluta på mål eller passa'],['Fintan ska göras nära konen','Explodera efter fintan'],'p 10 30;b 13 31;c 40 30;c 40 33;d 14 30 36 30;d 36 30 44 22;d 44 22 75 25;G 95 30 l;h 75 25 93 28'),
+F('hornen','Fyra hörn','Dribbling','Alla',8,'4 köer',['Koner','Bollar'],['En kö i varje hörn av en fyrkant','Dribbla till kön till höger och lämna bollen','Byt riktning efter en stund'],['Se upp i mitten så ingen krockar','Välj rätt fot efter riktning'],'c 25 12;c 75 12;c 25 48;c 75 48;p 21 12;b 24 14;p 79 12;p 21 48;p 79 48;b 76 46;d 27 13 71 13;d 74 46 74 16'),
+F('skydda','Skydda bollen','Dribbling','Alla',6,'Par',['En boll per par','Koner'],['Två och två i en liten cirkel','Den ena har bollen och skyddar den med kroppen','Den andra försöker peta bort bollen i 30 sekunder','Byt roller'],['Kroppen mellan motståndaren och bollen','Låg tyngdpunkt och armarna ut'],'z 30 12 70 48;p 48 30;b 51 31;o 42 25;r 42 25 47 28'),
+F('kantdrib','Dribbla förbi och slå in','Dribbling','Barn 9–12',12,'Köer om 3',['Koner','Bollar','Mål'],['Dribbla längs kanten förbi en kon','Slå ett inlägg in i straffområdet','En anfallare möter inlägget och avslutar'],['Dribbla med fart utåt','Inlägget ska slås hårt framför mål'],'p 20 8;b 23 9;c 50 8;d 23 8 70 10;s 72 12 82 32;p 60 40;r 60 40 82 32;G 95 30 l;h 83 32 93 30'),
+/* Passning */
+F('par','Passa två och två','Passning','Alla',8,'Par',['En boll per par'],['Stå 5–10 meter isär','Ta emot med ena foten, passa med den andra','Öka avståndet efter hand'],['Stödfoten bredvid bollen','Låst fotled vid passningen'],'p 30 30;p 70 30;b 33 31;s 33 28 67 28;s 67 33 33 33'),
+F('porpass','Passa genom porten','Passning','Alla',8,'Par',['Koner','En boll per par'],['Ställ en port om två koner mellan spelarna','Passa genom porten till kompisen','Flytta er runt porten och passa från nya vinklar'],['Passa precist med insidan','Rör dig efter varje passning'],'c 48 24;c 48 36;p 25 25;p 72 35;b 28 26;s 28 26 69 34;r 72 35 72 20'),
+F('triangel','Triangelpassning','Passning','Barn 9–12',10,'Grupper om 3–4',['Koner','Bollar'],['Ställ tre koner i en triangel, 10 meter mellan','Passa till nästa kon och spring efter din passning','Byt riktning efter en minut'],['Öppna kroppen mot nästa mottagare','Tempo i passningarna'],'c 25 45;c 75 45;c 50 12;p 22 47;p 78 47;p 50 9;b 27 43;s 27 43 72 43;s 74 42 52 15;r 25 45 72 47'),
+F('vagg','Väggspel','Passning','Barn 9–12',10,'Grupper om 3',['Koner','Bollar'],['En spelare står som ”vägg” i mitten','Passa till väggen och spring förbi','Väggen spelar tillbaka i löpvägen','Avsluta med passning eller skott'],['Passa i rätt ögonblick','Väggen spelar på direkten'],'p 20 30;b 23 31;p 50 22;s 23 29 47 22;r 23 33 60 36;s 52 24 62 34;c 80 30'),
+F('rondo','Rondo 4 mot 1','Passning','Barn 9–12',10,'Grupper om 5',['Koner','Bollar'],['Fyra spelare runt en ruta, en i mitten','De fyra passar, mitten försöker ta bollen','Den som tappar bollen går in i mitten'],['Erbjud dig alltid för passning','Få tillslag, tänk före'],'z 30 12 70 48;p 30 30;p 70 30;p 50 12;p 50 48;o 50 30;b 33 30;s 33 29 47 14;s 52 14 68 28'),
+F('kors','Passningskorset','Passning','Barn 9–12',10,'4 köer',['Koner','Bollar'],['En kö vid varje kon i ett kors','Passa till kön till höger och spring efter','Flera bollar samtidigt när det går bra'],['Titta upp innan du passar','Mottagning bort från konen'],'c 50 8;c 50 52;c 25 30;c 75 30;p 50 5;p 50 55;p 21 30;p 79 30;b 24 33;s 25 33 47 50;r 23 34 47 52'),
+F('langa','Långa passningar','Passning','Barn 9–12',8,'Par',['Bollar'],['Stå 20–25 meter isär','Slå en lång passning eller lyra till kompisen','Ta emot och slå tillbaka'],['Träffa bollen under mitten för att lyfta den','Följ med i sparken'],'p 15 30;p 85 30;b 18 31;s 18 30 82 30;l 50 24 20_m'),
+F('kagla','Kägelspelet','Passning','Knatte 5–8',8,'Två lag',['Koner','Bollar'],['Ställ ut koner i mitten','Passa och försök träffa och välta konerna','Laget som välter flest vinner'],['Sikta med insidan','Lugnt och precist före hårt'],'c 50 20;c 50 30;c 50 40;c 46 25;c 46 35;p 20 20;p 20 40;p 80 25;p 80 38;b 23 21;s 23 21 47 25;s 77 38 52 30'),
+/* Mottagning */
+F('sidtouch','Första touchen åt sidan','Mottagning','Alla',8,'Par',['Koner','Bollar'],['Mottagaren står mellan två koner','Tränaren eller kompisen passar','Ta med första touchen förbi en kon åt vänster eller höger','Passa tillbaka'],['Bestäm riktning innan bollen kommer','Mjuk men bestämd touch'],'c 60 22;c 60 38;p 60 30;p 20 30;b 23 31;s 23 30 57 30;d 60 30 70 20'),
+F('luftmott','Ta ner bollen','Mottagning','Barn 9–12',8,'Par',['Bollar'],['Kompisen kastar bollen i luften','Ta ner den med fot, lår eller bröst','Passa tillbaka på marken'],['Möt bollen och dra tillbaka foten','Kroppen bakom bollen'],'p 25 30;p 70 30;b 28 25;s 28 24 66 26;l 48 20 Kast'),
+F('vandmott','Vändning med boll','Mottagning','Barn 9–12',10,'Grupper om 3',['Koner','Bollar'],['Tre spelare på rad, 10 meter mellan','Mittenspelaren tar emot med ryggen mot den tredje','Vänd med bollen och passa vidare','Rotera positioner'],['Kolla axeln innan bollen kommer','Ta emot med foten längst ifrån'],'p 15 30;p 50 30;p 85 30;b 18 31;s 18 30 47 30;d 50 30 56 24;s 56 26 82 30'),
+F('oppen','Öppen kroppsställning','Mottagning','Barn 9–12',10,'Grupper om 3',['Koner','Bollar'],['Mottagaren står snett mellan två koner','Ta emot med bortre foten och spela framåt','Byt sida varannan gång'],['Öppna höften mot spelriktningen','Bollen ska gå framåt med första touchen'],'c 50 20;c 50 40;p 15 40;p 85 20;p 50 30;b 18 39;s 18 39 47 31;s 53 29 82 21'),
+/* Avslut */
+F('drivskott','Skott efter slalom','Avslut','Alla',10,'Köer om 3–4',['Koner','Bollar','Mål'],['Dribbla slalom mellan fyra koner','Avsluta med skott på mål','Hämta bollen och ställ dig sist'],['Titta på målet innan du skjuter','Stödfoten bredvid bollen'],'c 30 30;c 40 30;c 50 30;c 60 30;p 12 30;b 15 31;d 15 30 65 30;h 68 30 93 28;G 95 30 l;k 92 30'),
+F('vaggskott','Skott efter väggspel','Avslut','Barn 9–12',12,'Grupper om 3–4',['Koner','Bollar','Mål'],['Passa till väggspelaren','Få tillbaka bollen i löpvägen','Avsluta på direkten eller med en touch'],['Timing i löpningen','Skjut i hörnen'],'p 25 35;b 28 36;p 55 25;s 28 35 52 26;r 28 38 62 38;s 57 27 64 36;h 66 36 93 30;G 95 30 l;k 92 30'),
+F('inlagg','Inlägg och avslut','Avslut','Barn 9–12',12,'Grupper om 4',['Koner','Bollar','Mål'],['En spelare dribblar på kanten och slår inlägg','Två anfallare löper in mot nära och bortre stolpen','Avsluta på inlägget'],['Starta löpningen sent','Möt bollen'],'p 30 8;b 33 9;d 33 8 75 10;s 77 12 85 26;p 55 30;p 55 45;r 55 30 85 26;r 55 45 85 38;G 95 30 l;k 92 30'),
+F('1mot1mv','1 mot 1 mot målvakten','Avslut','Alla',10,'Kö + målvakt',['Bollar','Mål'],['Starta med boll vid mittlinjen','Dribbla mot målvakten och försök göra mål','Målvakten kommer ut och möter'],['Lugn i avslutet','Rundning eller placering, välj tidigt'],'p 15 30;b 18 31;d 18 30 75 30;k 88 30;r 92 30 86 30;G 95 30 l;h 76 30 93 34'),
+F('snabba','Snabba avslut','Avslut','Barn 9–12',8,'Kö + tränare',['Bollar','Mål'],['Tränaren spelar in bollar i snabb följd','Spelaren skjuter på direkten','Fem bollar per spelare, räkna målen'],['Kort förberedelse','Vrist eller insida beroende på läge'],'t 55 10;b 58 13;s 57 12 66 28;p 66 30;h 68 30 93 30;G 95 30 l;k 92 30'),
+F('horn','Hörnskytten','Avslut','Alla',10,'Köer om 3–4',['Koner','Bollar','Mål'],['Märk ut målets hörn med koner','Skjut från 10–12 meter och försök träffa mellan stolpe och kon','Hörnträff ger 2 poäng, vanligt mål 1 poäng'],['Precision före kraft','Placera med insidan'],'G 95 30 l;c 93 24;c 93 36;p 60 30;b 63 31;h 64 30 93 26;l 70 20 Hörn_=_2_p'),
+F('2mot1mal','2 mot 1 mot mål','Avslut','Barn 9–12',12,'Grupper om 3 + målvakt',['Bollar','Mål'],['Två anfallare mot en försvarare','Utnyttja övertaget och avsluta','Försvararen som vinner bollen spelar till tränaren'],['Dra försvararen till dig och passa','Spring i djupled'],'p 25 22;p 25 40;b 28 23;o 60 30;d 28 22 50 22;s 50 23 62 38;r 25 40 64 40;h 66 38 93 32;G 95 30 l;k 92 30'),
+F('retur','Returjakten','Avslut','Barn 9–12',10,'Köer om 3',['Bollar','Mål'],['Skjut från distans','Följ upp skottet direkt','Är det retur, avsluta igen'],['Spring in efter varje skott','Var först på returen'],'p 50 30;b 53 31;h 54 30 90 28;r 54 34 82 34;G 95 30 l;k 92 30;l 78 42 Retur'),
+/* Försvar */
+F('styra','Pressa och styra','Försvar','Barn 9–12',10,'Par',['Koner','Bollar'],['Anfallaren dribblar i en korridor','Försvararen pressar och styr ut mot sidan','Försvararen vinner när anfallaren tvingas ut över sidlinjen'],['Snett ställd kropp','Inte kasta in foten för tidigt'],'z 15 12 85 48;p 20 30;b 23 31;o 60 30;d 23 30 45 34;r 60 30 50 32;l 50 52 Styr_mot_sidan'),
+F('korridor','1 mot 1 i korridor','Försvar','Alla',10,'Par',['Koner','Bollar','Små mål'],['Korridor 10 × 20 meter med små mål i varje ände','Tränaren spelar in bollen','Den som får bollen anfaller, den andra försvarar'],['Snabbt i press','Tålamod, vänta på rätt läge att ta bollen'],'z 20 15 80 45;g 18 30;g 82 30;p 30 30;o 65 30;b 33 31;t 50 52;d 33 30 55 24'),
+F('2mot2sma','2 mot 2 till små mål','Försvar','Barn 9–12',12,'Grupper om 4',['Koner','Små mål','Bollar'],['Två mot två på liten plan med små mål','Fokus på samarbete i försvaret','En pressar, den andra täcker'],['Prata med varandra','Täck passningsvägen'],'z 20 10 80 50;g 18 30;g 82 30;p 35 22;p 35 40;o 60 22;o 60 40;b 38 23;s 38 23 57 39'),
+F('5sek','Återerövring på 5 sekunder','Försvar','Barn 9–12',12,'Hela laget',['Koner','Västar','Bollar'],['Smålagsspel 4 mot 4','Tappar laget bollen ska alla pressa direkt','Vinner man tillbaka bollen inom 5 sekunder ger det bonuspoäng'],['Närmaste spelaren pressar direkt','Övriga stänger passningsvägar'],'z 15 8 85 52;p 40 25;p 35 40;p 55 35;o 50 28;o 62 20;o 65 42;b 52 29;r 40 25 48 28;r 55 35 52 31'),
+F('blocka','Blocka skottet','Försvar','Barn 9–12',8,'Par + målvakt',['Bollar','Mål'],['Anfallaren dribblar mot mål','Försvararen följer med och försöker blocka skottet','Byt roller'],['Sidled och låg position','Kroppen i skottlinjen'],'p 30 30;b 33 31;d 33 30 60 30;o 70 28;r 70 28 66 30;G 95 30 l;k 92 30'),
+/* Smålagsspel */
+F('3mot3fyra','3 mot 3 till fyra små mål','Smålagsspel','Alla',15,'Lag om 3',['Koner','Västar','Bollar'],['Två små mål i varje ände','Laget kan göra mål i vilket som helst av sina två mål','Byt lag var 3:e minut'],['Spela till det mål där det är ledigt','Byt kant snabbt'],'z 15 8 85 52;g 13 20;g 13 40;g 87 20;g 87 40;p 35 20;p 40 38;p 50 28;o 60 22;o 65 40;o 55 34;b 52 29'),
+F('4mot4mv','4 mot 4 med målvakter','Smålagsspel','Alla',15,'Lag om 4–5',['Koner','Västar','Bollar','Mål'],['Plan ca 25 × 35 meter med riktiga mål','Vanliga regler, inkast med fötterna','Alla ska vara med och anfalla och försvara'],['Bred och djup när vi har bollen','Kompakt när vi försvarar'],'z 10 8 90 52;G 8 30 r;G 92 30 l;k 11 30;k 89 30;p 30 20;p 30 40;p 45 30;o 60 22;o 60 38;o 70 30;b 47 31'),
+F('linje','Linjespelet','Smålagsspel','Alla',12,'Lag om 3–5',['Koner','Västar','Bollar'],['Mål görs genom att dribbla över motståndarnas baslinje','Bollen ska stoppas på linjen','Inga målvakter'],['Våga dribbla när det är ledigt','Spring i djupled för passning'],'z 15 8 85 52;p 40 25;p 40 40;b 43 26;o 60 28;o 60 42;d 43 25 82 20;l 88 30 Linje'),
+F('joker','Spel med jokrar','Smålagsspel','Barn 9–12',15,'Lag om 3 + 2 jokrar',['Koner','Västar','Bollar','Små mål'],['3 mot 3 med två jokrar som alltid spelar med laget som har bollen','Jokrarna står på kanterna','Laget med boll har övertag 5 mot 3'],['Använd övertaget, spela via jokrarna','Snabb omställning vid bolltapp'],'z 15 8 85 52;g 13 30;g 87 30;p 35 25;p 40 40;p 45 30;o 60 25;o 60 40;o 55 32;t 50 6;t 50 54;l 56 5 Joker;l 56 58 Joker;b 47 31'),
+F('kungen','Kungens bana','Smålagsspel','Alla',15,'Flera lag om 2–3',['Koner','Små mål','Bollar'],['Flera små planer bredvid varandra','Spela 2 mot 2 i 2 minuter','Vinnarna flyttar upp en plan, förlorarna ner','Målet är att ta sig till kungens bana'],['Ge allt i varje match','Peppa varandra'],'z 5 10 32 50;z 36 10 64 50;z 68 10 95 50;l 12 6 Plan_1;l 43 6 Plan_2;l 72 6 Kungen;p 15 30;o 25 30;p 46 30;o 56 30;p 78 30;o 88 30'),
+F('allarora','Alla rör bollen','Smålagsspel','Barn 9–12',15,'Lag om 5',['Koner','Västar','Bollar','Mål'],['5 mot 5 med målvakter','Mål räknas bara om alla i laget rört bollen i anfallet','Vanligt mål utan regel räknas också men ger 1 poäng mindre'],['Alla erbjuder sig','Tålamod i anfallet'],'z 8 8 92 52;G 6 30 r;G 94 30 l;k 9 30;k 91 30;p 30 18;p 30 42;p 45 30;p 55 20;o 60 40;o 68 28;o 75 18;b 47 31;s 47 30 54 21'),
+F('behall','Behåll bollen','Smålagsspel','Barn 9–12',12,'Lag om 4',['Koner','Västar','Bollar'],['4 mot 4 i en ruta utan mål','Fem passningar i rad ger ett poäng','Laget som vinner bollen försöker samma sak'],['Gör planen stor när ni har bollen','Rör er efter passningen'],'z 15 8 85 52;p 25 15;p 75 15;p 30 45;p 70 45;o 45 25;o 55 35;o 50 18;o 60 42;b 28 17;s 28 16 72 16;s 74 17 70 42'),
+F('kontra','Kontringsspelet','Smålagsspel','Barn 9–12',15,'Lag om 4',['Koner','Västar','Bollar','Mål'],['Ett lag anfaller 4 mot 3, en försvarare väntar vid mittlinjen','Vinner försvarande lag bollen kontrar de 4 mot 3 åt andra hållet','Mål på kontring ger dubbla poäng'],['Snabbt framåt när bollen vinns','Spring brett'],'z 8 8 92 52;G 6 30 r;G 94 30 l;k 9 30;k 91 30;p 65 20;p 65 40;p 72 30;p 58 30;o 80 25;o 80 38;o 82 30;o 40 30;b 60 31;l 50 4 Mittlinje'),
+/* Lekar */
+F('hajen','Hajen och fiskarna','Lekar','Knatte 5–8',8,'Hela laget',['Koner','Bollar'],['Fiskarna dribblar med var sin boll från ena sidan till den andra','Hajarna i mitten försöker sparka ut fiskarnas bollar','Fisk som tappar bollen blir haj'],['Fart och huvudet uppe','Skydda bollen med kroppen'],'z 10 8 90 52;p 15 15;b 18 16;p 15 30;b 18 31;p 15 45;b 18 46;o 50 22;o 50 40;d 18 15 85 18;d 18 45 85 42;l 50 5 Hajar'),
+F('bollkull','Kull med boll','Lekar','Knatte 5–8',6,'Hela laget',['Koner','Bollar'],['Alla dribblar i en ruta','Kullaren dribblar också och försöker kulla med handen','Den som blir kullad tar över'],['Bollen nära hela tiden','Byt riktning snabbt'],'z 15 8 85 52;o 50 30;b 53 31;p 30 20;b 32 21;p 70 18;b 72 19;p 35 42;b 37 43;p 72 40;b 74 41;r 50 30 34 22'),
+F('tunnelkull','Tunnelkull','Lekar','Knatte 5–8',8,'Hela laget',['Koner','Bollar'],['Två kullare utan boll, alla andra dribblar','Den som blir kullad står bredbent med bollen i händerna','En kompis räddar genom att dribbla bollen mellan benen'],['Hjälp varandra','Titta var kullarna är'],'z 15 8 85 52;o 40 20;o 65 40;p 55 25;l 55 20 Fast;p 40 38;b 43 39;d 43 38 54 27'),
+F('skatt','Skattjakten','Lekar','Knatte 5–8',8,'Fyra lag',['Bollar','Koner'],['Alla bollar läggs i mitten','Ett lag i varje hörn','En i taget springer och dribblar hem en boll','När mitten är tom får man ta från andra lag'],['Bara en boll i taget','Dribbla, inte bära'],'z 15 8 85 52;b 48 28;b 52 32;b 50 26;b 47 33;b 53 28;c 18 11;c 82 11;c 18 49;c 82 49;p 20 14;p 80 14;p 20 46;p 80 46;r 22 16 46 27;d 50 32 78 45'),
+F('simon','Simon säger med boll','Lekar','Knatte 5–8',6,'Hela laget',['En boll per spelare'],['Alla dribblar fritt','Tränaren säger ”Simon säger …” och en rörelse','Bara rörelser med ”Simon säger” ska göras'],['Lyssna noga','Gör rörelserna med kontroll'],'z 20 10 80 50;t 50 54;p 30 20;b 32 21;p 55 18;b 57 19;p 42 38;b 44 39;p 68 36;b 70 37;l 52 6 Simon_säger_sula!'),
+F('tomma','Töm trädgården','Lekar','Knatte 5–8',6,'Två lag',['Koner','Många bollar'],['Två lag på var sin sida om en mittlinje','Sparka över bollarna till andra sidan','När tränaren blåser räknas bollarna på varje sida'],['Passa med insidan, inte tå','Snabbt upp med nästa boll'],'z 10 8 90 52;l 50 5 Mittlinje;p 25 20;p 30 40;b 28 22;b 35 30;o 70 25;o 65 42;b 72 27;s 28 22 60 18;s 68 41 40 36'),
+F('dribbelkung','Dribbelkungen','Lekar','Alla',8,'Hela laget',['Koner','En boll per spelare'],['Alla dribblar i en ruta och skyddar sin boll','Försök samtidigt sparka ut andras bollar','Den som blir utsparkad gör fem jonglerings-försök och är med igen'],['Skydda först, attackera sen','Titta upp'],'z 20 10 80 50;p 35 22;b 37 23;p 60 20;b 62 21;p 45 38;b 47 39;p 68 40;b 70 41;r 45 38 58 24'),
+F('bollpolis','Bollpolisen','Lekar','Knatte 5–8',6,'Hela laget',['Västar eller färgade kort','En boll per spelare'],['Alla dribblar','Tränaren håller upp en färg','Röd: stopp. Gul: sätt dig på bollen. Blå: rulla bollen med sulan'],['Titta upp på tränaren hela tiden','Reagera snabbt'],'z 20 10 80 50;t 50 54;p 30 22;b 32 23;p 58 20;b 60 21;p 40 40;b 42 41;p 66 38;b 68 39'),
+/* Målvakt */
+F('mvgrund','Grundposition och fånga','Målvakt','Alla',8,'Målvakter + tränare',['Bollar','Mål'],['Målvakten står i grundposition','Tränaren kastar låga, mellanhöga och höga bollar','Fånga med ”W”-greppet på höga, ”korg” på låga'],['Lätt på tå och lite böjda knän','Händerna framför kroppen'],'G 95 30 l;k 90 30;t 60 30;b 63 30;s 63 30 87 28'),
+F('mvfall','Fallningar åt sidan','Målvakt','Barn 9–12',10,'Målvakter + tränare',['Bollar','Mål','Matta'],['Börja på knä och fall åt sidan mot bollen','Därefter stående med kort förflyttning','Rulla bollar och sedan skott'],['Fall framåt i sidled, inte bakåt','Landa på sidan, inte armbågen'],'G 95 30 l;k 90 30;t 62 30;b 65 33;s 65 33 88 40;r 90 30 90 39'),
+F('mvutkast','Utkast och utspark','Målvakt','Alla',8,'Målvakt + spelare',['Bollar','Koner'],['Målvakten fångar och kastar ut till en spelare i en zon','Rull-kast på kort avstånd, överkast längre','Avsluta med utspark till zon'],['Titta upp först','Kasta till fri spelare'],'G 95 30 l;k 90 30;b 87 30;z 30 10 55 25;z 30 35 55 50;p 42 18;p 42 42;s 87 29 45 19'),
+F('mvreak','Reaktionsräddningar','Målvakt','Barn 9–12',8,'Målvakt + 2 skyttar',['Bollar','Mål'],['Två skyttar står snett framför mål','Tränaren ropar vem som skjuter','Målvakten förflyttar sig och räddar'],['Korta sidosteg','Var redo innan skottet'],'G 95 30 l;k 90 30;p 65 18;p 65 42;b 68 19;b 68 41;h 68 19 90 26;l 55 30 Vem_skjuter?'),
+/* Koordination */
+F('jongl','Jonglering','Koordination','Alla',8,'Alla själva',['En boll per spelare'],['Släpp bollen och spark upp den med foten, fånga','Försök två och tre tillslag innan du fångar','Räkna ditt rekord'],['Låst fotled, tårna upp','Låg spark, mjuk touch'],'p 30 30;b 32 24;p 55 30;b 57 24;p 80 30;b 82 24;l 50 50 Räkna_ditt_rekord'),
+F('hopp2','Hopp och sprint','Koordination','Alla',8,'Köer om 3–4',['Koner'],['Jämfotahopp över fem koner','Landa mjukt','Sprinta 10 meter efter sista konen'],['Använd armarna','Snabb fotisättning'],'c 20 30;c 27 30;c 34 30;c 41 30;c 48 30;c 80 30;p 10 30;r 14 28 52 28;r 52 30 78 30'),
+F('sidled','Sicksack i sidled','Koordination','Alla',6,'Köer om 3–4',['Koner'],['Koner i sicksack, 3 meter mellan','Förflytta dig i sidled från kon till kon','Rör konen med handen'],['Låg position','Inga korsade fötter'],'c 15 22;c 27 38;c 39 22;c 51 38;c 63 22;c 75 38;p 8 22;r 15 22 27 38;r 27 38 39 22;r 39 22 51 38'),
+F('balans','Balans med boll','Koordination','Knatte 5–8',6,'Alla själva',['En boll per spelare'],['Stå på ett ben med andra foten på bollen','Rulla bollen fram och tillbaka med sulan','Byt fot efter 20 sekunder'],['Blicken framåt','Spänn magen'],'p 35 30;b 38 34;p 65 30;b 68 34;l 50 50 Ett_ben'),
+F('kasta','Kasta och fånga','Koordination','Knatte 5–8',6,'Par',['Två bollar per par'],['Kasta en boll till kompisen och fånga den du får','Börja med en boll, sedan två samtidigt','Öka avståndet'],['Titta på bollen','Mjuka händer'],'p 30 30;p 70 30;b 33 28;b 67 32;s 33 27 67 27;s 67 33 33 33'),
+/* Matchspel */
+F('trmatch','Träningsmatch','Matchspel','Alla',30,'Två lag',['Västar','Bollar','Mål'],['Dela upp i två jämna lag','Spela två halvlekar om 10–15 minuter','Rotera positioner i halvtid, alla får prova målvakt','Tränaren stoppar högst ett par gånger och ger en kort instruktion'],['Låt spelarna spela, få avbrott','Beröm modiga beslut'],'z 5 5 95 55;G 4 30 r;G 96 30 l;k 7 30;k 93 30;p 25 18;p 25 42;p 40 30;p 50 15;p 50 45;o 60 30;o 70 18;o 70 42;o 80 30;b 42 31;l 50 4 Mittlinje'),
+F('foraldra','Matchspel mot föräldrarna','Matchspel','Knatte 5–8',30,'Barn mot föräldrar',['Västar','Bollar','Mål'],['Barnen spelar mot föräldrarna','Föräldrarna får bara använda svagaste foten eller gå','Byt målvakt efter varje mål'],['Peppa och ha roligt','Barnen ska få lyckas'],'z 5 5 95 55;G 4 30 r;G 96 30 l;k 7 30;k 93 30;p 30 20;p 30 40;p 45 30;p 40 12;o 60 30;o 70 20;o 70 40;b 47 31;l 70 6 Föräldrar'),
+F('tvatouch','Matchspel med två tillslag','Matchspel','Barn 9–12',15,'Lag om 5–7',['Västar','Bollar','Mål'],['Vanlig match men max två tillslag per spelare','Bryter man regeln blir det frispark till motståndarna','Sista fem minuterna fritt spel'],['Tänk före innan bollen kommer','Rörelse utan boll'],'z 5 5 95 55;G 4 30 r;G 96 30 l;k 7 30;k 93 30;p 30 18;p 30 42;p 45 30;o 60 22;o 60 40;o 72 30;b 47 31;s 47 30 32 20;l 50 52 Max_2_tillslag'),
+F('zonmatch','Matchspel med zoner','Matchspel','Barn 9–12',15,'Lag om 6–7',['Koner','Västar','Bollar','Mål'],['Dela planen i tre zoner','Mål räknas bara om minst tre spelare från laget är i anfallszonen','Försvararna får inte lämna sin zon förrän bollen passerat'],['Följ med upp i anfallet','Snabb återgång i försvaret'],'z 5 5 95 55;l 22 4 Försvar;l 45 4 Mitt;l 72 4 Anfall;c 35 5;c 35 55;c 65 5;c 65 55;G 96 30 l;k 93 30;p 70 20;p 72 40;p 80 30;p 50 30;o 85 25;o 85 38;b 52 31;s 52 30 70 22'),
+F('overtal','Matchspel i över- och undertal','Matchspel','Barn 9–12',15,'Lag om 5',['Västar','Bollar','Mål'],['Ett lag spelar med en extra spelare','Byt så att det andra laget får övertal var 3:e minut','Laget i undertal fokuserar på att stå kompakt'],['Övertal: bred och spela runt','Undertal: tätt och tålmodigt'],'z 5 5 95 55;G 4 30 r;G 96 30 l;k 7 30;k 93 30;p 30 15;p 30 45;p 45 25;p 45 38;p 55 30;o 65 25;o 65 36;o 75 30;b 57 31;l 30 52 5_mot_4'),
+F('straffar','Straffläggning','Matchspel','Alla',10,'Två lag',['Bollar','Mål'],['Avsluta träningen eller matchen med straffar','Fem straffar per lag, sedan sudden death','Alla som vill får prova att stå i mål'],['Bestäm hörn innan du springer','Lugn andning'],'G 96 30 l;k 93 30;b 80 30;p 70 30;h 81 30 94 25;p 30 22;p 30 30;p 30 38;l 22 48 Kö')
+];
+/* planskiss */
+let dgN=0;
+function diag(spec){
+  const id='dg'+(dgN++);const parts=String(spec||'').split(';').map(x=>x.trim().split(/\s+/)).filter(x=>x[0]);
+  const ar=(x1,y1,x2,y2,cls,mk)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="${cls}" marker-end="url(#${id}${mk})"/>`;
+  const wave=(x1,y1,x2,y2)=>{const dx=x2-x1,dy=y2-y1,L=Math.hypot(dx,dy)||1,n=Math.max(2,Math.round(L/5)),nx=-dy/L,ny=dx/L;let d=`M${x1} ${y1}`;for(let i=1;i<=n;i++){const t=i/n,a=(i%2?1.4:-1.4)*(i<n?1:0);d+=` L${(x1+dx*t+nx*a).toFixed(1)} ${(y1+dy*t+ny*a).toFixed(1)}`}return `<path d="${d}" class="dd" marker-end="url(#${id}d)"/>`};
+  const col={o:'#ff8a1f',y:'#ffd21f',b:'#3d8bff',r:'#ff4a3d'};
+  let g='';
+  for(const p of parts){const [k,...a]=p,v=a.map(Number);
+    if(k==='z')g+=`<rect x="${v[0]}" y="${v[1]}" width="${v[2]-v[0]}" height="${v[3]-v[1]}" class="dz"/>`;
+    else if(k==='c')g+=`<path d="M${v[0]} ${v[1]-2.2}L${v[0]+1.9} ${v[1]+1.4}L${v[0]-1.9} ${v[1]+1.4}Z" fill="${col[a[2]]||col.o}"/>`;
+    else if(k==='p')g+=`<circle cx="${v[0]}" cy="${v[1]}" r="2.6" fill="#b6f700" stroke="#0a0a0a" stroke-width=".6"/>`;
+    else if(k==='o')g+=`<circle cx="${v[0]}" cy="${v[1]}" r="2.6" fill="#fff" stroke="#0a0a0a" stroke-width=".6"/>`;
+    else if(k==='k')g+=`<circle cx="${v[0]}" cy="${v[1]}" r="2.6" fill="#ffd21f" stroke="#0a0a0a" stroke-width=".6"/><text x="${v[0]}" y="${v[1]+1.1}" class="dk">M</text>`;
+    else if(k==='t')g+=`<rect x="${v[0]-2.4}" y="${v[1]-2.4}" width="4.8" height="4.8" rx=".8" fill="#3d8bff" stroke="#0a0a0a" stroke-width=".5"/><text x="${v[0]}" y="${v[1]+1.1}" class="dk" fill="#fff">T</text>`;
+    else if(k==='b')g+=`<circle cx="${v[0]}" cy="${v[1]}" r="1.2" fill="#fff" stroke="#111" stroke-width=".45"/>`;
+    else if(k==='G'){const s=a[2]||'l',w=3,h=14,x=s==='l'?v[0]:v[0]-w;g+=`<rect x="${x}" y="${v[1]-h/2}" width="${w}" height="${h}" class="dg"/>`}
+    else if(k==='g')g+=`<rect x="${v[0]-1.2}" y="${v[1]-4}" width="2.4" height="8" class="dg"/>`;
+    else if(k==='r')g+=ar(v[0],v[1],v[2],v[3],'dr','r');
+    else if(k==='s')g+=ar(v[0],v[1],v[2],v[3],'ds','s');
+    else if(k==='h')g+=ar(v[0],v[1],v[2],v[3],'dh','h');
+    else if(k==='d')g+=wave(v[0],v[1],v[2],v[3]);
+    else if(k==='l')g+=`<text x="${v[0]}" y="${v[1]}" class="dl">${esc(a.slice(2).join(' ').replace(/_/g,' '))}</text>`;
+  }
+  const mk=(n,c)=>`<marker id="${id}${n}" viewBox="0 0 6 6" refX="5" refY="3" markerWidth="3.4" markerHeight="3.4" orient="auto"><path d="M0 0L6 3L0 6Z" fill="${c}"/></marker>`;
+  return `<svg class="diag" viewBox="0 0 100 60" role="img" aria-label="Planskiss"><defs>${mk('r','#fff')}${mk('s','#ffd21f')}${mk('h','#ff6a3d')}${mk('d','#b6f700')}</defs><rect x="0" y="0" width="100" height="60" fill="#14472a"/>${[0,1,2,3,4].map(i=>`<rect x="${i*20}" y="0" width="10" height="60" fill="#185331"/>`).join('')}<rect x="1.5" y="1.5" width="97" height="57" fill="none" stroke="rgba(255,255,255,.35)" stroke-width=".4"/>${g}</svg>`;
+}
+
 /* ---------- lag / fotboll ---------- */
 const TDR=[
 ['a1','Blixtstafetten','Snabbhet','Snabbhet','u',['Sprinta 10 meter','Runda konen','Spring tillbaka och växla'],['Koner'],3],
@@ -835,14 +986,15 @@ const TDR=[
 ].map(([id,n,tag,cat,pl,st,eq,p])=>({id,n,tag,cat,pl,st,eq,p,img:'team/'+id+'.webp'}));
 const TCATS=['Snabbhet','Styrka','Teknik','Explosivitet','Koordination','Samarbete','Reaktion','Allt i ett'];
 const T=()=>{if(!S.team)S.team={name:'BSK F2019',players:[],sessions:[],drills:[],score:{a:{n:'Lag Grön',p:0},b:{n:'Lag Gul',p:0}}};const t=S.team;t.players=t.players||[];t.sessions=t.sessions||[];t.drills=t.drills||[];t.score=t.score||{a:{n:'Lag Grön',p:0},b:{n:'Lag Gul',p:0}};return t};
-const allDr=()=>TDR.concat(T().drills);
+const allDr=()=>TDR.concat(FDR,(S.team&&S.team.drills)||[]);
 const DR=id=>allDr().find(d=>d.id===id)||{id,n:'Borttagen övning',tag:'',cat:'',st:[],eq:[],p:0};
 const tplBlocks=type=>type==='match'?[{n:'Samling och uppvärmning',min:15,dr:[]},{n:'Match',min:40,dr:[]}]:[{n:'Samling, två lag och genomgång',min:5,dr:[]},{n:'Stafetter',min:25,dr:[]},{n:'Matchspel, tjejerna mot föräldrarna',min:30,dr:[]}];
 const addMin=(hm,m)=>{const [h,mi]=String(hm||'17:30').split(':').map(Number);const t=((h*60+mi+m)%1440+1440)%1440;return pad2(Math.floor(t/60))+':'+pad2(t%60)};
 const sDate=s=>cap(dday(s.date).toLocaleDateString('sv-SE',{weekday:'long',day:'numeric',month:'long'}));
 const sTot=s=>s.blocks.reduce((a,b)=>a+num(b.min),0);
-const tImg=d=>d.img?`<img class="dimg" src="${d.img}" alt="" loading="lazy">`:`<div class="dimg ph"><span>${esc(d.cat||'Egen')}</span></div>`;
-let tSub='plan',tOpen=null,tCat='',tPl='',tPick=null;
+const tImg=d=>d.img?`<img class="dimg" src="${d.img}" alt="" loading="lazy">`:d.d?`<div class="dimg dwrap">${diag(d.d)}</div>`:`<div class="dimg ph"><span>${esc(d.cat||'Egen')}</span></div>`;
+const dMeta=d=>d.kind==='fb'?`${d.min} min · ${esc(d.pl)} · ${esc(d.lvl)}`:(d.pl==='g'?'Stafett · Gymnastiksal':d.pl==='u'?'Stafett · Utan redskap':'Egen övning');
+let tSub='plan',tOpen=null,tCat='',tPl='f',tPick=null,tQ='';
 const seg=()=>`<div class="seg" role="tablist">${[['plan','Planering'],['bank','Övningar'],['poang','Poäng'],['spel','Spelare']].map(([k,l])=>`<button class="${tSub===k?'on':''}" data-act="tsub" data-v="${k}" aria-pressed="${tSub===k}">${l}</button>`).join('')}</div>`;
 function teamView(){
   if(!ME)return '';if(!TID||!S.team)return noTeamView();
@@ -866,7 +1018,7 @@ function sessView(s){
   const t=T();let acc=0;
   const blocks=s.blocks.map((b,i)=>{const st=addMin(s.time,acc);acc+=num(b.min);const en=addMin(s.time,acc);
     return `<section class="card blk"><div class="bh"><span class="bt">${st}–${en}</span><span class="row" style="gap:4px;flex-wrap:nowrap"><button class="x" data-act="tbmin" data-i="${i}" data-v="-5" aria-label="5 minuter kortare">−</button><b class="bm">${num(b.min)} min</b><button class="x" data-act="tbmin" data-i="${i}" data-v="5" aria-label="5 minuter längre">+</button><button class="x" data-act="tbdel" data-i="${i}" aria-label="Ta bort blocket">×</button></span></div><input id="tb-${i}" data-tb="${i}" value="${esc(b.n)}" aria-label="Blockets namn">
-${b.dr.map((id,j)=>{const d=DR(id);return `<div class="mdr">${tImg(d)}<span><strong>${esc(d.n)}</strong><br><span class="mut sm">${esc(d.tag)} · ${d.p} p</span></span><button class="x" data-act="tdrv" data-id="${esc(id)}" aria-label="Visa">i</button><button class="x" data-act="tdrdel" data-i="${i}" data-j="${j}" aria-label="Ta bort">×</button></div>`}).join('')}
+${b.dr.map((id,j)=>{const d=DR(id);return `<div class="mdr">${tImg(d)}<span><strong>${esc(d.n)}</strong><br><span class="mut sm">${esc(d.tag)}${d.kind==='fb'?' · '+d.min+' min':d.p?' · '+d.p+' p':''}</span></span><button class="x" data-act="tdrv" data-id="${esc(id)}" aria-label="Visa">i</button><button class="x" data-act="tdrdel" data-i="${i}" data-j="${j}" aria-label="Ta bort">×</button></div>`}).join('')}
 <button class="btn" style="margin-top:8px" data-act="tdradd" data-i="${i}">+ Stafett eller övning</button></section>`}).join('');
   const pres=s.att||[];
   const att=t.players.length?`<div class="att">${t.players.map(p=>`<button class="${pres.includes(p.id)?'on':''}" data-act="tatt" data-id="${esc(p.id)}" aria-pressed="${pres.includes(p.id)}">${esc(p.n)}</button>`).join('')}</div>`:`<p class="mut" style="margin:0">Lägg till spelare under <button class="lnk" data-act="tsub" data-v="spel">Spelare</button> för att kunna bocka av närvaro.</p>`;
@@ -880,13 +1032,15 @@ ${eq.length?`<h2>Utrustning</h2><div class="card"><div class="eqs">${eq.map(e=>`
 <h2>Anteckningar</h2><textarea id="tnote" placeholder="T.ex. vad som gick bra, vad vi tränar på nästa gång" aria-label="Anteckningar">${esc(s.note||'')}</textarea>
 <button class="btn txt" style="width:100%;margin-top:14px" data-act="tdel">Radera passet</button>`;
 }
-function drillCard(d){const cu=T().drills.some(x=>x.id===d.id);
-  return `<article class="card dcard">${tImg(d)}<div class="dh"><h3>${esc(d.n)}</h3><span class="tagc">${esc(d.tag)}</span></div><ol class="tips">${d.st.map(x=>`<li>${esc(x)}</li>`).join('')}</ol><div class="df"><span class="mut sm">${d.eq.length?esc(d.eq.join(', ')):'Ingen utrustning'}</span><span class="pts">${d.p} p</span></div><div class="row"><button class="btn" data-act="tdrplan" data-id="${esc(d.id)}">Lägg i pass</button>${cu?`<button class="btn txt" data-act="tdrrm" data-id="${esc(d.id)}">Ta bort</button>`:''}</div></article>`}
+function drillCard(d){const cu=S.team&&(S.team.drills||[]).some(x=>x.id===d.id);
+  return `<article class="card dcard">${tImg(d)}<div class="dh"><h3>${esc(d.n)}</h3><span class="tagc">${esc(d.tag)}</span></div><div class="mut sm">${dMeta(d)}</div><ol class="tips">${d.st.map(x=>`<li>${esc(x)}</li>`).join('')}</ol>${d.cp&&d.cp.length?`<div class="cpts"><b>Tänk på</b><ul>${d.cp.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:''}<div class="df"><span class="mut sm">${d.eq.length?esc(d.eq.join(', ')):'Ingen utrustning'}</span>${d.p?`<span class="pts">${d.p} p</span>`:''}</div><div class="row"><button class="btn" data-act="tdrplan" data-id="${esc(d.id)}">Lägg i pass</button>${cu?`<button class="btn txt" data-act="tdrrm" data-id="${esc(d.id)}">Ta bort</button>`:''}</div></article>`}
+const bankList=()=>{const q=norm(tQ),own=(S.team&&S.team.drills)||[];let l=tPl==='s'?TDR:tPl==='e'?own:tPl==='f'?FDR:allDr();l=l.filter(d=>(!tCat||d.cat===tCat)&&(!q||norm(d.n+' '+d.cat+' '+d.st.join(' ')).includes(q)));return l};
+function dlistHtml(){const l=bankList();return `<p class="mut sm" style="margin:10px 0 0">${l.length} övningar</p><div class="dgrid">${l.map(drillCard).join('')||'<p class="empty">Inga övningar matchar.</p>'}</div>`}
 function bankView(){
-  const l=allDr().filter(d=>(!tCat||d.cat===tCat)&&(!tPl||(tPl==='e'?!d.img:d.pl===tPl)));
-  return `<div class="seg sm2">${[['','Alla'],['u','Utan redskap'],['g','Gymnastiksal'],['e','Egna']].map(([k,l2])=>`<button class="${tPl===k?'on':''}" data-act="tpl" data-v="${k}">${l2}</button>`).join('')}</div><div class="chips">${['',...TCATS].map(c=>`<button class="btn${tCat===c?' on':''}" data-act="tcat" data-v="${c}">${c||'Alla'}</button>`).join('')}</div>
-<div class="dgrid">${l.map(drillCard).join('')||'<p class="empty">Inga övningar här än.</p>'}</div>
-<details class="card" style="margin-top:14px"><summary><strong>Skapa egen övning</strong></summary><div class="stack" style="margin-top:10px"><input id="dn" placeholder="Namn, t.ex. Passningsrondo" aria-label="Namn"><select id="dc" aria-label="Kategori">${TCATS.map(c=>`<option>${c}</option>`).join('')}</select><textarea id="ds" placeholder="Beskrivning, en rad per steg" aria-label="Beskrivning"></textarea><input id="de" placeholder="Utrustning, t.ex. Koner, Fotbollar" aria-label="Utrustning"><label class="pf"><span>Poäng vid vinst</span><input id="dp" inputmode="numeric" value="3"></label><button class="btn pri" data-act="tdrnew">Spara övningen</button></div></details>`;
+  const cats=tPl==='s'?TCATS:tPl==='f'?FCATS:[...new Set(TCATS.concat(FCATS))];
+  return `<input id="tbq" type="search" placeholder="Sök övning, t.ex. passning eller rondo" value="${esc(tQ)}" aria-label="Sök övning" autocomplete="off" style="margin-top:4px"><div class="seg sm2" style="margin-top:8px">${[['f','Fotboll'],['s','Stafetter'],['e','Egna'],['','Alla']].map(([k,l2])=>`<button class="${tPl===k?'on':''}" data-act="tpl" data-v="${k}">${l2}</button>`).join('')}</div><div class="chips">${['',...cats].map(c=>`<button class="btn${tCat===c?' on':''}" data-act="tcat" data-v="${c}">${c||'Alla'}</button>`).join('')}</div>
+<div id="dlist">${dlistHtml()}</div>
+<details class="card" style="margin-top:14px"><summary><strong>Skapa egen övning</strong></summary><div class="stack" style="margin-top:10px"><input id="dn" placeholder="Namn, t.ex. Passningsrondo" aria-label="Namn"><select id="dc" aria-label="Kategori">${FCATS.concat(TCATS.filter(c=>!FCATS.includes(c))).map(c=>`<option>${c}</option>`).join('')}</select><textarea id="ds" placeholder="Beskrivning, en rad per steg" aria-label="Beskrivning"></textarea><input id="de" placeholder="Utrustning, t.ex. Koner, Fotbollar" aria-label="Utrustning"><label class="pf"><span>Poäng vid vinst (0 = ingen)</span><input id="dp" inputmode="numeric" value="0"></label><button class="btn pri" data-act="tdrnew">Spara övningen</button></div></details>`;
 }
 function poangView(){
   const sc=T().score,a=sc.a,b=sc.b,d=num(a.p)-num(b.p);
@@ -908,7 +1062,7 @@ function tForm(s,type){
   return `<div class="stack"><label class="pf"><span>Rubrik</span><input id="tf-title" value="${esc(d.title)}"></label>${d.type==='match'?`<label class="pf"><span>Motståndare</span><input id="tf-opp" value="${esc(d.opp||'')}"></label>`:''}<label class="pf"><span>Datum</span><input id="tf-date" type="date" value="${d.date}"></label><label class="pf"><span>Starttid</span><input id="tf-time" type="time" value="${esc(d.time)}"></label><label class="pf"><span>Plats</span><input id="tf-place" value="${esc(d.place||'')}" placeholder="T.ex. Gymnastiksal"></label>${s?'':`<label class="pf"><span>Upprepa varje vecka</span><select id="tf-rep">${[1,2,4,6,8,10,12,16,20].map(n=>`<option value="${n}">${n===1?'Bara en gång':n+' veckor'}</option>`).join('')}</select></label>`}<button class="btn pri big" data-act="tsave" data-type="${d.type}"${s?' data-edit="1"':''}>${s?'Spara ändringar':'Lägg till'}</button></div>`;
 }
 function drPicker(cb){openSheet('Välj övning',`<input id="tq" type="search" placeholder="Sök" aria-label="Sök övning"><div id="tql" style="margin-top:8px"></div>`);tPick=cb;fillTq('')}
-function fillTq(q){q=norm(q);$('#tql').innerHTML=allDr().filter(d=>!q||norm(d.n).includes(q)||norm(d.cat).includes(q)).map(d=>`<button class="pick" data-act="tqpick" data-id="${esc(d.id)}"><span class="lrow">${d.img?`<img class="th" src="${d.img}" alt="" loading="lazy">`:'<span class="th ph">'+esc(d.n[0])+'</span>'}${esc(d.n)}</span><span>${esc(d.tag)}</span></button>`).join('')}
+function fillTq(q){q=norm(q);$('#tql').innerHTML=allDr().filter(d=>!q||norm(d.n).includes(q)||norm(d.cat).includes(q)).map(d=>`<button class="pick" data-act="tqpick" data-id="${esc(d.id)}"><span class="lrow">${d.img?`<img class="th" src="${d.img}" alt="" loading="lazy">`:d.d?`<span class="th dth">${diag(d.d)}</span>`:'<span class="th ph">'+esc(d.n[0])+'</span>'}${esc(d.n)}</span><span>${esc(d.tag)}</span></button>`).join('')}
 const curS=()=>T().sessions.find(x=>x.id===tOpen);
 function teamToday(){const t=S.team;if(!t||!t.sessions)return '';const k=isoDay(Date.now()),k2=isoDay(Date.now()+864e5);const s=t.sessions.filter(x=>x.date===k||x.date===k2).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time))[0];if(!s)return '';
   return `<button class="card tcard" data-act="topen2" data-id="${esc(s.id)}"><span class="lbl">${esc(t.name)} · ${s.date===k?'idag':'imorgon'} ${esc(s.time)}</span><strong>${esc(s.title)}${s.place?' · '+esc(s.place):''}</strong><span class="mut sm">${s.blocks.reduce((a,b)=>a+b.dr.length,0)} stafetter och övningar planerade</span></button>`}
@@ -931,11 +1085,11 @@ const TACT={
   tbadd:()=>{const s=curS();s.blocks.push({n:'Nytt block',min:10,dr:[]});save();render()},
   tdradd:(b,i)=>{drPicker(id=>{curS().blocks[i].dr.push(id);save();render()})},
   tdrdel:(b,i,j)=>{curS().blocks[i].dr.splice(j,1);save();render()},
-  tdrv:b=>{const d=DR(b.dataset.id);openSheet(d.n,`${tImg(d)}<p class="mut" style="margin:10px 0 0">${esc(d.tag)} · ${d.p} poäng</p><ol class="tips">${d.st.map(x=>`<li>${esc(x)}</li>`).join('')}</ol><p class="mut sm">${d.eq.length?'Utrustning: '+esc(d.eq.join(', ')):'Ingen utrustning'}</p>`)},
+  tdrv:b=>{const d=DR(b.dataset.id);openSheet(d.n,`${tImg(d)}<p class="mut" style="margin:10px 0 0">${esc(d.tag)} · ${dMeta(d)}${d.p?' · '+d.p+' poäng':''}</p><ol class="tips">${d.st.map(x=>`<li>${esc(x)}</li>`).join('')}</ol>${d.cp&&d.cp.length?`<div class="cpts"><b>Tänk på</b><ul>${d.cp.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:''}<p class="mut sm">${d.eq.length?'Utrustning: '+esc(d.eq.join(', ')):'Ingen utrustning'}</p>`)},
   tqpick:b=>{const cb=tPick;closeSheet();tPick=null;cb&&cb(b.dataset.id)},
   tatt:b=>{const s=curS();s.att=s.att||[];const id=b.dataset.id,k=s.att.indexOf(id);if(k<0)s.att.push(id);else s.att.splice(k,1);save();render()},
   tcat:b=>{tCat=b.dataset.v;render()},
-  tpl:b=>{tPl=b.dataset.v;render()},
+  tpl:b=>{tPl=b.dataset.v;tCat='';render()},
   tdrplan:b=>{const t=T(),today=isoDay(Date.now()),up=t.sessions.filter(s=>s.date>=today).sort((a,c)=>(a.date+a.time).localeCompare(c.date+c.time));if(!up.length){toast('Lägg in ett pass under Planering först');return}
     const id=b.dataset.id;openSheet('Lägg i vilket pass?',up.slice(0,12).map(s=>`<button class="pick" data-act="tdrto" data-sid="${esc(s.id)}" data-id="${esc(id)}"><span>${esc(s.title)}<br><span class="mut sm">${sDate(s)} ${esc(s.time)}</span></span><span>Välj</span></button>`).join(''))},
   tdrto:b=>{const s=T().sessions.find(x=>x.id===b.dataset.sid);if(!s)return;let bi=s.blocks.findIndex(x=>/stafett|övning/i.test(x.n));if(bi<0)bi=Math.min(1,s.blocks.length-1);if(bi<0){s.blocks.push({n:'Stafetter',min:20,dr:[]});bi=0}s.blocks[bi].dr.push(b.dataset.id);save();closeSheet();toast(`${DR(b.dataset.id).n} tillagd i ${s.title}, ${sDate(s).toLowerCase()}`)},
@@ -952,9 +1106,16 @@ document.addEventListener('input',e=>{const t=e.target;
   else if(t.dataset.tr){const s=curS();if(s){s.res=s.res||{};s.res[t.dataset.tr]=t.value;save()}}
   else if(t.id==='tname'){T().name=t.value;save()}
   else if(t.dataset.ts){T().score[t.dataset.ts].n=t.value;save()}
-  else if(t.id==='tq')fillTq(t.value)});
+  else if(t.id==='tq')fillTq(t.value);
+  else if(t.id==='tbq'){tQ=t.value;$('#dlist').innerHTML=dlistHtml()}});
 Object.assign(TACT,{
   acct:()=>acctSheet(),
+  asignup:()=>showAuth('signup'),
+  invnew:async()=>{const a=new Uint8Array(6);crypto.getRandomValues(a);const c=Array.from(a,x=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[x%32]).join('');const role=$('#invr').value,note=$('#invn').value.trim();
+    const r=await sb.from('invites').insert({code:c,role,note});if(r.error){toast('Kunde inte skapa inbjudan. Har du kört databaskod del 2?');return}
+    $('#invout').innerHTML=`<div class="invbox"><span class="mut sm">Inbjudan som ${ROLE[role].toLowerCase()}</span><b class="code">${c}</b><span class="sm" style="overflow-wrap:anywhere">${esc(APPURL())}#kod-${c}</span><button class="btn pri" data-act="invcopy" data-c="${c}" data-n="${esc(note)}">Kopiera inbjudan</button></div>`;$('#invn').value='';loadInvites()},
+  invcopy:async b=>{const t=invText(b.dataset.c,b.dataset.n);try{await navigator.clipboard.writeText(t);toast('Kopierat, klistra in i sms eller mejl')}catch(e){toast('Koden är '+b.dataset.c)}},
+  invdel:b=>{sb.from('invites').delete().eq('code',b.dataset.c).then(()=>loadInvites())},
   logout:()=>ask('Logga ut','Du loggas ut från den här telefonen.','Logga ut',async()=>{await flush();try{await sb.auth.signOut()}catch(e){}try{localStorage.removeItem('jk.last')}catch(e){}location.reload()}),
   client:b=>clientSheet(b.dataset.id,b.dataset.n),
   aforgot:()=>showAuth('forgot'),
