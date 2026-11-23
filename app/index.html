@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>JoachimKantola PT</title>
 <link rel="manifest" href="manifest.webmanifest">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -206,6 +207,18 @@ summary::-webkit-details-marker{display:none}
 .tcard{display:flex;flex-direction:column;gap:2px;width:100%;text-align:left;border:0;margin-top:12px;color:var(--ink);font:inherit;cursor:pointer;border-left:6px solid #fff}
 .cd b.tm{background:#fff;border-radius:2px}
 .tabs button{font-size:12px}
+.logob{border:0;background:none;padding:0;cursor:pointer;border-radius:50%;flex:none}
+button.sync{border:0;background:none;cursor:pointer;font:inherit;font-size:13px;text-align:right;max-width:46%}
+.tsel{font:700 17px Barlow,sans-serif;color:var(--acc);margin:-2px 0 10px;background:var(--card)}
+.code{font:800 26px "Barlow Condensed",sans-serif;letter-spacing:.12em;color:var(--acc)}
+.auth{position:fixed;inset:0;z-index:30;background:var(--bg);overflow-y:auto;display:flex;justify-content:center;padding:calc(env(safe-area-inset-top,0px) + 36px) 20px 40px}
+.auth[hidden]{display:none}
+.ain{width:100%;max-width:400px;display:flex;flex-direction:column;gap:14px}
+.ain h1{font-size:40px}
+.alogo{width:150px;height:150px;align-self:center}
+.pf1{display:flex;flex-direction:column;gap:6px;font-weight:600}
+.amsg{color:var(--acc);min-height:1.3em;margin:0;font-weight:600}
+body.locked #app{visibility:hidden}
 .vh{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden}
 .imr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,11em);gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
 .btn[disabled]{opacity:.5}
@@ -251,7 +264,7 @@ summary::-webkit-details-marker{display:none}
 </head>
 <body>
 <div id="app">
-  <header class="top"><div><img class="logo" src="img/logo.webp" alt="JoachimKantola PT"><h1 id="ttl">Idag</h1></div><span id="sync" class="sync">Laddar…</span></header>
+  <header class="top"><div><button class="logob" data-act="acct" aria-label="Konto"><img class="logo" src="img/logo.webp" alt="JoachimKantola PT"></button><h1 id="ttl">Idag</h1></div><button id="sync" class="sync" data-act="acct">Laddar…</button></header>
   <div id="scroll"><main id="main"></main></div>
   <div id="rest" aria-live="polite"><div class="fill" id="restFill"></div><div class="in"><div><div class="sm">Vila</div><div class="t" id="restT">1:30</div></div><div class="row"><button class="btn" data-act="restAdj" data-v="-15">−15</button><button class="btn" data-act="restAdj" data-v="15">+15</button><button class="btn" data-act="restStop">Hoppa över</button></div></div></div>
   <nav class="tabs" aria-label="Flikar">
@@ -265,6 +278,7 @@ summary::-webkit-details-marker{display:none}
 </div>
 <div id="sheet" class="sheet" hidden><div class="panel" role="dialog" aria-modal="true"><div class="ph"><h3 id="shT"></h3><button class="btn" data-act="close">Stäng</button></div><div id="shB"></div></div></div>
 <div id="toast" role="status"></div>
+<div id="auth" class="auth" hidden><div class="ain"><img src="img/logo-512.webp" alt="JoachimKantola PT" class="alogo"><form id="aform" class="stack" novalidate></form><p id="amsg" class="amsg" role="alert"></p><p class="mut sm" style="margin:0">Konto får du av Joachim Kantola.</p><a class="mut sm" href="../">Till hemsidan</a></div></div>
 <script>
 {
 const $=s=>document.querySelector(s);
@@ -483,33 +497,144 @@ async function doImport(){
   if(add.length>10)toast('Alla importerade pass är sparade');
 }
 
-/* ---------- storage ---------- */
-let stRef=null,sCol=null,syncK='wait',wT=null,writing=false,dirty=false;
-const SYNC={ok:'Sparat på ditt konto',wait:'Ansluter…',slow:'Kan inte nå lagringen än',local:'Sparas i den här telefonen',err:'Kunde inte spara, försöker igen'};
-function setSync(k){syncK=k;const el=$('#sync');el.textContent=SYNC[k];el.className='sync'+(k==='err'||k==='slow'?' err':'')}
-function lsSave(){try{localStorage.setItem(K1,JSON.stringify(S));localStorage.setItem(K2,JSON.stringify(H))}catch(e){}}
-function save(){lsSave();if(!stRef)return;clearTimeout(wT);wT=setTimeout(push,700)}
-async function push(){if(!stRef)return;if(writing){dirty=true;return}writing=true;try{await stRef.set(JSON.parse(JSON.stringify(S)));setSync('ok')}catch(e){setSync('err')}writing=false;if(dirty){dirty=false;push()}}
-async function putSession(s){if(!sCol)return;try{await sCol.doc(s.id).set(JSON.parse(JSON.stringify(s)));setSync('ok')}catch(e){setSync('err')}}
-async function connect(){
-  const c=window.claude;if(!c||!c.use){setSync('local');return}
-  setSync('wait');const to=setTimeout(()=>{if(syncK==='wait')setSync('slow')},10000);
+/* ---------- konto och synk (Supabase) ---------- */
+const SB_URL='https://vvcvwedwuusgqgyvcdfe.supabase.co',SB_KEY='sb_publishable_vbcJCkeJmTe5yrQSy6BHrw_wpaKGSNK';
+let sb=null,ME=null,PROF=null,syncK='wait',fT=null,writing=false,dirty=false,TEAMS=[],TID=null;
+let PEND={w:[],wd:[]},lastState='',lastTeam='',lastTS={};
+const SYNC={ok:'Sparat på ditt konto',wait:'Ansluter…',off:'Offline, sparas när nätet är tillbaka',local:'Sparas i den här telefonen',err:'Kunde inte spara, försöker igen'};
+function setSync(k){syncK=k;const el=$('#sync');if(!el)return;el.textContent=SYNC[k]||'';el.className='sync'+(k==='err'||k==='off'?' err':'')}
+const UK=k=>'jk.'+(ME?ME.id:'anon')+'.'+k;
+const lsGet=(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}};
+const lsSet=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+function lsSave(){if(!ME){lsSet(K1,S);lsSet(K2,H);return}lsSet(UK('state'),S);lsSet(UK('sessions'),H);lsSet(UK('pend'),PEND);lsSet(UK('sync'),{lastState,lastTeam,lastTS,TID})}
+function save(){lsSave();clearTimeout(fT);fT=setTimeout(flush,700)}
+function putSession(s){if(!PEND.w.includes(s.id))PEND.w.push(s.id);PEND.wd=PEND.wd.filter(x=>x!==s.id);save()}
+function delSession(id){H=H.filter(s=>s.id!==id);PEND.w=PEND.w.filter(x=>x!==id);if(!PEND.wd.includes(id))PEND.wd.push(id);save()}
+const stateOut=()=>{const o=JSON.parse(JSON.stringify(S));delete o.team;delete o._legacyTeam;return o};
+const teamBlob=t=>({players:t.players||[],drills:t.drills||[],score:t.score||{a:{n:'Lag Grön',p:0},b:{n:'Lag Gul',p:0}}});
+const ck=e=>{if(e&&e.error)throw e.error;return e};
+async function flush(){
+  if(!sb||!ME)return;if(writing){dirty=true;return}writing=true;
   try{
-    const [d,u]=await Promise.all([c.use('db'),c.use('user')]);
-    const id=u?await u.id():null;
-    if(!d||!id){clearTimeout(to);setSync('local');return}
-    const ref=d.doc('data/users/'+id+'/state'),col=ref.collection('sessions');
-    const [st,qs]=await Promise.all([ref.get(),col.get()]);
-    clearTimeout(to);stRef=ref;sCol=col;
-    if(st.exists){const la=S.active;S=Object.assign(defState(),JSON.parse(JSON.stringify(st.data())));if(!S.active&&la)S.active=la}
-    const remote=qs.docs.map(x=>JSON.parse(JSON.stringify(x.data()))),ids=new Set(remote.map(x=>x.id));
-    const missing=H.filter(x=>!ids.has(x.id));
-    H=remote.concat(missing).sort((a,b)=>b.date.localeCompare(a.date));
-    lsSave();render();setSync('ok');
-    if(!st.exists)push();
-    for(const s of missing)await putSession(s);
-  }catch(e){clearTimeout(to);setSync('err')}
+    const st=JSON.stringify(stateOut());
+    if(st!==lastState){ck(await sb.from('user_state').upsert({user_id:ME.id,data:JSON.parse(st),updated_at:new Date().toISOString()}));lastState=st}
+    const ws=PEND.w.map(id=>H.find(s=>s.id===id)).filter(Boolean);
+    if(ws.length){ck(await sb.from('workouts').upsert(ws.map(s=>({user_id:ME.id,id:s.id,date:s.date,data:s,updated_at:new Date().toISOString()}))));PEND.w=PEND.w.filter(id=>!ws.some(s=>s.id===id))}
+    if(PEND.wd.length){const d=PEND.wd.slice();ck(await sb.from('workouts').delete().eq('user_id',ME.id).in('id',d));PEND.wd=PEND.wd.filter(x=>!d.includes(x))}
+    if(TID&&S.team)await teamFlush();
+    setSync('ok');
+  }catch(e){console.warn(e);setSync(navigator.onLine===false?'off':'err')}
+  writing=false;lsSave();
+  if(dirty){dirty=false;flush()}
 }
+const teamDirty=()=>{const t=S.team;if(!TID||!t)return false;if(JSON.stringify({n:t.name,b:teamBlob(t)})!==lastTeam)return true;const cur=new Set();for(const s of t.sessions){cur.add(s.id);if(lastTS[s.id]!==JSON.stringify(s))return true}return Object.keys(lastTS).some(id=>!cur.has(id))};
+async function teamFlush(){
+  const t=S.team,tb=JSON.stringify({n:t.name,b:teamBlob(t)});
+  if(tb!==lastTeam){ck(await sb.from('teams').update({name:t.name,data:teamBlob(t),updated_at:new Date().toISOString()}).eq('id',TID));lastTeam=tb}
+  const up=[],cur=new Set();
+  for(const s of t.sessions){cur.add(s.id);const j=JSON.stringify(s);if(lastTS[s.id]!==j)up.push(s)}
+  if(up.length){ck(await sb.from('team_sessions').upsert(up.map(s=>({team_id:TID,id:s.id,date:s.date,data:s,updated_at:new Date().toISOString(),updated_by:ME.id}))));up.forEach(s=>lastTS[s.id]=JSON.stringify(s))}
+  const gone=Object.keys(lastTS).filter(id=>!cur.has(id));
+  if(gone.length){ck(await sb.from('team_sessions').delete().eq('team_id',TID).in('id',gone));gone.forEach(id=>delete lastTS[id])}
+}
+const busyUI=()=>{const a=document.activeElement;return !$('#sheet').hidden||(a&&/INPUT|TEXTAREA|SELECT/.test(a.tagName))};
+async function teamPull(force){
+  if(!sb||!TID)return;if(!force&&(writing||teamDirty()))return;
+  try{
+    const [tr,sr]=await Promise.all([sb.from('teams').select('id,name,join_code,owner,data').eq('id',TID).maybeSingle(),sb.from('team_sessions').select('id,data').eq('team_id',TID)]);
+    ck(tr);ck(sr);if(!tr.data){TID=null;S.team=null;render();return}
+    if(!force&&teamDirty())return;
+    const d=tr.data.data||{};
+    S.team={name:tr.data.name,code:tr.data.join_code,owner:tr.data.owner,players:d.players||[],drills:d.drills||[],score:d.score||{a:{n:'Lag Grön',p:0},b:{n:'Lag Gul',p:0}},sessions:sr.data.map(r=>r.data)};
+    lastTeam=JSON.stringify({n:S.team.name,b:teamBlob(S.team)});lastTS={};S.team.sessions.forEach(s=>lastTS[s.id]=JSON.stringify(s));
+    lsSave();if(!busyUI()&&(tab==='lag'||tab==='hist'||tab==='idag'))render();
+  }catch(e){console.warn(e)}
+}
+async function loadTeams(){const r=await sb.from('teams').select('id,name,join_code,owner,created_at').order('created_at');if(r.error)throw r.error;TEAMS=r.data||[];return TEAMS}
+async function afterLogin(user){
+  ME=user;hideAuth();lsSet('jk.last',{id:user.id,email:user.email});
+  const cS=lsGet(UK('state'),null),cH=lsGet(UK('sessions'),null),cs=lsGet(UK('sync'),{});
+  PEND=lsGet(UK('pend'),{w:[],wd:[]});lastState=cs.lastState||'';lastTeam=cs.lastTeam||'';lastTS=cs.lastTS||{};TID=cs.TID||null;
+  const legacy=!cS?{S:lsGet('lyft.state',null),H:lsGet('lyft.sessions',[])}:null;
+  if(cS&&Array.isArray(cS.plan)){S=cS;H=cH||[]}
+  render();if(!sb||navigator.onLine===false){setSync('off');return}
+  setSync('wait');
+  try{
+    const [pr,sr,wr]=await Promise.all([sb.from('profiles').select('id,email,name,role').eq('id',ME.id).maybeSingle(),sb.from('user_state').select('data').eq('user_id',ME.id).maybeSingle(),sb.from('workouts').select('id,data').eq('user_id',ME.id).order('date',{ascending:false}).limit(5000)]);
+    ck(pr);ck(sr);ck(wr);PROF=pr.data||{role:'client',email:ME.email,name:(ME.email||'').split('@')[0]};
+    const team=S.team;
+    if(sr.data&&sr.data.data&&Array.isArray(sr.data.data.plan)){const la=S.active;S=Object.assign(defState(),sr.data.data);if(!S.active&&la&&PEND.w.length)S.active=la;lastState=JSON.stringify(stateOut())}
+    else if(legacy&&legacy.S&&Array.isArray(legacy.S.plan)){S=Object.assign(defState(),legacy.S);if(legacy.S.team)S._legacyTeam=legacy.S.team;lastState=''}
+    S.team=team||null;
+    const remote=wr.data.map(r=>r.data),ids=new Set(remote.map(x=>x.id));
+    let localOnly=H.filter(s=>PEND.w.includes(s.id)&&!ids.has(s.id));
+    if(!remote.length&&legacy&&legacy.H&&legacy.H.length){localOnly=legacy.H;legacy.H.forEach(s=>{if(!PEND.w.includes(s.id))PEND.w.push(s.id)})}
+    H=remote.filter(s=>!PEND.wd.includes(s.id)).concat(localOnly).sort((a,b)=>b.date.localeCompare(a.date));
+    await loadTeams();
+    if(!TEAMS.some(t=>t.id===TID))TID=S.teamId&&TEAMS.some(t=>t.id===S.teamId)?S.teamId:(TEAMS[0]?TEAMS[0].id:null);
+    if(!TID){S.team=null;lastTS={};lastTeam=''}
+    lsSave();render();
+    if(TID)await teamPull(true);
+    await flush();
+    if(syncK==='wait')setSync('ok');
+  }catch(e){console.warn(e);setSync(navigator.onLine===false?'off':'err')}
+}
+/* inloggningsruta */
+let authMode='login';
+function showAuth(mode,msg){authMode=mode||'login';const a=$('#auth');a.hidden=false;document.body.classList.add('locked');
+  $('#aform').innerHTML=authMode==='recover'?`<h1>Nytt lösenord</h1><p class="mut" style="margin:0">Välj ett nytt lösenord för ditt konto.</p><label class="pf1"><span>Nytt lösenord</span><input id="anp" type="password" autocomplete="new-password" minlength="8" required></label><button class="btn pri big" type="submit">Spara lösenord</button>`
+  :authMode==='forgot'?`<h1>Glömt lösenord</h1><p class="mut" style="margin:0">Skriv din e-post så skickar vi en länk där du väljer ett nytt lösenord.</p><label class="pf1"><span>E-post</span><input id="ae" type="email" autocomplete="username" required value="${esc(lsGet('jk.last',{}).email||'')}"></label><button class="btn pri big" type="submit">Skicka länk</button><button class="btn txt" type="button" data-act="alogin">Tillbaka till inloggning</button>`
+  :`<h1>Logga in</h1><label class="pf1"><span>E-post</span><input id="ae" type="email" autocomplete="username" inputmode="email" required value="${esc(lsGet('jk.last',{}).email||'')}"></label><label class="pf1"><span>Lösenord</span><input id="ap" type="password" autocomplete="current-password" required></label><button class="btn pri big" type="submit">Logga in</button><button class="btn txt" type="button" data-act="aforgot">Glömt lösenord?</button>`;
+  $('#amsg').textContent=msg||'';}
+function hideAuth(){$('#auth').hidden=true;document.body.classList.remove('locked')}
+$('#aform').addEventListener('submit',async e=>{e.preventDefault();const m=$('#amsg'),btn=$('#aform button[type=submit]');m.textContent='';btn.disabled=true;
+  try{
+    if(!sb)throw new Error('Kan inte nå servern. Kontrollera nätet och ladda om.');
+    if(authMode==='login'){const r=await sb.auth.signInWithPassword({email:$('#ae').value.trim(),password:$('#ap').value});if(r.error)throw new Error(/invalid/i.test(r.error.message)?'Fel e-post eller lösenord.':r.error.message);await afterLogin(r.data.user)}
+    else if(authMode==='forgot'){const r=await sb.auth.resetPasswordForEmail($('#ae').value.trim(),{redirectTo:location.origin+location.pathname});if(r.error)throw r.error;m.textContent='Klart! Kolla din e-post och följ länken.'}
+    else{const r=await sb.auth.updateUser({password:$('#anp').value});if(r.error)throw r.error;toast('Lösenordet är bytt');history.replaceState(null,'',location.pathname);await afterLogin(r.data.user)}
+  }catch(err){m.textContent=err.message||'Något gick fel, försök igen.'}btn.disabled=false});
+async function boot(){
+  if(!window.supabase||!window.supabase.createClient){const last=lsGet('jk.last',null);if(last&&last.id){ME={id:last.id,email:last.email};const cS=lsGet(UK('state'),null);if(cS){S=cS;H=lsGet(UK('sessions'),[]);S.team=S.team||null}PEND=lsGet(UK('pend'),{w:[],wd:[]});render();setSync('off')}else showAuth('login','Kan inte nå servern. Kontrollera nätet och ladda om sidan.');return}
+  sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+  let recovering=/type=recovery/.test(location.hash);
+  sb.auth.onAuthStateChange((ev)=>{if(ev==='PASSWORD_RECOVERY'){recovering=true;showAuth('recover')}});
+  const {data}=await sb.auth.getSession();
+  if(recovering){showAuth('recover');return}
+  if(data&&data.session)afterLogin(data.session.user);else showAuth('login');
+}
+window.addEventListener('online',()=>flush());
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&ME){flush().then(()=>teamPull())}});
+setInterval(()=>{if(document.visibilityState==='visible'&&ME&&TID&&(tab==='lag'||tab==='hist'))teamPull()},45000);
+/* konto */
+async function acctSheet(){
+  if(!ME)return;const p=PROF||{};
+  openSheet('Konto',`<div class="stack"><label class="pf"><span>Namn</span><input id="accn" value="${esc(p.name||'')}"></label><p class="mut" style="margin:0">${esc(ME.email||'')} · ${p.role==='admin'?'Admin':p.role==='coach'?'Tränare':'Klient'}</p><p class="mut sm" style="margin:0">${SYNC[syncK]||''}</p><button class="btn" data-act="logout">Logga ut</button></div>${p.role==='admin'?`<h3 style="margin:20px 0 6px">Dina klienter</h3><p class="mut sm" style="margin:0 0 8px">Nya konton skapar du i Supabase: Authentication → Users → Add user → Create new user. Kryssa i Auto Confirm User.</p><div id="clist"><p class="mut">Laddar…</p></div>`:''}`);
+  if(p.role==='admin'){const r=await sb.rpc('admin_clients');const el=$('#clist');if(!el)return;if(r.error){el.innerHTML='<p class="mut">Kunde inte hämta klienter.</p>';return}
+    el.innerHTML=r.data.length?r.data.map(c=>`<button class="pick" data-act="client" data-id="${esc(c.id)}" data-n="${esc(c.name||c.email)}"><span>${esc(c.name||c.email)}<br><span class="mut sm">${esc(c.email||'')}</span></span><span>${c.n30} pass / 30 d<br>${c.last_workout?fdate(c.last_workout):'Inget pass än'}</span></button>`).join(''):'<p class="mut">Inga klienter än.</p>'}
+}
+async function clientSheet(id,n){openSheet(n,'<p class="mut">Laddar…</p>');const r=await sb.from('workouts').select('data').eq('user_id',id).order('date',{ascending:false}).limit(20);if(r.error){$('#shB').innerHTML='<p class="mut">Kunde inte hämta passen.</p>';return}
+  const ws=r.data.map(x=>x.data);$('#shB').innerHTML=ws.length?`<p class="mut sm" style="margin-top:0">De senaste ${ws.length} passen</p>`+ws.map(sessCard).join(''):'<p class="mut">Inga pass loggade än.</p>'}
+document.addEventListener('change',async e=>{if(e.target.id==='accn'&&sb&&ME){const n=e.target.value.trim();const r=await sb.from('profiles').update({name:n}).eq('id',ME.id);if(!r.error){PROF.name=n;toast('Namnet är sparat')}}});
+/* lag i molnet */
+function noTeamView(){
+  const adm=PROF&&PROF.role==='admin',lg=S._legacyTeam;
+  return `<div class="card nextc" style="margin-top:6px"><h2 style="margin:0 0 6px">Gå med i ett lag</h2><p class="mut" style="margin:0 0 12px">Skriv lagkoden du fått av lagets ansvarige tränare.</p><div class="row nowrap"><input id="jcode" placeholder="T.ex. A1B2C3" autocapitalize="characters" autocomplete="off" aria-label="Lagkod"><button class="btn pri" data-act="tjoin">Gå med</button></div></div>
+${adm?`<div class="card" style="margin-top:12px"><h2 style="margin:0 0 6px">Skapa ett lag</h2><p class="mut" style="margin:0 0 12px">${lg?'Ditt lag från den här telefonen, med spelare och planerade pass, flyttas med.':'Du blir lagets ägare och kan bjuda in andra tränare med en kod.'}</p><div class="row nowrap"><input id="tnew" value="${esc(lg?lg.name:'BSK F2019')}" aria-label="Lagets namn"><button class="btn pri" data-act="tcreate">Skapa</button></div></div>`:''}`;
+}
+async function createTeam(){
+  const name=($('#tnew').value||'').trim();if(!name){toast('Skriv lagets namn');return}
+  const lg=S._legacyTeam,blob=lg?teamBlob(lg):teamBlob({});
+  const r=await sb.from('teams').insert({name,data:blob});if(r.error){toast('Kunde inte skapa laget');console.warn(r.error);return}
+  await loadTeams();const mine=TEAMS.filter(t=>t.owner===ME.id&&t.name===name);TID=(mine[mine.length-1]||TEAMS[TEAMS.length-1]).id;S.teamId=TID;
+  if(lg&&lg.sessions&&lg.sessions.length){const u=await sb.from('team_sessions').upsert(lg.sessions.map(s=>({team_id:TID,id:s.id,date:s.date,data:s})));if(!u.error)delete S._legacyTeam}else delete S._legacyTeam;
+  await teamPull(true);save();render();toast(name+' är skapat');
+}
+async function joinTeam(){const c=($('#jcode').value||'').trim();if(!c)return;const r=await sb.rpc('join_team',{code:c});if(r.error){toast(/Ingen/.test(r.error.message)?'Ingen lag med den koden':'Kunde inte gå med');return}
+  TID=r.data;S.teamId=TID;await loadTeams();await teamPull(true);save();render();toast('Du är med i '+(S.team?S.team.name:'laget'))}
+async function peopleBox(){const el=$('#tpeople');if(!el||!TID)return;const r=await sb.rpc('team_people',{t:TID});if(r.error){el.innerHTML='<p class="mut">Kunde inte hämta tränarna.</p>';return}
+  const own=S.team&&S.team.owner===ME.id;
+  el.innerHTML=r.data.map(p=>`<div class="prow"><span>${esc(p.name||p.email)}${p.user_id===ME.id?' (du)':''}</span><span class="mut sm">${p.role==='owner'?'Ansvarig':'Tränare'}</span>${own&&p.role!=='owner'?`<button class="x" data-act="tkick" data-id="${esc(p.user_id)}" aria-label="Ta bort">×</button>`:'<span></span>'}</div>`).join('')}
 
 /* ---------- views ---------- */
 function bell(pl){
@@ -711,9 +836,10 @@ const tImg=d=>d.img?`<img class="dimg" src="${d.img}" alt="" loading="lazy">`:`<
 let tSub='plan',tOpen=null,tCat='',tPl='',tPick=null;
 const seg=()=>`<div class="seg" role="tablist">${[['plan','Planering'],['bank','Övningar'],['poang','Poäng'],['spel','Spelare']].map(([k,l])=>`<button class="${tSub===k?'on':''}" data-act="tsub" data-v="${k}" aria-pressed="${tSub===k}">${l}</button>`).join('')}</div>`;
 function teamView(){
+  if(!ME)return '';if(!TID||!S.team)return noTeamView();
   const t=T();
   const body=tSub==='bank'?bankView():tSub==='poang'?poangView():tSub==='spel'?spelView():planView();
-  return `<div class="tname">${esc(t.name)}</div>${seg()}${body}`;
+  return `${TEAMS.length>1?`<select id="tsel" class="tsel" aria-label="Välj lag">${TEAMS.map(x=>`<option value="${esc(x.id)}"${x.id===TID?' selected':''}>${esc(x.id===TID?t.name:x.name)}</option>`).join('')}</select>`:`<div class="tname">${esc(t.name)}</div>`}${seg()}${body}`;
 }
 function sessRow(s){return `<button class="srow" data-act="topen" data-id="${esc(s.id)}"><span class="sd"><b>${dday(s.date).getDate()}</b>${dday(s.date).toLocaleDateString('sv-SE',{month:'short'})}</span><span class="si"><strong>${esc(s.title)}</strong><span class="mut sm">${cap(dday(s.date).toLocaleDateString('sv-SE',{weekday:'long'}))} ${esc(s.time)}${s.place?' · '+esc(s.place):''}</span></span><span class="tagc ${s.type==='match'?'m':''}">${s.type==='match'?'Match':'Träning'}</span></button>`}
 function planView(){
@@ -761,7 +887,9 @@ function poangView(){
 }
 function spelView(){
   const t=T(),today=isoDay(Date.now()),past=t.sessions.filter(s=>s.date<=today);
-  return `<h2 style="margin-top:6px">Laget</h2><label class="pf"><span>Lagets namn</span><input id="tname" value="${esc(t.name)}"></label>
+  const own=t.owner===(ME&&ME.id);
+  return `<h2 style="margin-top:6px">Tränare i laget</h2><div class="card">${own?`<p style="margin:0 0 8px">Lagkod: <b class="code">${esc(t.code||'')}</b></p><div class="row"><button class="btn" data-act="tcopy">Kopiera kod</button><button class="btn" data-act="tnewcode">Ny kod</button></div><p class="mut sm">Ge koden till de andra tränarna. De loggar in med sitt konto och skriver koden under Lag. Allt i laget delas direkt.</p>`:''}<div id="tpeople" style="margin-top:6px"><p class="mut">Laddar…</p></div>${own?'':`<button class="btn txt" style="margin-top:6px" data-act="tleave">Lämna laget</button>`}</div>
+<h2>Laget</h2><label class="pf"><span>Lagets namn</span><input id="tname" value="${esc(t.name)}"></label>
 <h2>Spelare <span class="mut sm" style="font-family:Barlow">${t.players.length} st</span></h2><div class="row nowrap"><input id="tpn" placeholder="Förnamn" aria-label="Spelarens namn" autocomplete="off"><button class="btn pri" data-act="tpadd">Lägg till</button></div>
 <div class="card" style="margin-top:10px;padding:4px 14px">${t.players.length?t.players.map(p=>{const n=past.filter(s=>(s.att||[]).includes(p.id)).length;return `<div class="prow"><span>${esc(p.n)}</span><span class="mut sm">${past.length?`${n} av ${past.length} pass`:''}</span><button class="x" data-act="tprm" data-id="${esc(p.id)}" aria-label="Ta bort ${esc(p.n)}">×</button></div>`}).join(''):'<p class="mut">Inga spelare än. Skriv ett namn ovan.</p>'}</div>`;
 }
@@ -816,6 +944,21 @@ document.addEventListener('input',e=>{const t=e.target;
   else if(t.id==='tname'){T().name=t.value;save()}
   else if(t.dataset.ts){T().score[t.dataset.ts].n=t.value;save()}
   else if(t.id==='tq')fillTq(t.value)});
+Object.assign(TACT,{
+  acct:()=>acctSheet(),
+  logout:()=>ask('Logga ut','Du loggas ut från den här telefonen.','Logga ut',async()=>{await flush();try{await sb.auth.signOut()}catch(e){}try{localStorage.removeItem('jk.last')}catch(e){}location.reload()}),
+  client:b=>clientSheet(b.dataset.id,b.dataset.n),
+  aforgot:()=>showAuth('forgot'),
+  alogin:()=>showAuth('login'),
+  tjoin:()=>joinTeam(),
+  tcreate:()=>createTeam(),
+  tcopy:async()=>{try{await navigator.clipboard.writeText(S.team.code);toast('Koden är kopierad')}catch(e){toast('Lagkoden är '+S.team.code)}},
+  tnewcode:()=>ask('Ny lagkod','Den gamla koden slutar fungera. Tränare som redan är med påverkas inte.','Byt kod',async()=>{const r=await sb.rpc('new_join_code',{t:TID});if(r.error){toast('Kunde inte byta kod');return}S.team.code=r.data;render()}),
+  tkick:b=>ask('Ta bort tränare','Tränaren förlorar åtkomst till laget.','Ta bort',async()=>{const r=await sb.from('team_members').delete().eq('team_id',TID).eq('user_id',b.dataset.id);if(r.error)toast('Kunde inte ta bort');peopleBox()}),
+  tleave:()=>ask('Lämna laget','Du förlorar åtkomst till lagets planering.','Lämna',async()=>{const r=await sb.from('team_members').delete().eq('team_id',TID).eq('user_id',ME.id);if(r.error){toast('Kunde inte lämna laget');return}await loadTeams();TID=TEAMS[0]?TEAMS[0].id:null;S.team=null;S.teamId=TID;lastTS={};lastTeam='';if(TID)await teamPull(true);save();render()})
+});
+document.addEventListener('change',async e=>{if(e.target.id==='tsel'){await flush();TID=e.target.value;S.teamId=TID;S.team=null;lastTS={};lastTeam='';tOpen=null;await teamPull(true);save();render()}});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='jcode'){e.preventDefault();joinTeam()}});
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='tpn'){e.preventDefault();TACT.tpadd()}});
 const TITLES={idag:'Idag',schema:'Schema',stat:'Statistik',hist:'Kalender',ovn:'Övningar',lag:'Lag'};
 const VIEWS={idag:idagView,schema:schemaView,stat:statView,hist:histView,ovn:ovnView,lag:teamView};
@@ -825,6 +968,7 @@ function render(){
   $('#ttl').textContent=tab==='idag'&&S.active?'Träning':TITLES[tab];
   $('#main').innerHTML=VIEWS[tab]();
   if(tab==='stat')drawStats();
+  if(tab==='lag'&&tSub==='spel'&&TID)peopleBox();
   document.querySelectorAll('.tabs button').forEach(b=>{if(b.dataset.t===tab)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
   $('#liveDot').hidden=!S.active;tickEl();
 }
@@ -894,7 +1038,7 @@ const ACT={
   eff:(b,i,j)=>{const s=S.active.items[i].sets[j],r=+b.dataset.r;s.r=s.r===r?undefined:r;save();render()},
   seteff:b=>{S.eff=b.dataset.v;save();render()},
   up:b=>{const p=S.plan[+b.dataset.d],j=+b.dataset.j,lk=LK(+b.dataset.d);lk[j-1]=lk[j]=false;if(j>1)lk[j-2]=false;[p[j-1],p[j]]=[p[j],p[j-1]];save();render()},
-  delsess:b=>ask('Radera pass','Passet tas bort för gott.','Radera',()=>{const id=b.dataset.id;H=H.filter(s=>s.id!==id);lsSave();if(sCol)sCol.doc(id).delete().catch(()=>setSync('err'));render()}),
+  delsess:b=>ask('Radera pass','Passet tas bort för gott.','Radera',()=>{delSession(b.dataset.id);render()}),
   grp:b=>{exG=b.dataset.g;render()},
   doimport:()=>doImport(),
   logact:()=>{LG={ex:'',min:60,day:0,q:'',km:''};openLog()},
@@ -917,7 +1061,7 @@ const ACT={
   delcustom:b=>ask('Ta bort övning','Övningen tas bort ur listan. Sparade pass påverkas inte.','Ta bort',()=>{S.custom=S.custom.filter(c=>c.id!==b.dataset.id);S.plan=S.plan.map(p=>p.filter(x=>x!==b.dataset.id));save();render()}),
   export:async()=>{const txt=JSON.stringify({app:'lyft',state:S,sessions:H});try{await navigator.clipboard.writeText(txt);toast('Kopierat')}catch(e){const t=$('#bk');t.value=txt;t.select();toast('Markera och kopiera texten')}},
   import:()=>{let d;try{d=JSON.parse($('#bk').value)}catch(e){toast('Texten kunde inte läsas');return}if(!d||d.app!=='lyft'||!d.state||!Array.isArray(d.sessions)){toast('Det ser inte ut som en säkerhetskopia');return}
-    ask('Importera','Schema och egna övningar ersätts. Pass läggs till i historiken.','Importera',async()=>{S=Object.assign(defState(),d.state);const ids=new Set(H.map(s=>s.id)),add=d.sessions.filter(s=>s&&s.id&&!ids.has(s.id));H=H.concat(add).sort((a,b)=>b.date.localeCompare(a.date));save();render();toast(add.length+' pass importerade');for(const s of add)await putSession(s)})},
+    ask('Importera','Schema och egna övningar ersätts. Pass läggs till i historiken.','Importera',async()=>{const keepT=S.team;S=Object.assign(defState(),d.state);if(S.team&&!keepT)S._legacyTeam=S.team;S.team=keepT;const ids=new Set(H.map(s=>s.id)),add=d.sessions.filter(s=>s&&s.id&&!ids.has(s.id));H=H.concat(add).sort((a,b)=>b.date.localeCompare(a.date));save();render();toast(add.length+' pass importerade');for(const s of add)await putSession(s)})},
   close:()=>closeSheet(),
   ok:()=>{const cb=sheetCb;closeSheet();cb&&cb()},
   pick:b=>{const cb=sheetCb;closeSheet();cb&&cb(b.dataset.ex)}
@@ -944,7 +1088,7 @@ document.addEventListener('change',e=>{const t=e.target;
   if(t.dataset.name!==undefined)render();else if(e.target.id==='statEx'){statEx=e.target.value;render()}});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#sheet').hidden)closeSheet()});
 render();setSync('wait');
-connect();
+boot();
 }
 </script>
 </body>
