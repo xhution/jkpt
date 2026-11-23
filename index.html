@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>JoachimKantola PT</title>
+<link rel="icon" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#0a0a0a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE occasion site for a personal trainer: confident, direct, gym floor
+   IDEA the trainer's own badge and the app; the site is the front door to the app
+   PICTURE a phone running the training app beside the big logo, lime light behind
+   COLOUR black ground, lime #b6f700 accent, white text, one graphite surface
+   TYPE Barlow Condensed 800 display + Barlow
+   LAYOUT nav, hero with phone, steps, services, app band, about, contact, footer; stacks under 760px */
+:root{color-scheme:dark;--bg:#0a0a0a;--card:#161718;--line:#2b2d30;--ink:#f4f5f0;--mut:#a3a69c;--acc:#b6f700;--on:#0a0a0a;--org:#ff9a3d;--teal:#2ec4b6}
+*{box-sizing:border-box;min-width:0}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 Barlow,system-ui,sans-serif;overflow-x:clip}
+a{color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:"Barlow Condensed",sans-serif;line-height:1.02;margin:0;letter-spacing:-.01em;text-wrap:balance}
+h1{font-weight:800;font-size:clamp(48px,7.5vw,92px);text-transform:uppercase}
+h2{font-weight:800;font-size:clamp(36px,5vw,58px);text-transform:uppercase}
+h3{font-weight:700;font-size:26px}
+.acc{color:var(--acc)}
+.mut{color:var(--mut)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;padding:0 24px;border-radius:12px;font:700 18px Barlow,sans-serif;text-decoration:none;border:2px solid var(--acc);color:var(--acc);background:none;cursor:pointer;white-space:nowrap}
+.btn.pri{background:var(--acc);color:var(--on)}
+.btn:hover{filter:brightness(1.08)}
+.btn:focus-visible,a:focus-visible{outline:3px solid #fff;outline-offset:3px}
+/* nav */
+.nav{position:sticky;top:0;z-index:5;background:rgba(10,10,10,.88);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:72px}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;font:800 22px "Barlow Condensed",sans-serif;letter-spacing:.01em}
+.brand img{width:46px;height:46px}
+.links{display:flex;align-items:center;gap:26px;font-weight:600}
+.links a{text-decoration:none;color:var(--mut)}
+.links a:hover{color:var(--ink)}
+.nav .btn{min-height:44px;padding:0 18px;font-size:16px}
+/* hero */
+.hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+.hero::before{content:"";position:absolute;right:-12%;top:-10%;width:70%;aspect-ratio:1;background:radial-gradient(closest-side,rgba(182,247,0,.22),rgba(182,247,0,0));pointer-events:none}
+.hero .wrap{position:relative;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:40px;align-items:center;padding-top:clamp(40px,7vw,90px);padding-bottom:clamp(40px,7vw,90px)}
+.kick{display:inline-flex;align-items:center;gap:10px;font-weight:700;color:var(--acc);margin-bottom:18px}
+.kick i{width:28px;height:3px;background:var(--acc);border-radius:2px}
+.lead{font-size:20px;max-width:34em;color:#d6d8cf;margin:22px 0 30px}
+.cta{display:flex;gap:12px;flex-wrap:wrap}
+.facts{display:flex;gap:28px;flex-wrap:wrap;margin-top:34px;color:var(--mut);font-weight:600}
+.facts b{display:block;font:800 30px "Barlow Condensed",sans-serif;color:var(--ink)}
+/* phone */
+.stage{position:relative;display:flex;justify-content:center;align-items:center;min-height:600px}
+.badge{position:absolute;width:min(78%,380px);left:-4%;top:6%;opacity:.16;transform:rotate(-10deg)}
+.phone{position:relative;width:290px;height:590px;border-radius:46px;background:#000;border:10px solid #232427;box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 0 1px #3a3c40;overflow:hidden;transform:rotate(3deg)}
+.phone .notch{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:92px;height:26px;border-radius:14px;background:#000;z-index:2}
+.scr{position:absolute;inset:0;padding:46px 14px 0;background:#0a0a0a;font-size:12px;line-height:1.35}
+.scr .hd{display:flex;align-items:center;gap:8px;font:800 26px "Barlow Condensed",sans-serif}
+.scr .hd img{width:34px;height:34px}
+.scr .wk{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin:8px 0}
+.scr .wk span{background:var(--card);border-radius:6px;text-align:center;padding:4px 0 5px;font-weight:700;font-size:10px}
+.scr .wk span.now{box-shadow:inset 0 0 0 1.5px #fff}
+.scr .wk i{display:block;width:8px;height:8px;border-radius:50%;margin:3px auto 0;border:1.5px solid var(--line)}
+.scr .tc{background:var(--card);border-radius:12px;padding:10px;border-left:4px solid var(--acc)}
+.scr .tc .t{font:800 20px "Barlow Condensed",sans-serif}
+.scr .tc li{display:flex;justify-content:space-between;border-top:1px solid var(--line);padding:5px 0;list-style:none}
+.scr .tc ul{margin:6px 0 8px;padding:0}
+.scr .tc li b{color:var(--mut);font-weight:600}
+.scr .tc li b.up{color:var(--acc)}
+.scr .go{background:var(--acc);color:var(--on);border-radius:9px;text-align:center;font-weight:700;padding:9px 0;font-size:13px}
+.scr .tb{position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid var(--line);background:#0a0a0a;padding:8px 0 14px;font-size:9px;color:var(--mut);text-align:center;font-weight:600}
+.scr .tb span:first-child{color:var(--acc)}
+/* sections */
+.band{padding:clamp(56px,8vw,110px) 0;border-bottom:1px solid var(--line)}
+.sh{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;margin-bottom:38px}
+.sh p{max-width:30em;margin:0;color:var(--mut);font-size:18px}
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;counter-reset:s}
+.step{background:var(--card);border-radius:18px;padding:26px;position:relative;overflow:hidden}
+.step .n{font:800 84px/1 "Barlow Condensed",sans-serif;color:var(--acc);opacity:.95}
+.step h3{margin:6px 0 8px}
+.step p{margin:0;color:#cfd1c8}
+.svc{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.card{background:var(--card);border-radius:18px;padding:26px;border:1px solid var(--line);display:flex;flex-direction:column;gap:12px}
+.card.hi{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc) inset}
+.card ul{margin:0;padding:0;list-style:none}
+.card li{padding:7px 0 7px 28px;position:relative;border-top:1px solid var(--line)}
+.card li::before{content:"";position:absolute;left:2px;top:14px;width:14px;height:8px;border-left:3px solid var(--acc);border-bottom:3px solid var(--acc);transform:rotate(-45deg)}
+.card .pr{margin-top:auto;font-weight:700;color:var(--mut)}
+.tag{align-self:flex-start;background:var(--acc);color:var(--on);font-weight:800;font-size:13px;border-radius:6px;padding:2px 8px}
+.app{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:center}
+.feat{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:26px 0 30px}
+.feat div{background:var(--card);border-radius:14px;padding:16px}
+.feat b{display:block;font:700 20px "Barlow Condensed",sans-serif;margin-bottom:2px}
+.feat span{color:var(--mut);font-size:15px}
+.login{background:var(--acc);color:var(--on);border-radius:24px;padding:clamp(28px,4vw,48px);display:flex;flex-direction:column;gap:16px}
+.login h2{font-size:clamp(34px,4.4vw,52px)}
+.login p{margin:0;font-size:18px}
+.login .btn{background:var(--on);color:var(--acc);border-color:var(--on);align-self:flex-start;min-height:56px;font-size:19px}
+.login small{font-size:14px;opacity:.8}
+.about{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:48px;align-items:center}
+.about img{width:100%;max-width:380px;display:block;margin:0 auto}
+.about p{font-size:19px;color:#d6d8cf;margin:18px 0 0}
+.contact{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px;align-items:start}
+.cbox{background:var(--card);border-radius:18px;padding:26px;display:flex;flex-direction:column;gap:14px}
+.cl{display:flex;flex-direction:column;gap:2px;padding:12px 0;border-top:1px solid var(--line)}
+.cl span{color:var(--mut);font-size:14px;font-weight:600}
+.cl a{font:700 22px "Barlow Condensed",sans-serif;text-decoration:none;overflow-wrap:anywhere}
+.note{font-size:14px;color:var(--mut)}
+footer{padding:34px 0 calc(34px + env(safe-area-inset-bottom,0px));color:var(--mut);font-size:15px}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center}
+footer img{width:36px;height:36px;vertical-align:middle;margin-right:10px}
+@media (max-width:900px){.links a:not(.btn){display:none}.steps,.svc{grid-template-columns:minmax(0,1fr)}.feat{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:760px){.hero .wrap,.app,.about,.contact{grid-template-columns:minmax(0,1fr)}.stage{min-height:560px}.about img{max-width:240px}.brand span{display:none}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top"><img src="logo.webp" alt="JoachimKantola PT"><span>JoachimKantola <span class="acc">PT</span></span></a>
+    <nav class="links" aria-label="Huvudmeny">
+      <a href="#sa-funkar-det">Så funkar det</a>
+      <a href="#traning">Träning</a>
+      <a href="#appen">Appen</a>
+      <a href="#kontakt">Kontakt</a>
+      <a class="btn" id="login-top" href="app/">Logga in</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <div class="kick"><i></i>Personlig tränare</div>
+      <h1>Träna smartare.<br><span class="acc">Bli starkare</span> varje vecka.</h1>
+      <p class="lead">Personlig träning med Joachim Kantola. Du får ett upplägg byggt för dig, och allt loggas i appen så att vi båda ser hur du utvecklas, pass för pass.</p>
+      <div class="cta">
+        <a class="btn pri" href="#kontakt">Boka första samtalet</a>
+        <a class="btn" href="app/">Logga in i appen</a>
+      </div>
+      <div class="facts"><div><b>1:1</b>personlig träning</div><div><b>Online</b>coachning</div><div><b>App</b>logg och statistik</div></div>
+    </div>
+    <div class="stage" aria-hidden="true">
+      <img class="badge" src="logo.webp" alt="">
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="scr">
+          <div class="hd"><img src="logo.webp" alt="">Idag</div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:8px"><b style="font:800 22px 'Barlow Condensed',sans-serif">3 pass</b><span class="mut">denna vecka</span></div>
+          <svg viewBox="0 0 360 130" style="width:100%;display:block;margin:2px 0"><rect x="4" y="60" width="352" height="10" rx="5" fill="#6d727a"/><rect x="146" y="57" width="68" height="16" rx="3" fill="#6d727a"/><rect x="144" y="50" width="6" height="30" rx="2" fill="#ddd"/><rect x="210" y="50" width="6" height="30" rx="2" fill="#ddd"/><g fill="#b6f700"><rect x="128" y="14" width="15" height="102" rx="3"/><rect x="217" y="14" width="15" height="102" rx="3"/></g><g fill="#ff9a3d"><rect x="111" y="14" width="15" height="102" rx="3"/><rect x="234" y="14" width="15" height="102" rx="3"/></g><g fill="#b6f700"><rect x="94" y="14" width="15" height="102" rx="3"/><rect x="251" y="14" width="15" height="102" rx="3"/></g></svg>
+          <div class="wk"><span>Mån<i style="background:#b6f700;border-color:#b6f700"></i></span><span>Tis<i style="background:#ff9a3d;border-color:#ff9a3d"></i></span><span>Ons<i style="background:#b6f700;border-color:#b6f700"></i></span><span class="now">Tor<i></i></span><span>Fre<i></i></span><span>Lör<i></i></span><span>Sön<i></i></span></div>
+          <div class="tc">
+            <div class="mut" style="font-weight:600">Idag · Torsdag</div>
+            <div class="t">Helkropp</div>
+            <ul><li>Marklyft<b class="up">3 × 102,5×5 ↑</b></li><li>Lutande hantelpress<b>3 × 24×10</b></li><li>Chins<b>8 st, 7 st, 6 st</b></li><li>Sidolyft<b class="up">3 × 10×12 ↑</b></li></ul>
+            <div class="go">Starta pass</div>
+          </div>
+          <div class="tb"><span>Idag</span><span>Schema</span><span>Statistik</span><span>Kalender</span><span>Övningar</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="sa-funkar-det">
+  <div class="wrap">
+    <div class="sh"><h2>Så funkar <span class="acc">det</span></h2><p>Tre steg från första samtalet till ett upplägg som håller i längden.</p></div>
+    <div class="steps">
+      <div class="step"><div class="n">1</div><h3>Vi pratar mål</h3><p>Ett första samtal om var du är i dag, vad du vill uppnå och hur mycket tid du har att träna.</p></div>
+      <div class="step"><div class="n">2</div><h3>Du får ditt program</h3><p>Ett veckoschema som läggs in direkt i appen, med övningar, set och vikter anpassade efter dig.</p></div>
+      <div class="step"><div class="n">3</div><h3>Vi följer upp</h3><p>Du loggar varje pass. Appen föreslår när vikten ska öka, och vi justerar upplägget utifrån hur det går.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="traning">
+  <div class="wrap">
+    <div class="sh"><h2>Välj din <span class="acc">träning</span></h2><p>Alla upplägg ingår med tillgång till appen.</p></div>
+    <div class="svc">
+      <div class="card"><h3>Personlig träning 1:1</h3><p class="mut" style="margin:0">Vi tränar tillsammans och jobbar med teknik, upplägg och tempo.</p><ul><li>Pass tillsammans med mig</li><li>Teknikgenomgång på varje övning</li><li>Program och logg i appen</li></ul><div class="pr">Pris efter upplägg</div></div>
+      <div class="card hi"><span class="tag">Populärast</span><h3>Onlinecoachning</h3><p class="mut" style="margin:0">Träna när och var du vill, med mitt program och uppföljning.</p><ul><li>Personligt veckoschema</li><li>Automatiska förslag på vikt och reps</li><li>Regelbunden uppföljning</li></ul><div class="pr">Pris efter upplägg</div></div>
+      <div class="card"><h3>Program i appen</h3><p class="mut" style="margin:0">Ett färdigt upplägg för dig som vill köra på egen hand.</p><ul><li>Program anpassat efter ditt mål</li><li>Statistik, rekord och kalender</li><li>Logga gym, löpning och idrott</li></ul><div class="pr">Pris efter upplägg</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="appen">
+  <div class="wrap app">
+    <div>
+      <h2>Allt i <span class="acc">appen</span></h2>
+      <p class="mut" style="font-size:18px;margin:14px 0 0">Din träning samlad på ett ställe, i mobilen.</p>
+      <div class="feat">
+        <div><b>Veckoschema</b><span>Dagens pass klart att starta med ett tryck.</span></div>
+        <div><b>Smart progression</b><span>Förslag på när vikt och reps ska öka.</span></div>
+        <div><b>Vilotimer och rekord</b><span>Timer mellan set och markering när du slår ett rekord.</span></div>
+        <div><b>Statistik</b><span>Kroppsvikt, styrkeutveckling och aktivitet över tid.</span></div>
+        <div><b>Kalender</b><span>Översikt över alla pass, gjorda och planerade.</span></div>
+        <div><b>All träning</b><span>Gym, löpning, fotboll, brottning och mycket mer.</span></div>
+      </div>
+    </div>
+    <div class="login" id="logga-in">
+      <h2>Redan klient?</h2>
+      <p>Logga in och fortsätt där du slutade. Ditt schema, dina pass och din statistik väntar.</p>
+      <a class="btn" id="login-main" href="app/">Logga in i appen →</a>
+      <small>Tips: lägg appen på hemskärmen via Dela → Lägg till på hemskärmen i Safari.</small>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="om-mig">
+  <div class="wrap about">
+    <img src="logo.webp" alt="JoachimKantola PT, personlig tränare">
+    <div>
+      <h2>Hej, jag är <span class="acc">Joachim</span></h2>
+      <p>Jag är personlig tränare och hjälper dig att träna med ett tydligt upplägg, rätt teknik och en plan som går att hålla. Oavsett om målet är att bli starkare, komma i form eller prestera bättre i din idrott bygger vi träningen kring dig.</p>
+      <div class="cta" style="margin-top:28px"><a class="btn pri" href="#kontakt">Hör av dig</a></div>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="kontakt">
+  <div class="wrap contact">
+    <div>
+      <h2>Boka första <span class="acc">samtalet</span></h2>
+      <p class="mut" style="font-size:18px;margin:14px 0 0">Berätta kort om dig och ditt mål, så hör jag av mig och vi bokar en tid.</p>
+    </div>
+    <div class="cbox">
+      <div class="cl"><span>E-post</span><a href="mailto:joachim@example.com">joachim@example.com</a></div>
+      <div class="cl"><span>Telefon</span><a href="tel:+46700000000">070-000 00 00</a></div>
+      <div class="cl"><span>Instagram</span><a href="https://instagram.com/">@joachimkantolapt</a></div>
+      <p class="note" style="margin:0">Kontaktuppgifterna ovan är exempel och byts mot de riktiga.</p>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span><img src="logo.webp" alt="">© <span id="yr">2026</span> JoachimKantola PT · Personlig tränare</span>
+    <a href="app/" class="acc" style="font-weight:700;text-decoration:none">Logga in i appen →</a>
+  </div>
+</footer>
+<script>
+{const y=document.getElementById('yr');if(y)y.textContent=new Date().getFullYear()}
+</script>
+</body>
+</html>
