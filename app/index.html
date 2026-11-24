@@ -347,7 +347,7 @@ const LIB=[
 ].map(([id,n,t,g])=>({id,n,t,g}));
 const IMG=new Set(["bench", "bike", "bridge", "bwlunge", "bwsquat", "cablerow", "calf", "chin", "curl", "dbrow", "dbsp", "dip", "dl", "ellip", "facepull", "farmer", "fly", "front", "hammer", "hip", "incdb", "invrow", "kbswing", "lat", "legcurl", "legext", "legpress", "legraise", "lunge", "ohp", "pistol", "plank", "pulldown", "pullup", "pushdown", "pushup", "rdl", "rope", "row", "rowerg", "run", "situp", "skull", "splank", "squat", "walk"]);
 const TIPS={"squat": ["Stången vilar på övre ryggen, fötterna axelbrett", "Sitt ner mellan hälarna tills låren är minst parallella", "Knäna följer tårna, bröstet uppe"], "front": ["Stången vilar på framsidan av axlarna, armbågarna högt", "Gå djupt med rak överkropp", "Pressa upp genom hela foten"], "dl": ["Stången över mitten av foten, greppa precis utanför benen", "Rak rygg, spänn bålen och tryck golvet ifrån dig", "Stången nära kroppen hela vägen"], "rdl": ["Mjuka knän, fäll i höften och skjut baken bakåt", "Stången glider längs låren ner mot knäna", "Känn sträckningen baksida lår, ryggen rak"], "lunge": ["Långt steg framåt, sänk bakre knät mot golvet", "Främre knät över foten", "Tryck tillbaka genom främre hälen"], "legpress": ["Fötterna axelbrett mitt på plattan", "Sänk tills knäna är ca 90°", "Lås inte knäna i toppen"], "legcurl": ["Knäna precis utanför dynans kant", "Böj benen kontrollerat mot baken", "Sänk långsamt"], "legext": ["Knäna i linje med maskinens led", "Sträck benen helt och håll en sekund", "Sänk kontrollerat"], "calf": ["Stå på framfoten med hälarna fria", "Gå så högt du kan upp på tå", "Sänk hälarna under kanten för full rörlighet"], "hip": ["Övre ryggen mot bänken, stången över höften", "Tryck upp höften tills kroppen är rak", "Kläm ihop sätet i toppen"], "bench": ["Skulderbladen ihop och ner, fötterna i golvet", "Sänk stången till nedre bröstet", "Pressa upp i en lätt båge mot axlarna"], "incdb": ["Bänken på 30–45°", "Sänk hantlarna till bröstets sidor", "Pressa upp och lätt ihop"], "fly": ["Lätt böjda armbågar hela vägen", "Öppna armarna i en båge tills du känner sträckning", "För ihop över bröstet"], "ohp": ["Stången vid nyckelbenen, greppa strax utanför axlarna", "Spänn sätet och bålen, pressa rakt upp", "För huvudet framåt under stången i toppen"], "dbsp": ["Hantlarna i axelhöjd, handflatorna framåt", "Pressa upp utan att svanka", "Sänk kontrollerat till axlarna"], "lat": ["Lätt böj i armbågarna", "Lyft ut åt sidorna till axelhöjd", "Led med armbågarna, inte händerna"], "facepull": ["Repet i ögonhöjd", "Dra mot ansiktet och isär med händerna", "Armbågarna högt, kläm skulderbladen"], "row": ["Fäll fram till ca 45°, rak rygg", "Dra stången mot naveln", "Armbågarna nära kroppen"], "dbrow": ["Stöd hand och knä på bänken", "Dra hanteln mot höften", "Ingen rotation i överkroppen"], "pulldown": ["Brett grepp, lätt bakåtlutad", "Dra stången till övre bröstet", "Tänk att armbågarna går ner i fickorna"], "cablerow": ["Sitt rakt med mjuka knän", "Dra handtaget mot magen", "Kläm skulderbladen, släpp fram kontrollerat"], "curl": ["Armbågarna stilla vid sidorna", "Böj upp utan att gunga", "Sänk hela vägen ner"], "hammer": ["Handflatorna mot varandra", "Böj upp med armbågarna stilla", "Sänk kontrollerat"], "pushdown": ["Armbågarna fasta vid sidorna", "Pressa ner tills armarna är raka", "Låt bara underarmarna röra sig"], "skull": ["Ligg på bänken med raka armar över bröstet", "Böj armbågarna och sänk mot pannan", "Sträck upp utan att flytta överarmarna"], "kbswing": ["Fäll i höften, inte knäböj", "Explodera med höften och låt klotet flyga", "Armarna styr, höften driver"], "pushup": ["Händerna strax brett än axlarna", "Kroppen rak som en planka", "Bröstet nästan till golvet"], "chin": ["Underhandsgrepp, axelbrett", "Dra hakan över stången", "Sänk till raka armar"], "pullup": ["Överhandsgrepp, lite bredare än axlarna", "Dra bröstet mot stången", "Hela rörelsebanan, inget sparkande"], "dip": ["Luta överkroppen lätt framåt", "Sänk tills axlarna är i armbågshöjd", "Pressa upp till raka armar"], "bwsquat": ["Fötterna axelbrett, armarna framåt", "Sitt ner med bröstet uppe", "Knäna följer tårna"], "bwlunge": ["Långt steg, bakre knät mot golvet", "Rak överkropp", "Kliv vidare med nästa ben"], "pistol": ["Stå på ett ben, andra benet rakt fram", "Sitt ner så långt du kan med kontroll", "Ta hjälp av en vikt eller stöd i början"], "invrow": ["Kroppen rak under stången, hälarna i golvet", "Dra bröstet till stången", "Ju lägre stång, desto tyngre"], "burpee": ["Ner på händerna och hoppa bakåt till planka", "Armhävning om du vill", "Hoppa in med fötterna och upp med armarna över huvudet"], "situp": ["Böjda knän, fötterna fixerade", "Rulla upp en kota i taget", "Sänk kontrollerat"], "legraise": ["Häng med raka armar", "Lyft benen utan att gunga", "Rulla bäckenet uppåt i toppen"], "bridge": ["Ligg på rygg med böjda knän", "Tryck upp höften genom hälarna", "Kläm sätet i toppen"], "plank": ["Underarmarna under axlarna", "Rak linje från huvud till häl", "Spänn mage och säte, andas lugnt"], "splank": ["Armbågen under axeln", "Lyft höften till rak linje", "Höften får inte sjunka"], "hang": ["Grepp axelbrett, raka armar", "Låt axlarna slappna av eller dra ner dem lätt", "Andas och håll"], "wallsit": ["Ryggen mot väggen", "Knäna i 90°, fötterna under knäna", "Håll"], "hollow": ["Ländryggen tryckt mot golvet", "Armar och ben lyfta och sträckta", "Ju lägre, desto tyngre"], "farmer": ["Tunga vikter i varje hand", "Res dig rak, axlarna ner", "Korta, snabba steg"], "run": ["Kort, lätt steg under kroppen", "Avslappnade axlar", "Börja lugnt, öka mot slutet"], "walk": ["Rask takt", "Pendla med armarna", "Lägg till lutning för mer puls"], "bike": ["Sadeln så att knät är lätt böjt i botten", "Jämn kadens", "Öka motståndet hellre än takten"], "rowerg": ["Ben, sedan kropp, sedan armar", "Tillbaka i omvänd ordning", "Kraften kommer från benen"], "ellip": ["Rak hållning", "Använd armarna aktivt", "Jämnt tempo"], "swim": ["Jämn andning", "Lång glidfas", "Variera simsätt"], "rope": ["Små hopp på framfoten", "Snurra med handlederna", "Armbågarna nära kroppen"]};
-const thumb=e=>HOLO[e.id]?`<span class="thw"><img class="th" src="img/${e.id}-0.webp" alt="" loading="lazy"><b class="b3d">3D</b></span>`:IMG.has(e.id)?`<img class="th" src="img/${e.id}-0.webp" alt="" loading="lazy">`:`<span class="th ph" aria-hidden="true">${esc((e.n||'?')[0])}</span>`;
+const thumb=e=>HOLO[e.id]?`<span class="thw">${IMG.has(e.id)?`<img class="th" src="img/${e.id}-0.webp" alt="" loading="lazy">`:`<span class="th ph" aria-hidden="true">${esc((e.n||'?')[0])}</span>`}<b class="b3d">3D</b></span>`:IMG.has(e.id)?`<img class="th" src="img/${e.id}-0.webp" alt="" loading="lazy">`:`<span class="th ph" aria-hidden="true">${esc((e.n||'?')[0])}</span>`;
 const photoDemo=e=>IMG.has(e.id)?`<div class="demo"><img src="img/${e.id}-0.webp" alt="${esc(e.n)}, startläge" loading="lazy"><img class="b" src="img/${e.id}-1.webp" alt="${esc(e.n)}, slutläge" loading="lazy"></div>`:'';
 const demo=e=>(HOLO[e.id]?holoHTML(e.id)+(IMG.has(e.id)?`<details class="phd"><summary><span class="mut sm">Visa foton</span></summary>${photoDemo(e)}</details>`:''):photoDemo(e))+(TIPS[e.id]?`<ol class="tips">${TIPS[e.id].map(t=>`<li>${esc(t)}</li>`).join('')}</ol>`:'');
 const DEF={w:()=>[{a:20,b:8},{a:20,b:8},{a:20,b:8}],bw:()=>[{a:10,b:''},{a:10,b:''},{a:10,b:''}],t:()=>[{a:30},{a:30},{a:30}],c:()=>[{a:30,b:5}],sp:()=>[{a:60}]};
@@ -699,47 +699,152 @@ async function peopleBox(){const el=$('#tpeople');if(!el||!TID)return;const r=aw
 
 /* ---------- 3D-hologram ---------- */
 const HL={sh:0.43,th:0.44,ua:0.30,fa:0.28,t:0.52,foot:0.15};
-const hd=a=>{const r=a*Math.PI/180;return [Math.cos(r),Math.sin(r)]};
-const hadd=(p,a,L)=>{const d=hd(a);return [p[0]+d[0]*L,p[1]+d[1]*L]};
-const hl=(a,b,t)=>a+(b-a)*t;
-function hik(s,h,L1,L2,pick){
-  let dx=h[0]-s[0],dy=h[1]-s[1],d=Math.hypot(dx,dy)||1e-6;const mx=L1+L2-1e-3;if(d>mx){dx*=mx/d;dy*=mx/d;d=mx}
-  const a=Math.atan2(dy,dx),c=Math.acos(Math.max(-1,Math.min(1,(L1*L1+d*d-L2*L2)/(2*L1*d))));
-  const e1=[s[0]+Math.cos(a+c)*L1,s[1]+Math.sin(a+c)*L1],e2=[s[0]+Math.cos(a-c)*L1,s[1]+Math.sin(a-c)*L1];
-  const sc=e=>pick==='down'?-e[1]:pick==='up'?e[1]:pick==='front'?e[0]:-e[0];
-  return {el:sc(e1)>=sc(e2)?e1:e2,hand:[s[0]+dx,s[1]+dy]};
+const D2R=Math.PI/180;
+const v3=(a,b)=>[a[0]+b[0],a[1]+b[1],a[2]+b[2]],vs=(a,k)=>[a[0]*k,a[1]*k,a[2]*k],vsub=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]],vdot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2],vlen=a=>Math.hypot(a[0],a[1],a[2]),vn=a=>{const l=vlen(a)||1;return vs(a,1/l)};
+const dir3=(phi,psi,s)=>{const p=phi*D2R,q=(psi||0)*D2R;return [Math.cos(p)*Math.cos(q),Math.sin(p)*Math.cos(q),Math.sin(q)*(s||1)]};
+function ik3(a,t,L1,L2,pole){let d=vsub(t,a),dist=vlen(d);const mx=L1+L2-1e-3;if(dist>mx){d=vs(d,mx/dist);dist=mx}if(dist<1e-4)dist=1e-4;const n=vs(d,1/dist);const x=(L1*L1+dist*dist-L2*L2)/(2*dist),h=Math.sqrt(Math.max(0,L1*L1-x*x));let pp=vsub(pole,vs(n,vdot(pole,n)));if(vlen(pp)<1e-4)pp=[0,1,0];pp=vn(pp);return [v3(v3(a,vs(n,x)),vs(pp,h)),v3(a,d)]}
+const KD={ax:0,ay:0.08,sh:-90,th:-90,t:90,ua:-90,fa:-90,ft:0,hd:0};
+function kf(X,t){const F=X.f;let a,b,u;
+  if(X.cyc){const n=F.length,x=(((t%1)+1)%1)*n,i=Math.floor(x);a=F[i];b=F[(i+1)%n];u=0.5-0.5*Math.cos(Math.PI*(x-i))}
+  else{a=F[0];b=F[1]||F[0];u=0.5-0.5*Math.cos(2*Math.PI*t)}
+  const K=Object.assign({},KD);for(const k of new Set([...Object.keys(a),...Object.keys(b)])){const va=a[k]!==undefined?a[k]:(b[k]!==undefined?b[k]:KD[k]),vb=b[k]!==undefined?b[k]:va;K[k]=va+(vb-va)*u}
+  K._t=t;K._u=u;return K}
+/* punkter relativt bålen: fram (f), upp längs bålen (u), sida (z) */
+const rel=(J,K,f,u,z)=>{const fd=dir3(K.t-90,0,1);return [J.Sc[0]+J.td[0]*u+fd[0]*f,J.Sc[1]+J.td[1]*u+fd[1]*f,z]};
+function body(X,K){
+  const g=(k,s)=>{const v=K[k+(s>0?'R':'L')];return v!==undefined?v:K[k]};
+  const td=dir3(K.t,0,1);let P;
+  if(X.anchor==='hip')P=[K.px,K.py,0];
+  else if(X.anchor==='sc')P=vsub([K.sx,K.sy,0],vs(td,HL.t-0.04));
+  else{const s=X.as||1;const ank=[g('ax',s),g('ay',s),0.13*s];const knee=vsub(ank,vs(dir3(g('sh',s),g('shz',s),s),HL.sh));const hip=vsub(knee,vs(dir3(g('th',s),g('thz',s),s),HL.th));P=[hip[0],hip[1],0]}
+  const Sc=v3(P,vs(td,HL.t-0.04)),neck=v3(P,vs(td,HL.t)),head=v3(neck,vs(dir3(K.t+(K.hd||0),0,1),0.17));
+  const J={P,Sc,neck,head,td,S:{}};
+  for(const s of [-1,1]){
+    const hip=v3(P,[0,0,0.11*s]);let knee,ankle;const lt=X.leg&&X.leg(K,J,s);
+    if(lt)[knee,ankle]=ik3(hip,lt.t,HL.th,HL.sh,lt.pole);else{knee=v3(hip,vs(dir3(g('th',s),g('thz',s),s),HL.th));ankle=v3(knee,vs(dir3(g('sh',s),g('shz',s),s),HL.sh))}
+    const toe=v3(ankle,vs(dir3(g('ft',s),0,s),HL.foot));
+    const sh=v3(Sc,[0,0,0.19*s]);let el,hand;const at=X.hand&&X.hand(K,J,s);
+    if(at)[el,hand]=ik3(sh,at.t,HL.ua,HL.fa,at.pole);else{el=v3(sh,vs(dir3(g('ua',s),g('uaz',s),s),HL.ua));hand=v3(el,vs(dir3(g('fa',s),g('faz',s),s),HL.fa))}
+    J.S[s]={hip,knee,ankle,toe,sh,el,hand};
+  }
+  if(X.post){const m=X.post;['P','Sc','neck','head'].forEach(k=>J[k]=m(J[k]));for(const s of [-1,1])for(const k in J.S[s])J.S[s][k]=m(J.S[s][k])}
+  return J;
 }
-function legsUp(ankle,sh,th){const knee=hadd(ankle,sh+180,HL.sh),hip=hadd(knee,th+180,HL.th);return {ankle,knee,hip}}
-function legsDown(hip,th,sh){const knee=hadd(hip,th,HL.th),ankle=hadd(knee,sh,HL.sh);return {ankle,knee,hip}}
-const HOLO={
-  squat:{n:'Knäböj',mus:['Framsida lår','Säte','Bål'],hi:['thigh','glute','core'],cy:0.85,fit:[0,1.95,1.0],grip:0.42,
-    pose(p){const L=legsUp([0,0.08],hl(-90,-112,p),hl(-90,-2,p));const t=hl(90,48,p);const sh=hadd(L.hip,t,HL.t-0.04);const neck=hadd(L.hip,t,HL.t);
-      const bar=hadd(hadd(sh,t+90,0.08),t+180,0.02);const a=hik(sh,bar,HL.ua,HL.fa,'down');
-      return {...L,t,sh,neck,head:hadd(neck,t+8,0.17),el:a.el,hand:a.hand,toe:hadd(L.ankle,0,HL.foot),eq:[{k:'bar',p:bar,w:1.0,r:0.22}]}}},
-  bench:{n:'Bänkpress',mus:['Bröst','Triceps','Framsida axlar'],hi:['chest','ua'],cy:0.6,fit:[0,1.2,1.0],grip:0.38,
-    pose(p){const hip=[0.3,0.53];const L=legsDown(hip,-15,-95);const t=180;const sh=hadd(hip,t,HL.t-0.04),neck=hadd(hip,t,HL.t);
-      const bar=[hl(sh[0]+0.06,sh[0]+0.12,p),hl(sh[1]+0.56,sh[1]+0.09,p)];const a=hik(sh,bar,HL.ua,HL.fa,'down');
-      return {...L,t,sh,neck,head:hadd(neck,180,0.16),el:a.el,hand:a.hand,toe:hadd(L.ankle,0,HL.foot),eq:[{k:'bar',p:bar,w:1.0,r:0.2},{k:'bench'}]}}},
-  dl:{n:'Marklyft',mus:['Baksida lår','Säte','Rygg','Grepp'],hi:['thigh','glute','back','fa'],cy:0.8,fit:[0,1.85,1.0],grip:0.24,
-    pose(p){const L=legsUp([0,0.08],hl(-100,-90,p),hl(-25,-90,p));const t=hl(20,92,p);const sh=hadd(L.hip,t,HL.t-0.04),neck=hadd(L.hip,t,HL.t);
-      const hand=hadd(sh,-90,HL.ua+HL.fa-0.01);const a=hik(sh,hand,HL.ua,HL.fa,'back');
-      return {...L,t,sh,neck,head:hadd(neck,t+5,0.17),el:a.el,hand:a.hand,toe:hadd(L.ankle,0,HL.foot),eq:[{k:'bar',p:a.hand,w:1.0,r:0.225}]}}},
-  pushup:{n:'Armhävningar',mus:['Bröst','Triceps','Bål'],hi:['chest','ua','core'],cy:0.35,fit:[0,0.8,1.0],grip:0.27,
-    pose(p){const ank=[-0.85,0.08],th=hl(21,8,p);const knee=hadd(ank,th,HL.sh),hip=hadd(knee,th,HL.th);const sh=hadd(hip,th,HL.t-0.04),neck=hadd(hip,th,HL.t);
-      const top=hadd(hadd(hadd([-0.85,0.08],21,HL.sh+HL.th),21,HL.t-0.04),0,0);const hand=[top[0],0.02];const a=hik(sh,hand,HL.ua,HL.fa,'up');
-      return {ankle:ank,knee,hip,t:th,sh,neck,head:hadd(neck,th+12,0.17),el:a.el,hand:a.hand,toe:hadd(ank,th-80,0.12),eq:[]}}},
-  chin:{n:'Chins',mus:['Rygg (lats)','Biceps','Grepp'],hi:['back','ua','fa'],cy:1.35,fit:[0,2.45,0.85],grip:0.2,
-    pose(p){const bar=[0.05,2.3];const sh=[hl(bar[0]-0.03,bar[0]-0.09,p),hl(bar[1]-0.57,bar[1]-0.13,p)];const t=hl(90,97,p);
-      const hip=hadd(sh,t+180,HL.t-0.04),neck=hadd(hip,t,HL.t);const L=legsDown(hip,hl(-95,-88,p),hl(-125,-120,p));const a=hik(sh,bar,HL.ua,HL.fa,'front');
-      return {...L,t,sh,neck,head:hadd(neck,t-3,0.17),el:a.el,hand:a.hand,toe:hadd(L.ankle,-60,0.12),eq:[{k:'pull',p:bar}]}}}
+const hc=J=>vs(v3(J.S[-1].hand,J.S[1].hand),0.5);
+const E={
+  bar:(c,w,r)=>({k:'bar',c,w:w||1,r:r===undefined?0.2:r}),
+  db:J=>[{k:'db',c:J.S[-1].hand},{k:'db',c:J.S[1].hand}],
+  bench:(x0,x1,y,zw)=>({k:'box',a:[x0,y-0.08,-(zw||0.16)],b:[x1,y,zw||0.16],legs:true}),
+  box:(a,b)=>({k:'box',a,b}),
+  quad:(p)=>({k:'quad',p}),
+  line:(a,b)=>({k:'line',a,b}),
+  circ:(c,r,pl)=>({k:'circ',c,r,pl:pl||'xy'}),
+  cable:(a,b)=>({k:'cable',a,b}),
+  mat:(x0,x1)=>({k:'quad',p:[[x0,0.01,-0.32],[x1,0.01,-0.32],[x1,0.01,0.32],[x0,0.01,0.32]],dim:true}),
+  pull:(c,w)=>({k:'pull',c,w:w||0.75})
 };
+const pole=(x,y,z)=>s=>[x,y,z*s];
+const gait=(amp,kick,arm,bob,y0,t0)=>{const A={px:0,py:y0,t:t0,thR:-90+amp,thL:-90-amp,shR:-95,shL:-90-kick,ftR:0,ftL:-40,uaR:-90-arm,uaL:-90+arm,faR:-90-arm+(arm>20?70:10),faL:-90+arm+(arm>20?80:10)},B={px:0,py:y0+bob,t:t0,thR:-90,thL:-90,shR:-90-kick*0.5,shL:-92,ftR:-20,ftL:0,uaR:-90,uaL:-90,faR:-90+(arm>20?60:5),faL:-90+(arm>20?60:5)};
+  const sw=o=>{const r={};for(const k in o){const m=k.match(/^(.*)([RL])$/);r[m?m[1]+(m[2]==='R'?'L':'R'):k]=o[k]}return r};return [A,B,sw(A),sw(B)]};
+const HOLO={
+  squat:{n:'Knäböj',mus:['Framsida lår','Säte','Bål'],hi:['thigh','glute','core'],f:[{sh:-90,th:-90,t:90},{sh:-112,th:-2,t:48}],
+    hand:(K,J,s)=>({t:rel(J,K,-0.1,0.03,0.42*s),pole:[-0.4,-1,0.3*s]}),eq:(K,J)=>[E.bar(rel(J,K,-0.1,0.03,0),1,0.22)]},
+  front:{n:'Frontböj',mus:['Framsida lår','Säte','Bål'],hi:['thigh','glute','core'],f:[{sh:-90,th:-90,t:90},{sh:-115,th:-4,t:68}],
+    hand:(K,J,s)=>({t:rel(J,K,0.14,0.02,0.24*s),pole:[1,0.2,0.2*s]}),eq:(K,J)=>[E.bar(rel(J,K,0.12,0.04,0),1,0.22)]},
+  dl:{n:'Marklyft',mus:['Baksida lår','Säte','Rygg','Grepp'],hi:['thigh','glute','back','fa'],f:[{sh:-100,th:-25,t:20},{sh:-90,th:-90,t:92}],
+    hand:(K,J,s)=>({t:[J.Sc[0],J.Sc[1]-0.57,0.24*s],pole:[-1,0,0.2*s]}),eq:(K,J)=>[E.bar([J.Sc[0],J.Sc[1]-0.57,0],1,0.225)]},
+  rdl:{n:'Raka marklyft',mus:['Baksida lår','Säte','Ländrygg'],hi:['thigh','glute','back'],f:[{sh:-90,th:-90,t:90},{sh:-96,th:-72,t:22}],
+    hand:(K,J,s)=>({t:[J.Sc[0],J.Sc[1]-0.57,0.24*s],pole:[-1,0,0.2*s]}),eq:(K,J)=>[E.bar([J.Sc[0],J.Sc[1]-0.57,0],1,0.225)]},
+  lunge:{n:'Utfallssteg',mus:['Framsida lår','Säte','Balans'],hi:['thigh','glute'],as:1,f:[{axR:0.3,shR:-95,thR:-60,thL:-110,shL:-120,ftL:-70,t:90},{axR:0.3,shR:-100,thR:0,thL:-100,shL:-175,ftL:-80,t:88}],eq:(K,J)=>E.db(J)},
+  bwlunge:{n:'Utfall',mus:['Framsida lår','Säte','Balans'],hi:['thigh','glute'],as:1,f:[{axR:0.3,shR:-95,thR:-60,thL:-110,shL:-120,ftL:-70,t:90,uaR:-100,uaL:-80,faR:-60,faL:-50},{axR:0.3,shR:-100,thR:0,thL:-100,shL:-175,ftL:-80,t:88,uaR:-80,uaL:-100,faR:-50,faL:-60}]},
+  bwsquat:{n:'Knäböj, kroppsvikt',mus:['Framsida lår','Säte'],hi:['thigh','glute'],f:[{sh:-90,th:-90,t:90,ua:-75,fa:-75},{sh:-112,th:-2,t:52,ua:5,fa:5}]},
+  pistol:{n:'Pistol squat',mus:['Framsida lår','Säte','Balans'],hi:['thigh','glute','core'],as:1,f:[{shR:-90,thR:-90,shL:-90,thL:-80,t:90,ua:-60,fa:-60},{shR:-115,thR:10,thL:12,shL:6,t:52,ua:8,fa:8}]},
+  legpress:{n:'Benpress',mus:['Framsida lår','Säte'],hi:['thigh','glute'],anchor:'hip',f:[{px:0,py:0.55,t:135,th:80,sh:5,ft:130,ua:-110,fa:-60},{px:0,py:0.55,t:135,th:40,sh:40,ft:130,ua:-110,fa:-60}],
+    eq:(K,J)=>{const a=J.S[1].ankle,b=J.S[-1].ankle,c=vs(v3(a,b),0.5),u=dir3(130,0,1);return [E.quad([v3(v3(c,vs(u,0.28)),[0,0,-0.32]),v3(v3(c,vs(u,0.28)),[0,0,0.32]),v3(v3(c,vs(u,-0.12)),[0,0,0.32]),v3(v3(c,vs(u,-0.12)),[0,0,-0.32])]),E.line([0.1,0.42,0],[0.95,1.2,0]),E.quad([[0.05,0.48,-0.2],[0.05,0.48,0.2],[-0.5,1.0,0.2],[-0.5,1.0,-0.2]])]}},
+  legcurl:{n:'Lårcurl',mus:['Baksida lår'],hi:['thigh'],anchor:'hip',f:[{px:0,py:0.58,t:0,th:180,sh:180,ft:-90,ua:-100,fa:-40,hd:-10},{px:0,py:0.58,t:0,th:180,sh:85,ft:180,ua:-100,fa:-40,hd:-10}],
+    eq:(K,J)=>[E.bench(-0.95,0.6,0.53,0.17),{k:'roll',c:v3(vs(v3(J.S[1].ankle,J.S[-1].ankle),0.5),[0,0.05,0])}]},
+  legext:{n:'Benspark',mus:['Framsida lår'],hi:['thigh'],anchor:'hip',f:[{px:0,py:0.55,t:95,th:0,sh:-88,ft:0,ua:-95,fa:-50},{px:0,py:0.55,t:95,th:0,sh:-5,ft:85,ua:-95,fa:-50}],
+    eq:(K,J)=>[E.bench(-0.15,0.45,0.5,0.2),E.quad([[-0.12,0.5,-0.2],[-0.12,0.5,0.2],[-0.2,1.1,0.2],[-0.2,1.1,-0.2]]),{k:'roll',c:v3(vs(v3(J.S[1].ankle,J.S[-1].ankle),0.5),[0.06,0,0])}]},
+  calf:{n:'Vadpress',mus:['Vader'],hi:['shin'],f:[{ay:0.15,ft:-4},{ay:0.255,ft:-50}],eq:(K,J)=>[E.box([0.02,0,-0.35],[0.3,0.12,0.35])].concat(E.db(J))},
+  hip:{n:'Höftlyft',mus:['Säte','Baksida lår'],hi:['glute','thigh'],f:[{ax:0.45,sh:-95,th:35,t:157},{ax:0.45,sh:-95,th:0,t:180}],
+    hand:(K,J,s)=>({t:[J.P[0]+0.02,J.P[1]+0.14,0.35*s],pole:[-0.3,1,0.4*s]}),eq:(K,J)=>[E.bar([J.P[0]+0.02,J.P[1]+0.14,0],1,0.22),E.bench(-0.85,-0.3,0.43,0.2)]},
+  bench:{n:'Bänkpress',mus:['Bröst','Triceps','Framsida axlar'],hi:['chest','ua','delt'],anchor:'hip',f:[{px:0.3,py:0.53,t:180,th:-15,sh:-95},{px:0.3,py:0.53,t:180,th:-15,sh:-95}],
+    hand:(K,J,s)=>{const u=K._u;return {t:[J.Sc[0]+0.06+0.06*u,J.Sc[1]+0.56-0.47*u,0.38*s],pole:[0.3,-1,0.6*s]}},eq:(K,J)=>{const c=hc(J);return [E.bar(c,1,0.2),E.bench(-0.78,0.42,0.46)]}},
+  incdb:{n:'Lutande hantelpress',mus:['Övre bröst','Framsida axlar','Triceps'],hi:['chest','delt','ua'],anchor:'hip',f:[{px:0,py:0.52,t:145,th:0,sh:-90},{px:0,py:0.52,t:145,th:0,sh:-90}],
+    hand:(K,J,s)=>{const u=K._u;return {t:[J.Sc[0]+0.08,J.Sc[1]+0.56-0.46*u,(0.16+0.22*u)*s],pole:[0,-1,0.8*s]}},eq:(K,J)=>E.db(J).concat([E.bench(-0.1,0.4,0.47),E.quad([[-0.05,0.47,-0.17],[-0.05,0.47,0.17],[-0.55,0.82,0.17],[-0.55,0.82,-0.17]])])},
+  fly:{n:'Hantelflyes',mus:['Bröst','Framsida axlar'],hi:['chest','delt'],anchor:'hip',f:[{px:0.3,py:0.53,t:180,th:-15,sh:-95},{px:0.3,py:0.53,t:180,th:-15,sh:-95}],
+    hand:(K,J,s)=>{const u=K._u;return {t:[J.Sc[0]+0.08,J.Sc[1]+0.54-0.42*u,(0.12+0.5*u)*s],pole:[0,-1,0.6*s]}},eq:(K,J)=>E.db(J).concat([E.bench(-0.78,0.42,0.46)])},
+  ohp:{n:'Militärpress',mus:['Axlar','Triceps','Bål'],hi:['delt','ua','core'],f:[{t:90},{t:90}],
+    hand:(K,J,s)=>{const u=K._u;return {t:[J.Sc[0]+0.13-0.11*u,J.Sc[1]+0.03+0.54*u,0.27*s],pole:[1,-0.6,0.4*s]}},eq:(K,J)=>[E.bar(hc(J),1,0.22)]},
+  dbsp:{n:'Axelpress med hantlar',mus:['Axlar','Triceps'],hi:['delt','ua'],anchor:'hip',f:[{px:0,py:0.52,t:92,th:0,sh:-90},{px:0,py:0.52,t:92,th:0,sh:-90}],
+    hand:(K,J,s)=>{const u=K._u;return {t:[J.Sc[0]+0.04,J.Sc[1]+0.05+0.5*u,(0.4-0.2*u)*s],pole:[0,-1,0.8*s]}},eq:(K,J)=>E.db(J).concat([E.bench(-0.25,0.25,0.47)])},
+  lat:{n:'Sidolyft',mus:['Axlar (sida)'],hi:['delt'],f:[{uaz:8,faz:10},{uaz:84,faz:78}],eq:(K,J)=>E.db(J)},
+  facepull:{n:'Face pull',mus:['Bakre axlar','Övre rygg'],hi:['delt','back'],f:[{t:90},{t:90}],
+    hand:(K,J,s)=>{const u=K._u;return {t:[J.Sc[0]+0.56-0.42*u,J.Sc[1]+0.05+0.08*u,(0.08+0.22*u)*s],pole:[0,1,0.6*s]}},eq:(K,J)=>[E.cable([1.05,J.Sc[1]+0.12,0],hc(J))]},
+  row:{n:'Skivstångsrodd',mus:['Rygg','Bakre axlar','Biceps'],hi:['back','ua'],f:[{sh:-96,th:-62,t:28},{sh:-96,th:-62,t:30}],
+    hand:(K,J,s)=>{const u=K._u,lo=[J.Sc[0],J.Sc[1]-0.56,0],hi=rel(J,K,0.16,-0.24,0);return {t:[lo[0]+(hi[0]-lo[0])*u,lo[1]+(hi[1]-lo[1])*u,0.26*s],pole:[-1,0.4,0.3*s]}},eq:(K,J)=>[E.bar(hc(J),1,0.2)]},
+  dbrow:{n:'Hantelrodd',mus:['Rygg','Biceps'],hi:['back','ua'],anchor:'hip',f:[{px:0,py:0.88,t:10,thR:-100,shR:-85,thL:-90,shL:180,ftL:180,uaL:-90,faL:-90},{px:0,py:0.88,t:10,thR:-100,shR:-85,thL:-90,shL:180,ftL:180,uaL:-90,faL:-90}],
+    hand:(K,J,s)=>{if(s<0)return null;const u=K._u;return {t:[J.Sc[0]-0.12*u,J.Sc[1]-0.55+0.4*u,0.24],pole:[-1,0.6,0.2]}},eq:(K,J)=>[{k:'db',c:J.S[1].hand},E.box([-0.6,0.34,-0.38],[0.75,0.42,-0.04])]},
+  pulldown:{n:'Latsdrag',mus:['Rygg (lats)','Biceps'],hi:['back','ua'],anchor:'hip',f:[{px:0,py:0.52,t:100,th:0,sh:-90},{px:0,py:0.52,t:100,th:0,sh:-90}],
+    hand:(K,J,s)=>{const u=K._u;return {t:[J.Sc[0]+0.1+0.04*u,J.Sc[1]+0.56-0.46*u,0.42*s],pole:[0,-1,0.6*s]}},eq:(K,J)=>{const c=hc(J);return [E.bar(c,0.55,0),E.cable([c[0],2.35,0],c),E.bench(-0.25,0.25,0.47),E.box([0.15,0.62,-0.22],[0.3,0.7,0.22])]}},
+  cablerow:{n:'Sittande kabelrodd',mus:['Rygg','Biceps'],hi:['back','ua'],anchor:'hip',f:[{px:0,py:0.36,t:70,th:8,sh:-12,ft:80},{px:0,py:0.36,t:100,th:8,sh:-12,ft:80}],
+    hand:(K,J,s)=>{const u=K._u;return {t:[J.Sc[0]+0.55-0.42*u,J.Sc[1]-0.05-0.18*u,(0.1+0.04*u)*s],pole:[-1,-0.2,0.3*s]}},eq:(K,J)=>[E.cable([1.25,0.38,0],hc(J)),E.bench(-0.4,0.25,0.31),E.quad([[0.82,0.1,-0.25],[0.82,0.1,0.25],[0.86,0.55,0.25],[0.86,0.55,-0.25]])]},
+  curl:{n:'Bicepscurl',mus:['Biceps','Underarmar'],hi:['ua','fa'],f:[{ua:-92,fa:-88},{ua:-88,fa:78}],eq:(K,J)=>[E.bar(hc(J),0.5,0.12)]},
+  hammer:{n:'Hammercurl',mus:['Biceps','Underarmar'],hi:['ua','fa'],f:[{ua:-92,fa:-88,uaz:4,faz:4},{ua:-88,fa:80,uaz:4,faz:4}],eq:(K,J)=>E.db(J)},
+  pushdown:{n:'Triceps pushdown',mus:['Triceps'],hi:['ua'],f:[{t:86,ua:-95,fa:8},{t:86,ua:-95,fa:-86}],eq:(K,J)=>{const c=hc(J);return [E.cable([0.62,2.1,0],c),E.bar(c,0.2,0)]}},
+  skull:{n:'Fransk press',mus:['Triceps'],hi:['ua'],anchor:'hip',f:[{px:0.3,py:0.53,t:180,th:-15,sh:-95,ua:100,fa:100},{px:0.3,py:0.53,t:180,th:-15,sh:-95,ua:100,fa:208}],eq:(K,J)=>[E.bar(hc(J),0.38,0.1),E.bench(-0.78,0.42,0.46)]},
+  kbswing:{n:'Kettlebellsving',mus:['Säte','Baksida lår','Bål'],hi:['glute','thigh','core'],f:[{sh:-96,th:-60,t:30,ua:-112,fa:-118},{sh:-90,th:-90,t:94,ua:2,fa:4}],eq:(K,J)=>[{k:'kb',c:hc(J)}]},
+  pushup:{n:'Armhävningar',mus:['Bröst','Triceps','Bål'],hi:['chest','ua','core'],f:[{ax:-0.85,sh:201,th:201,t:21,ft:-60},{ax:-0.85,sh:188,th:188,t:8,ft:-72}],
+    hand:(K,J,s)=>({t:[0.41,0.02,0.27*s],pole:[-0.3,1,0.6*s]})},
+  dip:{n:'Dips',mus:['Bröst','Triceps','Axlar'],hi:['chest','ua','delt'],anchor:'sc',f:[{sx:0,sy:1.84,t:90,th:-100,sh:-150,ft:-120},{sx:0.06,sy:1.46,t:74,th:-95,sh:-150,ft:-120}],
+    hand:(K,J,s)=>({t:[0.02,1.27,0.25*s],pole:[-1,0.2,0.2*s]}),eq:()=>[{k:'dip'}]},
+  chin:{n:'Chins',mus:['Rygg (lats)','Biceps','Grepp'],hi:['back','ua','fa'],anchor:'sc',f:[{sx:0.02,sy:1.73,t:90,th:-95,sh:-125,ft:-60},{sx:-0.04,sy:2.17,t:97,th:-88,sh:-120,ft:-60}],
+    hand:(K,J,s)=>({t:[0.05,2.3,0.2*s],pole:[1,-0.5,0.2*s]}),eq:()=>[E.pull([0.05,2.3,0])]},
+  pullup:{n:'Pullups',mus:['Rygg (lats)','Biceps','Grepp'],hi:['back','ua','fa'],anchor:'sc',f:[{sx:0.02,sy:1.78,t:90,th:-95,sh:-125,ft:-60},{sx:-0.02,sy:2.15,t:96,th:-90,sh:-122,ft:-60}],
+    hand:(K,J,s)=>({t:[0.05,2.3,0.42*s],pole:[0,-1,0.8*s]}),eq:()=>[E.pull([0.05,2.3,0])]},
+  invrow:{n:'Inverterad rodd',mus:['Rygg','Biceps'],hi:['back','ua'],f:[{ax:-0.7,sh:205,th:205,t:25,ft:60},{ax:-0.7,sh:220,th:220,t:40,ft:60}],
+    hand:(K,J,s)=>({t:[0.29,1.16,0.28*s],pole:[0,-1,0.6*s]}),eq:()=>[E.pull([0.29,1.16,0],0.6)]},
+  burpee:{n:'Burpees',mus:['Helkropp','Bröst','Lår'],hi:['thigh','chest','core'],anchor:'hip',cyc:true,f:[
+    {px:0,py:0.95,t:90,th:-90,sh:-90,ft:0,ua:-90,fa:-90},{px:-0.25,py:0.53,t:45,th:-10,sh:-110,ft:0,ua:-70,fa:-90},{px:-0.3,py:0.36,t:16,th:196,sh:196,ft:-80,ua:-92,fa:-90},
+    {px:-0.25,py:0.53,t:45,th:-10,sh:-110,ft:0,ua:-70,fa:-90},{px:0,py:1.15,t:90,th:-90,sh:-95,ft:-60,ua:95,fa:95}]},
+  situp:{n:'Situps',mus:['Mage'],hi:['core'],anchor:'hip',f:[{px:0,py:0.12,t:176,th:50,sh:-60,ua:20,fa:20,hd:-5},{px:0,py:0.12,t:78,th:50,sh:-60,ua:8,fa:8,hd:-10}],eq:()=>[E.mat(-0.75,0.7)]},
+  legraise:{n:'Hängande benlyft',mus:['Mage','Höftböjare'],hi:['core','thigh'],anchor:'sc',f:[{sx:0,sy:1.73,t:90,th:-90,sh:-90,ft:0},{sx:0,sy:1.73,t:96,th:-2,sh:-2,ft:80}],
+    hand:(K,J,s)=>({t:[0.03,2.3,0.32*s],pole:[0,-1,0.6*s]}),eq:()=>[E.pull([0.03,2.3,0])]},
+  bridge:{n:'Glute bridge',mus:['Säte','Baksida lår'],hi:['glute','thigh'],f:[{ax:0.45,sh:-100,th:50,t:184,ua:-5,fa:-5},{ax:0.45,sh:-100,th:10,t:212,ua:-12,fa:-12}],eq:()=>[E.mat(-0.75,0.75)]},
+  plank:{n:'Planka',mus:['Bål','Axlar'],hi:['core','delt'],f:[{ax:-0.85,sh:191.5,th:191.5,t:11.5,ft:-70,ua:-90,fa:0},{ax:-0.85,sh:192.5,th:192.5,t:12.5,ft:-70,ua:-90,fa:0}],eq:()=>[E.mat(-1.0,0.7)]},
+  splank:{n:'Sidoplanka',mus:['Sneda magmuskler','Bål'],hi:['core'],anchor:'hip',f:[{px:0,py:0,t:0,th:180,sh:180,ft:90,ua:0,uaz:90,fa:0,faz:90,a:12},{px:0,py:0,t:0,th:180,sh:180,ft:90,ua:0,uaz:90,fa:0,faz:90,a:15}],
+    hand:(K,J,s)=>s<0?{t:v3(J.Sc,[0.28,0,-0.49]),pole:[0,0,-1]}:null,
+    post:p=>{const x=p[0]+0.87,y=p[2]+0.19,c=Math.cos(13.5*D2R),sn=Math.sin(13.5*D2R);return [x*c-y*sn-0.87,x*sn+y*c+0.06,-p[1]]},eq:()=>[E.mat(-1.0,0.7)]},
+  hang:{n:'Dead hang',mus:['Grepp','Axlar','Rygg'],hi:['fa','delt'],anchor:'sc',f:[{sx:0.02,sy:1.74,t:90,th:-92,sh:-95,ft:-50},{sx:0.03,sy:1.74,t:92,th:-88,sh:-92,ft:-50}],
+    hand:(K,J,s)=>({t:[0.04,2.3,0.34*s],pole:[0,-1,0.6*s]}),eq:()=>[E.pull([0.04,2.3,0])]},
+  wallsit:{n:'Wall sit',mus:['Framsida lår','Säte'],hi:['thigh'],f:[{ax:0.42,sh:-90,th:0,t:90,ua:-92,fa:-15},{ax:0.42,sh:-91,th:1,t:90,ua:-92,fa:-15}],eq:()=>[E.quad([[-0.14,0,-0.5],[-0.14,0,0.5],[-0.14,1.8,0.5],[-0.14,1.8,-0.5]])]},
+  hollow:{n:'Hollow hold',mus:['Mage','Bål'],hi:['core'],anchor:'hip',f:[{px:0,py:0.1,t:163,th:14,sh:14,ft:14,ua:165,fa:165},{px:0,py:0.1,t:158,th:18,sh:18,ft:18,ua:160,fa:160}],eq:()=>[E.mat(-1.0,1.0)]},
+  farmer:{n:'Farmer’s walk',mus:['Grepp','Bål','Trapezius'],hi:['fa','core','delt'],anchor:'hip',cyc:true,f:gait(18,30,0,0.02,0.92,90),eq:(K,J)=>E.db(J)},
+  walk:{n:'Promenad',mus:['Ben','Kondition'],hi:['thigh','shin'],anchor:'hip',cyc:true,f:gait(20,30,15,0.02,0.92,90),eq:()=>[{k:'tread'}]},
+  run:{n:'Löpning',mus:['Ben','Kondition'],hi:['thigh','shin'],anchor:'hip',cyc:true,f:gait(35,70,38,0.06,0.9,84),eq:()=>[{k:'tread'}]},
+  rowerg:{n:'Roddmaskin',mus:['Ben','Rygg','Kondition'],hi:['thigh','back','ua'],anchor:'hip',f:[{px:-0.15,py:0.32,t:60},{px:-0.6,py:0.32,t:110}],
+    leg:(K,J,s)=>({t:[0.35,0.33,0.13*s],pole:[1,1,0]}),hand:(K,J,s)=>{const u=K._u,a=[0.62,0.52,0.12*s],b=rel(J,K,0.12,-0.16,0.16*s);return {t:[a[0]+(b[0]-a[0])*u,a[1]+(b[1]-a[1])*u,a[2]+(b[2]-a[2])*u],pole:[-1,-0.3,0.4*s]}},
+    eq:(K,J)=>[E.line([-1.0,0.24,0],[0.85,0.24,0]),E.circ([0.95,0.45,0],0.24),E.cable([0.85,0.48,0],hc(J)),E.box([J.P[0]-0.12,0.24,-0.14],[J.P[0]+0.12,0.3,0.14]),E.quad([[0.38,0.18,-0.22],[0.38,0.18,0.22],[0.42,0.5,0.22],[0.42,0.5,-0.22]])]},
+  bike:{n:'Cykel',mus:['Framsida lår','Vader','Kondition'],hi:['thigh','shin'],anchor:'hip',cyc:true,f:[{px:0,py:0.98,t:58,ua:-35,fa:-10},{px:0,py:0.98,t:58,ua:-35,fa:-10}],
+    leg:(K,J,s)=>{const a=(K._t*360+(s>0?0:180))*D2R;return {t:[0.3+Math.cos(a)*0.17,0.36+Math.sin(a)*0.17,0.15*s],pole:[1,0.3,0]}},hand:(K,J,s)=>({t:[0.62,1.05,0.22*s],pole:[-0.5,-1,0.3*s]}),
+    eq:()=>[E.circ([0.3,0.36,0],0.17),E.circ([0.62,0.36,0],0.26),E.line([0,0.93,0],[0.3,0.36,0]),E.line([0.3,0.36,0],[0.6,1.0,0]),E.line([0.6,1.0,-0.24],[0.6,1.0,0.24]),E.line([0.3,0.36,0],[0.3,0,0])]},
+  rope:{n:'Hopprep',mus:['Vader','Kondition','Koordination'],hi:['shin','fa'],anchor:'hip',cyc:true,f:[{px:0,py:0.95,t:90,ua:-100,uaz:22,fa:-40,faz:30,ft:-20},{px:0,py:1.04,t:90,ua:-100,uaz:22,fa:-40,faz:30,ft:-45}],eq:(K,J)=>[{k:'rope'}]}
+};
+['squat','front','dl','rdl','lunge','calf','ohp','lat','facepull','row','curl','hammer','pushdown','kbswing','bwsquat','bwlunge','pistol','hip','wallsit','bridge','invrow','pushup','plank'].forEach(id=>{if(!HOLO[id].anchor)HOLO[id].anchor='foot'});
 const HOLOS=[];let holoRAF=0,holoLast=0;
 function holoHTML(id){const h=HOLO[id];if(!h)return '';return `<div class="holo" data-ex="${id}"><canvas aria-label="3D-hologram av ${esc(h.n)}" role="img"></canvas><div class="hctl"><button class="hb" data-h="play" aria-label="Pausa">❚❚</button><button class="hb" data-h="slow">Slow</button><button class="hb on" data-h="spin">Snurra</button><span class="hhint">Dra för att vrida</span></div><div class="hmus">${h.mus.map(m=>`<span>${esc(m)}</span>`).join('')}</div></div>`}
+function holoEq(X,K,J){return X.eq?X.eq(K,J):[]}
+function eqPts(e,J){
+  if(e.k==='bar')return [v3(e.c,[0,e.r,-e.w]),v3(e.c,[0,-e.r,e.w])];if(e.k==='box')return [e.a,e.b];if(e.k==='quad')return e.p;if(e.k==='line'||e.k==='cable')return [e.a,e.b];if(e.k==='circ')return [v3(e.c,[e.r,e.r,0]),v3(e.c,[-e.r,-e.r,0])];
+  if(e.k==='pull')return [v3(e.c,[0,0.05,-e.w]),[e.c[0],0,e.w]];if(e.k==='dip')return [[-0.4,0,-0.3],[0.45,1.3,0.3]];if(e.k==='tread')return [[-0.8,0,-0.35],[0.8,1.2,0.35]];return [e.c||[0,0,0]]}
+function holoFit(X){let x0=1e9,x1=-1e9,y0=0,y1=-1e9,r=0;const pts=[];
+  for(let i=0;i<10;i++){const K=kf(X,i/10),J=body(X,K);pts.push(J.P,J.Sc,J.head,v3(J.head,[0,0.12,0]));for(const s of [-1,1])for(const k in J.S[s])pts.push(J.S[s][k]);holoEq(X,K,J).forEach(e=>eqPts(e,J).forEach(p=>pts.push(p)))}
+  for(const p of pts){x0=Math.min(x0,p[0]);x1=Math.max(x1,p[0]);y1=Math.max(y1,p[1]);y0=Math.min(y0,p[1])}const cx=(x0+x1)/2;for(const p of pts)r=Math.max(r,Math.hypot(p[0]-cx,p[2]));return {cx,y0,y1,r:Math.max(r,0.6)}}
 function mountHolos(root){
   (root||document).querySelectorAll('.holo:not([data-m])').forEach(el=>{
-    el.dataset.m='1';const cv=el.querySelector('canvas'),o={el,cv,ctx:cv.getContext('2d'),ex:el.dataset.ex,yaw:-0.55,t:0,play:true,speed:1,spin:true,drag:null,W:0,H:0};
+    el.dataset.m='1';const cv=el.querySelector('canvas'),X=HOLO[el.dataset.ex];if(!X)return;const o={el,cv,ctx:cv.getContext('2d'),X,fit:holoFit(X),yaw:-0.55,t:0,play:true,speed:1,spin:true,drag:null,W:0,H:0};
     const ro=new ResizeObserver(()=>{const r=cv.getBoundingClientRect(),d=Math.min(2,window.devicePixelRatio||1);o.W=r.width;o.H=r.height;cv.width=Math.round(r.width*d);cv.height=Math.round(r.height*d);o.ctx.setTransform(d,0,0,d,0,0)});ro.observe(cv);o.ro=ro;
-    cv.addEventListener('pointerdown',e=>{o.drag={x:e.clientX,y:e.clientY,yaw:o.yaw};o.spin=false;el.querySelector('[data-h=spin]').classList.remove('on');cv.setPointerCapture(e.pointerId)});
+    cv.addEventListener('pointerdown',e=>{o.drag={x:e.clientX,yaw:o.yaw};o.spin=false;el.querySelector('[data-h=spin]').classList.remove('on');try{cv.setPointerCapture(e.pointerId)}catch(_){}});
     cv.addEventListener('pointermove',e=>{if(o.drag)o.yaw=o.drag.yaw+(e.clientX-o.drag.x)*0.012});
     const up=()=>{o.drag=null};cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
     el.querySelector('.hctl').addEventListener('click',e=>{const b=e.target.closest('[data-h]');if(!b)return;e.stopPropagation();const k=b.dataset.h;
@@ -755,47 +860,56 @@ function holoTick(ts){
   const dt=Math.min(0.05,(ts-(holoLast||ts))/1000);holoLast=ts;
   for(let i=HOLOS.length-1;i>=0;i--){const o=HOLOS[i];if(!o.cv.isConnected){o.ro.disconnect();HOLOS.splice(i,1);continue}
     if(!o.W||!o.H)continue;const r=o.cv.getBoundingClientRect();if(r.bottom<0||r.top>innerHeight)continue;
-    if(o.play)o.t+=dt*o.speed/2.6;if(o.spin&&!o.drag)o.yaw+=dt*0.35;holoDraw(o)}
+    if(o.play)o.t+=dt*o.speed/(o.X.cyc?1.6:2.6);if(o.spin&&!o.drag)o.yaw+=dt*0.35;holoDraw(o)}
   holoRAF=HOLOS.length?requestAnimationFrame(holoTick):0;
 }
 function holoDraw(o){
-  const h=HOLO[o.ex],P=h.pose(0.5-0.5*Math.cos(2*Math.PI*o.t)),c=o.ctx,W=o.W,H=o.H;
-  const T0=50,B0=40,Ha=H-T0-B0,F=h.fit,S=Math.min(W/(2*F[2]*1.08),Ha/((F[1]-F[0])*1.12)),cy=(F[0]+F[1])/2,sy=T0+Ha/2,pitch=-0.2,cp=Math.cos(pitch),spch=Math.sin(pitch),cyw=Math.cos(o.yaw),syw=Math.sin(o.yaw),D=4.2;
-  const pr=(x,y,z)=>{x-=0;y-=cy;const x1=x*cyw-z*syw,z1=x*syw+z*cyw;const y2=y*cp-z1*spch,z2=y*spch+z1*cp;const f=D/(D+z2);return [W/2+x1*f*S,sy-y2*f*S,z2,f]};
-  c.clearRect(0,0,W,H);c.globalCompositeOperation='lighter';c.lineCap='round';c.lineJoin='round';
-  const A='182,247,0',pulse=0.55+0.45*Math.sin(o.t*2*Math.PI*2);
-  const line=(a,b,w,al,col)=>{c.strokeStyle=`rgba(${col||A},${al})`;c.lineWidth=w;c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.stroke()};
+  const X=o.X,K=kf(X,o.t),J=body(X,K),c=o.ctx,W=o.W,H=o.H,F=o.fit;
+  const T0=50,B0=40,Ha=H-T0-B0,S=Math.min(W/(2*F.r*1.1),Ha/((F.y1-F.y0)*1.15)),cy=(F.y0+F.y1)/2,sy=T0+Ha/2;
+  const pitch=-0.2,cp=Math.cos(pitch),sp=Math.sin(pitch),cyw=Math.cos(o.yaw),syw=Math.sin(o.yaw),D=4.2;
+  const pr=p=>{const x=p[0]-F.cx,y=p[1]-cy,z=p[2];const x1=x*cyw-z*syw,z1=x*syw+z*cyw;const y2=y*cp-z1*sp,z2=y*sp+z1*cp;const f=D/(D+z2);return [W/2+x1*f*S,sy-y2*f*S,z2,f]};
+  c.clearRect(0,0,W,H);c.globalCompositeOperation='lighter';c.lineCap='round';c.lineJoin='round';c.shadowBlur=0;
+  const A='182,247,0',HOT='235,255,170',pulse=0.55+0.45*Math.sin(o.t*2*Math.PI*2);
+  const ln=(a,b,w,al,col)=>{c.strokeStyle=`rgba(${col||A},${al})`;c.lineWidth=w;c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.stroke()};
+  const l3=(a,b,w,al)=>ln(pr(a),pr(b),w,al);
+  const ring=(cn,r,pl,al,w)=>{c.strokeStyle=`rgba(${A},${al})`;c.lineWidth=w||1.5;c.beginPath();for(let i=0;i<=24;i++){const a=i/24*Math.PI*2,q=pl==='xz'?[cn[0]+Math.cos(a)*r,cn[1],cn[2]+Math.sin(a)*r]:pl==='yz'?[cn[0],cn[1]+Math.cos(a)*r,cn[2]+Math.sin(a)*r]:[cn[0]+Math.cos(a)*r,cn[1]+Math.sin(a)*r,cn[2]],s=pr(q);i?c.lineTo(s[0],s[1]):c.moveTo(s[0],s[1])}c.stroke()};
   /* golv */
-  c.shadowBlur=0;
-  for(let i=-4;i<=4;i++){line(pr(i*0.3,0,-1.2),pr(i*0.3,0,1.2),1,0.12);line(pr(-1.2,0,i*0.3),pr(1.2,0,i*0.3),1,0.12)}
-  c.strokeStyle=`rgba(${A},.35)`;c.lineWidth=1.5;c.beginPath();for(let i=0;i<=48;i++){const a=i/48*Math.PI*2,q=pr(Math.cos(a)*1.15,0,Math.sin(a)*1.15);i?c.lineTo(q[0],q[1]):c.moveTo(q[0],q[1])}c.stroke();
+  const gx=F.cx;for(let i=-4;i<=4;i++){l3([gx+i*0.3,0,-1.2],[gx+i*0.3,0,1.2],1,0.12);l3([gx-1.2,0,i*0.3],[gx+1.2,0,i*0.3],1,0.12)}
+  ring([gx,0,0],1.15,'xz',0.35);
   const segs=[];
-  const P3=(p,z)=>pr(p[0],p[1],z);
   /* utrustning */
-  for(const e of P.eq){
-    if(e.k==='bar'){const z0=-e.w,z1=e.w;segs.push({d:0,f:()=>{c.shadowBlur=8;c.shadowColor=`rgba(${A},.8)`;line(P3(e.p,z0),P3(e.p,z1),2.2,0.75);
-      for(const zz of [-0.78,-0.86,0.78,0.86]){c.beginPath();for(let i=0;i<=20;i++){const a=i/20*Math.PI*2,q=pr(e.p[0]+Math.cos(a)*e.r,e.p[1]+Math.sin(a)*e.r,zz);i?c.lineTo(q[0],q[1]):c.moveTo(q[0],q[1])}c.strokeStyle=`rgba(${A},.55)`;c.lineWidth=1.6;c.stroke()}}})}
-    if(e.k==='bench'){segs.push({d:0,f:()=>{c.shadowBlur=0;const bx=[-0.78,0.42],by=[0.36,0.46],bz=[-0.16,0.16];const C=[];for(const x of bx)for(const y of by)for(const z of bz)C.push(pr(x,y,z));
-      const E=[[0,1],[2,3],[4,5],[6,7],[0,2],[1,3],[4,6],[5,7],[0,4],[1,5],[2,6],[3,7]];E.forEach(([a,b])=>line(C[a],C[b],1.4,0.4));
-      for(const x of [-0.7,0.34])for(const z of [-0.12,0.12])line(pr(x,0.36,z),pr(x,0,z),1.2,0.3)}})}
-    if(e.k==='pull'){segs.push({d:0,f:()=>{c.shadowBlur=6;c.shadowColor=`rgba(${A},.7)`;line(P3(e.p,-0.75),P3(e.p,0.75),2.4,0.7);for(const z of [-0.75,0.75])line(pr(e.p[0],0,z),pr(e.p[0],e.p[1]+0.05,z),1.6,0.4)}})}
+  for(const e of holoEq(X,K,J)){
+    const z=e.c?pr(e.c)[2]:0;
+    segs.push({d:z+0.01,f:()=>{c.shadowBlur=8;c.shadowColor=`rgba(${A},.7)`;
+      if(e.k==='bar'){l3(v3(e.c,[0,0,-e.w]),v3(e.c,[0,0,e.w]),2.2,0.75);if(e.r)for(const zz of [e.w-0.14,e.w-0.06]){ring(v3(e.c,[0,0,-zz]),e.r,'xy',0.55);ring(v3(e.c,[0,0,zz]),e.r,'xy',0.55)}}
+      else if(e.k==='db'){l3(v3(e.c,[0,0,-0.13]),v3(e.c,[0,0,0.13]),2.4,0.8);for(const zz of [-0.11,-0.08,0.08,0.11])ring(v3(e.c,[0,0,zz]),0.075,'xy',0.6,1.4)}
+      else if(e.k==='kb'){ring(v3(e.c,[0,-0.14,0]),0.11,'xy',0.7,2);ring(v3(e.c,[0,-0.14,0]),0.11,'yz',0.5,1.4);l3(v3(e.c,[0,0,-0.06]),v3(e.c,[0,-0.05,-0.08]),1.6,0.6);l3(v3(e.c,[0,0,0.06]),v3(e.c,[0,-0.05,0.08]),1.6,0.6);l3(v3(e.c,[0,0,-0.06]),v3(e.c,[0,0,0.06]),2,0.7)}
+      else if(e.k==='box'){const a=e.a,b=e.b,C=[];for(const x of [a[0],b[0]])for(const y of [a[1],b[1]])for(const zz of [a[2],b[2]])C.push(pr([x,y,zz]));[[0,1],[2,3],[4,5],[6,7],[0,2],[1,3],[4,6],[5,7],[0,4],[1,5],[2,6],[3,7]].forEach(([i,j])=>ln(C[i],C[j],1.3,0.4));
+        if(e.legs)for(const x of [a[0]+0.06,b[0]-0.06])for(const zz of [a[2]+0.04,b[2]-0.04])l3([x,a[1],zz],[x,0,zz],1.1,0.28)}
+      else if(e.k==='quad'){const q=e.p.map(pr);c.fillStyle=`rgba(${A},${e.dim?0.04:0.07})`;c.strokeStyle=`rgba(${A},${e.dim?0.22:0.45})`;c.lineWidth=1.3;c.beginPath();q.forEach((p,i)=>i?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));c.closePath();c.fill();c.stroke()}
+      else if(e.k==='line')l3(e.a,e.b,1.6,0.45);
+      else if(e.k==='circ')ring(e.c,e.r,e.pl,0.45,1.5);
+      else if(e.k==='cable'){l3(e.a,e.b,1.1,0.55);ring(e.a,0.05,'xy',0.6);l3([e.a[0]+0.06,0,-0.12],[e.a[0]+0.06,Math.max(e.a[1],2.1),-0.12],1.4,0.3);l3([e.a[0]+0.06,0,0.12],[e.a[0]+0.06,Math.max(e.a[1],2.1),0.12],1.4,0.3)}
+      else if(e.k==='pull'){l3(v3(e.c,[0,0,-e.w]),v3(e.c,[0,0,e.w]),2.4,0.7);for(const s of [-1,1])l3([e.c[0],0,e.w*s],[e.c[0],e.c[1]+0.05,e.w*s],1.6,0.38)}
+      else if(e.k==='dip'){for(const s of [-1,1]){l3([-0.35,1.27,0.25*s],[0.4,1.27,0.25*s],2.2,0.7);l3([-0.3,0,0.25*s],[-0.3,1.27,0.25*s],1.3,0.35);l3([0.35,0,0.25*s],[0.35,1.27,0.25*s],1.3,0.35)}}
+      else if(e.k==='roll'){l3(v3(e.c,[0,0,-0.24]),v3(e.c,[0,0,0.24]),5,0.5);ring(v3(e.c,[0,0,-0.24]),0.05,'xy',0.6);ring(v3(e.c,[0,0,0.24]),0.05,'xy',0.6)}
+      else if(e.k==='tread'){const y=0.06;[[-0.75,0.75]].forEach(()=>{l3([-0.75,y,-0.3],[0.75,y,-0.3],1.4,0.45);l3([-0.75,y,0.3],[0.75,y,0.3],1.4,0.45);l3([-0.75,y,-0.3],[-0.75,y,0.3],1.4,0.45);l3([0.75,y,-0.3],[0.75,y,0.3],1.4,0.45)});
+        for(let i=0;i<6;i++){const xx=-0.75+((i/6+K._t*1.5)%1)*1.5;l3([xx,y,-0.28],[xx,y,0.28],1,0.18)}for(const s of [-1,1])l3([0.75,0,0.3*s],[0.78,1.1,0.3*s],1.4,0.35);l3([0.78,1.1,-0.3],[0.78,1.1,0.3],1.8,0.5)}
+      else if(e.k==='rope'){const hl=J.S[-1].hand,hr=J.S[1].hand,a=K._t*2*Math.PI,m=[F.cx+Math.sin(a)*0.35,0.95+Math.cos(a)*1.0,0],mid=vs(v3(hl,hr),0.5),ctl=vsub(vs(m,2),mid),pa=pr(hl),pb=pr(hr),pc=pr(ctl);c.strokeStyle=`rgba(${A},.6)`;c.lineWidth=1.4;c.beginPath();c.moveTo(pa[0],pa[1]);c.quadraticCurveTo(pc[0],pc[1],pb[0],pb[1]);c.stroke()}
+    }});
   }
   /* kropp */
-  const hiOn=k=>h.hi.includes(k);
-  const zs={sh:0.19,hip:0.12,knee:0.13,ankle:0.13,toe:0.13};
-  for(const s of [-1,1]){
-    const J={sh:P3(P.sh,s*zs.sh),hip:P3(P.hip,s*zs.hip),knee:P3(P.knee,s*zs.knee),ankle:P3(P.ankle,s*zs.ankle),toe:P3(P.toe,s*zs.toe),hand:P3(P.hand,s*h.grip),el:P3(P.el,s*(h.grip+zs.sh)/2+s*0.04)};
-    const seg=(a,b,key,w)=>segs.push({d:(a[2]+b[2])/2,f:()=>{const on=hiOn(key);c.shadowBlur=on?18:10;c.shadowColor=on?'rgba(235,255,170,.95)':`rgba(${A},.9)`;const ww=w*(a[3]+b[3])/2;
-      line(a,b,ww,on?0.35+0.25*pulse:0.28,on?'235,255,170':null);line(a,b,ww*0.42,on?0.9:0.85,on?'250,255,225':null)}});
-    seg(J.hip,J.knee,'thigh',13);seg(J.knee,J.ankle,'shin',10);seg(J.ankle,J.toe,'foot',7);seg(J.sh,J.el,'ua',10);seg(J.el,J.hand,'fa',8);
-    for(const k of ['knee','ankle','el','hand'])segs.push({d:J[k][2],f:()=>{c.shadowBlur=10;c.shadowColor=`rgba(${A},.9)`;c.fillStyle=`rgba(${A},.9)`;c.beginPath();c.arc(J[k][0],J[k][1],2.6*J[k][3],0,7);c.fill()}});
-    if(hiOn('glute'))segs.push({d:J.hip[2],f:()=>{c.shadowBlur=22;c.shadowColor='rgba(235,255,170,.95)';c.fillStyle=`rgba(235,255,170,${0.25+0.25*pulse})`;c.beginPath();c.arc(J.hip[0],J.hip[1],11*J.hip[3],0,7);c.fill()}});
+  const hi=k=>X.hi.includes(k);
+  for(const s of [-1,1]){const B=J.S[s],Q={};for(const k in B)Q[k]=pr(B[k]);
+    const seg=(a,b,key,w)=>segs.push({d:(a[2]+b[2])/2,f:()=>{const on=hi(key);c.shadowBlur=on?18:10;c.shadowColor=on?`rgba(${HOT},.95)`:`rgba(${A},.9)`;const ww=w*(a[3]+b[3])/2;ln(a,b,ww,on?0.35+0.25*pulse:0.28,on?HOT:null);ln(a,b,ww*0.42,0.88,on?'250,255,225':null)}});
+    seg(Q.hip,Q.knee,'thigh',13);seg(Q.knee,Q.ankle,'shin',10);seg(Q.ankle,Q.toe,'foot',7);seg(Q.sh,Q.el,'ua',10);seg(Q.el,Q.hand,'fa',8);
+    for(const k of ['knee','ankle','el','hand'])segs.push({d:Q[k][2],f:()=>{c.shadowBlur=10;c.shadowColor=`rgba(${A},.9)`;c.fillStyle=`rgba(${A},.9)`;c.beginPath();c.arc(Q[k][0],Q[k][1],2.6*Q[k][3],0,7);c.fill()}});
+    for(const [k,key,r] of [['hip','glute',11],['sh','delt',9]])if(hi(key))segs.push({d:Q[k][2],f:()=>{c.shadowBlur=22;c.shadowColor=`rgba(${HOT},.95)`;c.fillStyle=`rgba(${HOT},${0.22+0.25*pulse})`;c.beginPath();c.arc(Q[k][0],Q[k][1],r*Q[k][3],0,7);c.fill()}});
   }
-  /* bål */
-  const q=[P3(P.sh,-zs.sh),P3(P.sh,zs.sh),P3(P.hip,zs.hip),P3(P.hip,-zs.hip)],tz=q.reduce((a,b)=>a+b[2],0)/4;
-  segs.push({d:tz,f:()=>{const on=hiOn('chest')||hiOn('back')||hiOn('core');c.shadowBlur=on?24:12;c.shadowColor=on?'rgba(235,255,170,.9)':`rgba(${A},.8)`;
-    c.fillStyle=on?`rgba(235,255,170,${0.12+0.14*pulse})`:`rgba(${A},.08)`;c.strokeStyle=`rgba(${A},.85)`;c.lineWidth=2;c.beginPath();q.forEach((p,i)=>i?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));c.closePath();c.fill();c.stroke();
-    const n=P3(P.neck,0),hh=P3(P.head,0);line(n,hh,6*n[3],0.6);c.fillStyle=`rgba(${A},.14)`;c.beginPath();c.arc(hh[0],hh[1],0.11*S*hh[3],0,7);c.fill();c.stroke();
+  const q=[pr(J.S[-1].sh),pr(J.S[1].sh),pr(J.S[1].hip),pr(J.S[-1].hip)],tz=q.reduce((a,b)=>a+b[2],0)/4;
+  segs.push({d:tz,f:()=>{const on=hi('chest')||hi('back')||hi('core');c.shadowBlur=on?24:12;c.shadowColor=on?`rgba(${HOT},.9)`:`rgba(${A},.8)`;
+    c.fillStyle=on?`rgba(${HOT},${0.12+0.14*pulse})`:`rgba(${A},.08)`;c.strokeStyle=`rgba(${A},.85)`;c.lineWidth=2;c.beginPath();q.forEach((p,i)=>i?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));c.closePath();c.fill();c.stroke();
+    const n=pr(J.neck),hh=pr(J.head);ln(n,hh,6*n[3],0.6);c.fillStyle=`rgba(${A},.14)`;c.beginPath();c.arc(hh[0],hh[1],0.11*S*hh[3],0,7);c.fill();c.stroke();
     if(on){const m=[(q[0][0]+q[1][0]+q[2][0]+q[3][0])/4,(q[0][1]+q[1][1]+q[2][1]+q[3][1])/4];c.fillStyle=`rgba(250,255,225,${0.3+0.3*pulse})`;c.beginPath();c.arc(m[0],m[1],5,0,7);c.fill()}}});
   segs.sort((a,b)=>b.d-a.d).forEach(s=>s.f());
   c.shadowBlur=0;c.globalCompositeOperation='source-over';
