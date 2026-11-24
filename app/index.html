@@ -713,7 +713,7 @@ function kf(X,t){const F=X.f;let a,b,u;
   if(X.cyc){const n=F.length,x=(((t%1)+1)%1)*n,i=Math.floor(x);a=F[i];b=F[(i+1)%n];u=0.5-0.5*Math.cos(Math.PI*(x-i))}
   else{a=F[0];b=F[1]||F[0];u=0.5-0.5*Math.cos(2*Math.PI*t)}
   const K=Object.assign({},KD);for(const k of new Set([...Object.keys(a),...Object.keys(b)])){const va=a[k]!==undefined?a[k]:(b[k]!==undefined?b[k]:KD[k]),vb=b[k]!==undefined?b[k]:va;K[k]=va+(vb-va)*u}
-  K._t=t;K._u=u;return K}
+  K._t=t;K._u=u;if(X.mod)X.mod(K);return K}
 /* punkter relativt bålen: fram (f), upp längs bålen (u), sida (z) */
 const rel=(J,K,f,u,z)=>{const fd=dir3(K.t-90,0,1);return [J.Sc[0]+J.td[0]*u+fd[0]*f,J.Sc[1]+J.td[1]*u+fd[1]*f,z]};
 function body(X,K){
@@ -732,7 +732,8 @@ function body(X,K){
     if(at)[el,hand]=ik3(sh,at.t,HL.ua,HL.fa,at.pole);else{el=v3(sh,vs(dir3(g('ua',s),g('uaz',s),s),HL.ua));hand=v3(el,vs(dir3(g('fa',s),g('faz',s),s),HL.fa))}
     J.S[s]={hip,knee,ankle,toe,sh,el,hand};
   }
-  if(X.post){const m=X.post;['P','Sc','neck','head'].forEach(k=>J[k]=m(J[k]));for(const s of [-1,1])for(const k in J.S[s])J.S[s][k]=m(J.S[s][k])}
+  const m0=X.postK?X.postK(K):X.post;if(m0){const m=m0;['P','Sc','neck','head'].forEach(k=>J[k]=m(J[k]));for(const s of [-1,1])for(const k in J.S[s])J.S[s][k]=m(J.S[s][k])}
+  if(X.two)J.two=body(X.two,kf(X.two,K._t));
   return J;
 }
 const hc=J=>vs(v3(J.S[-1].hand,J.S[1].hand),0.5);
@@ -836,14 +837,132 @@ const HOLO={
   rope:{n:'Hopprep',mus:['Vader','Kondition','Koordination'],hi:['shin','fa'],anchor:'hip',cyc:true,f:[{px:0,py:0.95,t:90,ua:-100,uaz:22,fa:-40,faz:30,ft:-20},{px:0,py:1.04,t:90,ua:-100,uaz:22,fa:-40,faz:30,ft:-45}],eq:(K,J)=>[{k:'rope'}]}
 };
 ['squat','front','dl','rdl','lunge','calf','ohp','lat','facepull','row','curl','hammer','pushdown','kbswing','bwsquat','bwlunge','pistol','hip','wallsit','bridge','invrow','pushup','plank'].forEach(id=>{if(!HOLO[id].anchor)HOLO[id].anchor='foot'});
+/* ---------- hologram: sporter och aktiviteter ---------- */
+const lp3=(a,b,u)=>[a[0]+(b[0]-a[0])*u,a[1]+(b[1]-a[1])*u,a[2]+(b[2]-a[2])*u];
+const ballE=(c,r)=>({k:'ball',c,r:r||0.11});
+const polyE=(p,o)=>Object.assign({k:'poly',p},o||{});
+const ringE=(c,r,pl,o)=>Object.assign({k:'ringP',c,r,pl},o||{});
+const hdir=(J,s)=>vn(vsub(J.S[s].hand,J.S[s].el));
+const racketE=(J,s,L,r)=>{const h=J.S[s].hand,d=hdir(J,s),c=v3(h,vs(d,L));return [polyE([h,v3(h,vs(d,L-r))],{w:2.4,al:0.8}),ringE(c,r,'xy',{al:0.75,w:2}),ringE(c,r*0.6,'xy',{al:0.3,w:1})]};
+const stickE=J=>{const a=J.S[-1].hand,b=J.S[1].hand,d=vn(vsub(b,a));const t=d[1]<-0.05?Math.min(1.5,(b[1]-0.03)/(-d[1])):0.8;const e=v3(b,vs(d,t));return [polyE([a,e],{w:2.6,al:0.8}),polyE([e,v3(e,[0.17,0,0.03])],{w:3.4,al:0.8})]};
+const bladeTip=J=>{const a=J.S[-1].hand,b=J.S[1].hand,d=vn(vsub(b,a));const t=d[1]<-0.05?Math.min(1.5,(b[1]-0.03)/(-d[1])):0.8;return v3(v3(b,vs(d,t)),[0.12,0.04,0.03])};
+const skisE=J=>[-1,1].map(s=>{const a=J.S[s].ankle;return polyE([v3(a,[-0.75,-0.07,0]),v3(a,[0.85,-0.07,0]),v3(a,[0.98,0,0])],{w:2.2,al:0.75})});
+const polesE=(J,back)=>[-1,1].map(s=>{const h=J.S[s].hand;return polyE([h,[h[0]-(back||0.3),0.01,h[2]+0.05*s]],{w:1.6,al:0.65})});
+const bladesE=J=>[-1,1].map(s=>{const a=J.S[s].ankle;return polyE([v3(a,[-0.14,-0.08,0]),v3(a,[0.22,-0.08,0]),v3(a,[0.25,-0.05,0])],{w:2,al:0.8})});
+const waterE=(y,t,w)=>{const L=[];for(let j=-2;j<=2;j++){const p=[];for(let i=0;i<=16;i++){const x=-(w||1.4)+i*(w||1.4)/8;p.push([x,y+0.025*Math.sin(i*0.9+t*6.28+j*1.7),j*0.32])}L.push(polyE(p,{al:0.28,w:1.2}))}return L};
+const ellXZ=(cx,y,cz,rx,rz,n)=>{const p=[];for(let i=0;i<=(n||24);i++){const a=i/(n||24)*Math.PI*2;p.push([cx+Math.cos(a)*rx,y,cz+Math.sin(a)*rz])}return p};
+const wallE=(x,y1,holds)=>[{k:'quad',p:[[x,0,-0.9],[x,0,0.9],[x,y1,0.9],[x,y1,-0.9]]}].concat(holds.map(h=>ringE(h,0.05,'yz',{al:0.85,w:2})));
+const horseE=t=>{const b=0.04*Math.sin(t*Math.PI*4),L=[];const y=1.08+b;
+  for(const x of [-0.55,-0.25,0.05,0.35])L.push(ringE([x,y,0],0.26,'yz',{al:0.5,w:1.4}));
+  L.push(polyE([[-0.7,y+0.2,0],[0.45,y+0.22,0],[0.7,y+0.55,0],[0.95,y+0.75,0],[1.15,y+0.6,0],[1.05,y+0.5,0],[0.75,y+0.25,0],[0.5,y-0.2,0],[-0.6,y-0.18,0],[-0.78,y,0]],{al:0.6,w:1.8}));
+  L.push(polyE([[-0.78,y+0.05,0],[-0.95,y-0.35,0]],{al:0.4}));
+  const ph=t*Math.PI*4;[[-0.5,0],[0.35,Math.PI]].forEach(([x,o])=>[-1,1].forEach(s=>{const sw=0.18*Math.sin(ph+o+(s>0?Math.PI:0));L.push(polyE([[x,y-0.2,0.12*s],[x+sw*0.6,y-0.6,0.12*s],[x+sw,0.02,0.12*s]],{al:0.65,w:2}))}));return L};
+const runF=gait(35,70,38,0.06,0.9,84),walkF=gait(20,30,15,0.02,0.92,90);
+const withArmR=(F,o)=>F.map(f=>Object.assign({},f,o));
+const SP={
+  sp_fotboll:{n:'Fotboll',mus:['Ben','Kondition','Teknik'],hi:['thigh','shin'],anchor:'hip',cyc:true,f:runF,eq:(K,J)=>[ballE([0.55+0.05*Math.sin(K._t*6.28),0.11,0.08],0.11)]},
+  sp_futsal:{n:'Futsal',mus:['Ben','Kondition','Teknik'],hi:['thigh','shin'],anchor:'hip',cyc:true,f:runF,eq:(K,J)=>[ballE([0.52+0.04*Math.sin(K._t*6.28),0.1,0.08],0.095)]},
+  sp_innebandy:{n:'Innebandy',mus:['Ben','Bål','Kondition'],hi:['thigh','core'],anchor:'hip',cyc:true,f:gait(25,45,0,0.04,0.85,70),
+    hand:(K,J,s)=>({t:s<0?rel(J,K,0.25,-0.02,0.02):rel(J,K,0.42,-0.32,0.24),pole:[-0.3,-1,0.6*s]}),eq:(K,J)=>stickE(J).concat([ballE(bladeTip(J),0.05)])},
+  sp_ishockey:{n:'Ishockey',mus:['Ben','Säte','Bål'],hi:['thigh','glute','core'],anchor:'hip',cyc:true,f:[{px:0,py:0.78,t:55,thR:-100,thzR:32,shR:-95,shzR:28,thL:-60,shL:-100},{px:0,py:0.8,t:55,thR:-80,shR:-95,thL:-80,shL:-95},{px:0,py:0.78,t:55,thL:-100,thzL:32,shL:-95,shzL:28,thR:-60,shR:-100},{px:0,py:0.8,t:55,thR:-80,shR:-95,thL:-80,shL:-95}],
+    postK:K=>{const a=6*Math.sin(K._t*Math.PI*2)*D2R,c=Math.cos(a),sn=Math.sin(a);return p=>[p[0],p[1]*c-p[2]*sn,p[1]*sn+p[2]*c]},
+    hand:(K,J,s)=>({t:s<0?rel(J,K,0.25,-0.02,0.02):rel(J,K,0.42,-0.32,0.24),pole:[-0.3,-1,0.6*s]}),eq:(K,J)=>stickE(J).concat(bladesE(J),[ringE(bladeTip(J),0.06,'xz',{al:0.8,w:2.4})])},
+  sp_bandy:null,
+  sp_handboll:{n:'Handboll',mus:['Axlar','Ben','Bål'],hi:['delt','ua','thigh'],anchor:'hip',cyc:true,f:[
+    {px:0,py:0.85,t:80,thR:-60,shR:-110,thL:-100,shL:-100,uaR:-100,faR:-40,uaL:-60,faL:-40},
+    {px:0.1,py:1.22,t:95,thR:-40,shR:-130,thL:-100,shL:-120,uaR:150,uazR:20,faR:110,uaL:20,faL:30},
+    {px:0.2,py:1.12,t:70,thR:-50,shR:-120,thL:-95,shL:-110,uaR:30,uazR:-10,faR:10,uaL:-80,faL:-60}],eq:(K,J)=>[ballE(v3(J.S[1].hand,[0.03,0.05,0]),0.09)]},
+  sp_basket:{n:'Basket',mus:['Ben','Kondition','Bollkontroll'],hi:['thigh','fa'],f:[{sh:-100,th:-55,t:72,uaL:-40,uazL:30,faL:-20},{sh:-104,th:-48,t:70,uaL:-40,uazL:30,faL:-20}],
+    hand:(K,J,s)=>s>0?{t:[J.Sc[0]+0.32,0.78-0.08*K._u,0.3],pole:[0,0.3,1]}:null,eq:(K,J)=>[ballE([J.S[1].hand[0]+0.02,(J.S[1].hand[1]-0.13)+(0.12-(J.S[1].hand[1]-0.13))*K._u,0.3],0.12)]},
+  sp_volleyboll:{n:'Volleyboll',mus:['Ben','Axlar','Reaktion'],hi:['thigh','delt'],f:[{sh:-105,th:-40,t:60},{sh:-95,th:-75,t:75}],
+    hand:(K,J,s)=>({t:rel(J,K,0.5,-0.38,0.03*s),pole:[0,-0.2,1*s]}),eq:(K,J)=>[ballE(v3(hc(J),[0.05,0.16+0.85*K._u,0]),0.11)]},
+  sp_rugby:{n:'Rugby',mus:['Ben','Kondition','Styrka'],hi:['thigh','shin','core'],anchor:'hip',cyc:true,f:withArmR(runF,{uaR:-60,faR:35,uazR:5}),eq:(K,J)=>[ballE(v3(J.S[1].hand,[0,0.02,-0.03]),0.1),ringE(v3(J.S[1].hand,[0,0.02,-0.03]),0.14,'xy',{al:0.5})]},
+  sp_amfotboll:null,
+  sp_tennis:{n:'Tennis',mus:['Axlar','Bål','Ben'],hi:['delt','ua','core'],f:[{sh:-95,th:-72,t:84,uaR:-150,uazR:15,faR:-120,fazR:10,uaL:-20,faL:0},{sh:-95,th:-72,t:84,uaR:30,uazR:-35,faR:60,fazR:-40,uaL:-95,faL:-90}],eq:(K,J)=>racketE(J,1,0.42,0.14).concat([ballE([0.75,1.0,0.25],0.04)])},
+  sp_padel:{n:'Padel',mus:['Axlar','Bål','Ben'],hi:['delt','ua','core'],f:[{sh:-98,th:-65,t:80,uaR:-145,uazR:15,faR:-110,fazR:10,uaL:-20,faL:0},{sh:-98,th:-65,t:80,uaR:20,uazR:-30,faR:50,fazR:-35,uaL:-95,faL:-90}],eq:(K,J)=>racketE(J,1,0.3,0.13).concat([ballE([0.7,0.95,0.25],0.04)])},
+  sp_badminton:{n:'Badminton',mus:['Axlar','Ben','Reaktion'],hi:['delt','ua'],f:[{sh:-95,th:-80,t:92,uaR:125,uazR:10,faR:-110,uaL:60,faL:70},{sh:-95,th:-80,t:88,uaR:95,uazR:5,faR:95,uaL:-60,faL:-60}],eq:(K,J)=>racketE(J,1,0.5,0.1).concat([polyE([[0.4,2.35,0.15],[0.45,2.25,0.15]],{w:2.2,al:0.8})])},
+  sp_squash:{n:'Squash',mus:['Ben','Kondition','Axlar'],hi:['thigh','delt'],f:[{sh:-105,th:-45,t:70,uaR:-150,uazR:15,faR:-120,fazR:10,uaL:-30,faL:-10},{sh:-105,th:-45,t:70,uaR:20,uazR:-30,faR:40,fazR:-35,uaL:-95,faL:-90}],eq:(K,J)=>racketE(J,1,0.4,0.11).concat([ballE([0.6,0.5,0.25],0.03)])},
+  sp_bordtennis:{n:'Bordtennis',mus:['Reaktion','Underarmar','Ben'],hi:['fa','ua'],f:[{sh:-98,th:-65,t:75,uaR:-100,uazR:20,faR:-40,fazR:10,uaL:-60,faL:-20},{sh:-98,th:-65,t:75,uaR:-30,uazR:-20,faR:30,fazR:-40,uaL:-60,faL:-20}],
+    eq:(K,J)=>racketE(J,1,0.13,0.08).concat([E.box([0.55,0.7,-0.76],[1.95,0.76,0.76]),polyE([[1.25,0.76,-0.8],[1.25,0.92,-0.8],[1.25,0.92,0.8],[1.25,0.76,0.8]],{al:0.5}),ballE([0.85+0.5*K._u,0.95,0.2],0.025)])},
+  sp_golf:{n:'Golf',mus:['Bål','Axlar','Rörlighet'],hi:['core','delt'],f:[{sh:-95,th:-75,t:62,thz:6},{sh:-95,th:-75,t:66,thz:6}],
+    hand:(K,J,s)=>{const a=(-115+235*K._u)*D2R,c=rel(J,K,0.32,-0.05,0),p=v3(c,[0,-Math.cos(a)*0.5,Math.sin(a)*0.5]),d=vn(vsub(p,c));return {t:v3(p,vs(d,s>0?-0.06:0.02)),pole:[0,-0.3,s]}},
+    eq:(K,J)=>{const a=(-115+235*K._u)*D2R,c=rel(J,K,0.32,-0.05,0),p=v3(c,[0,-Math.cos(a)*0.5,Math.sin(a)*0.5]),d=vn(vsub(p,c)),e=v3(p,vs(d,0.95));return [polyE([p,e],{w:2.2,al:0.8}),polyE([e,v3(e,[0.1,0,0])],{w:4,al:0.8}),ballE([J.Sc[0]+0.32,0.03,0],0.03)]}},
+  sp_brottning:{n:'Brottning',mus:['Helkropp','Styrka','Bål'],hi:['back','thigh','core'],f:[{ax:-0.05,sh:-105,th:-50,t:42,ua:-15,fa:15},{ax:0,sh:-108,th:-45,t:38,ua:-10,fa:20}],
+    two:{f:[{ax:-0.05,sh:-105,th:-50,t:42,ua:-15,fa:15},{ax:-0.1,sh:-102,th:-55,t:46,ua:-20,fa:10}],post:p=>[1.0-p[0],p[1],-p[2]]}},
+  sp_judo:{n:'Judo',mus:['Helkropp','Grepp','Balans'],hi:['fa','core','thigh'],f:[{ax:0,sh:-95,th:-80,t:80,ua:-25,fa:35},{ax:0.05,sh:-98,th:-75,t:75,ua:-20,fa:40}],
+    two:{f:[{ax:0,sh:-95,th:-80,t:80,ua:-25,fa:35},{ax:-0.05,sh:-92,th:-85,t:84,ua:-30,fa:30}],post:p=>[0.85-p[0],p[1],-p[2]]}},
+  sp_bjj:{n:'BJJ / jujutsu',mus:['Helkropp','Grepp','Bål'],hi:['core','thigh','fa'],anchor:'hip',f:[{px:0,py:0.13,t:180,th:58,sh:-12,ft:-30,ua:65,fa:40},{px:0,py:0.13,t:172,th:52,sh:-20,ft:-30,ua:55,fa:35}],
+    two:{anchor:'hip',f:[{px:0,py:0.55,t:70,th:-90,sh:180,ft:180,ua:-35,fa:-50},{px:0,py:0.55,t:62,th:-90,sh:180,ft:180,ua:-30,fa:-45}],post:p=>[0.78-p[0],p[1],-p[2]]},eq:()=>[E.mat(-0.8,1.4)]},
+  sp_boxning:{n:'Boxning',mus:['Axlar','Bål','Kondition'],hi:['delt','ua','core'],as:-1,cyc:true,f:[{axL:0.15,shL:-100,thL:-78,thR:-102,shR:-95,ftR:-10,t:84,jl:0,jr:0},{axL:0.15,shL:-100,thL:-76,thR:-104,shR:-95,ftR:-10,t:80,jl:1,jr:0},{axL:0.15,shL:-100,thL:-78,thR:-102,shR:-95,ftR:-10,t:84,jl:0,jr:0},{axL:0.15,shL:-100,thL:-76,thR:-104,shR:-95,ftR:-10,t:78,jl:0,jr:1}],
+    hand:(K,J,s)=>{const g=s<0?rel(J,K,0.26,0.12,-0.12):rel(J,K,0.14,0.16,0.14),p=rel(J,K,0.62,0.12,s<0?-0.05:0.04);return {t:lp3(g,p,s<0?K.jl:K.jr),pole:[0,-1,0.6*s]}},eq:(K,J)=>[ballE(J.S[-1].hand,0.07),ballE(J.S[1].hand,0.07)]},
+  sp_kickboxning:{n:'Kickboxning',mus:['Ben','Bål','Axlar'],hi:['thigh','core','delt'],as:-1,cyc:true,f:[{axL:0.15,thR:-102,shR:-95,t:84,jl:0,jr:0},{axL:0.15,thR:-102,shR:-95,t:80,jl:1,jr:0},{axL:0.15,thR:-10,thzR:45,shR:-20,shzR:50,t:68,jl:0,jr:0},{axL:0.15,thR:-102,shR:-95,t:84,jl:0,jr:0}],
+    hand:(K,J,s)=>{const g=s<0?rel(J,K,0.26,0.12,-0.12):rel(J,K,0.14,0.16,0.14),p=rel(J,K,0.62,0.12,s<0?-0.05:0.04);return {t:lp3(g,p,s<0?K.jl:K.jr),pole:[0,-1,0.6*s]}},eq:(K,J)=>[ballE(J.S[-1].hand,0.07),ballE(J.S[1].hand,0.07)]},
+  sp_mma:null,
+  sp_karate:{n:'Karate',mus:['Ben','Bål','Axlar'],hi:['thigh','core','delt'],as:-1,cyc:true,f:[{axL:0.35,shL:-100,thL:-40,thR:-120,shR:-125,ftR:-10,t:90,jl:1,jr:0},{axL:0.35,shL:-100,thL:-40,thR:-120,shR:-125,ftR:-10,t:90,jl:0,jr:1}],
+    hand:(K,J,s)=>{const g=rel(J,K,0.05,-0.3,0.2*s),p=rel(J,K,0.7,0.0,0.02*s);return {t:lp3(g,p,s<0?K.jl:K.jr),pole:[-1,-0.5,0.5*s]}},eq:()=>[E.mat(-0.9,0.9)]},
+  sp_taekwondo:{n:'Taekwondo',mus:['Ben','Rörlighet','Bål'],hi:['thigh','core'],as:-1,f:[{axL:0.1,thR:-102,shR:-95,t:86,ua:-40,fa:70},{axL:0.1,thR:35,shR:40,ftR:40,t:65,ua:-40,fa:70}],eq:()=>[E.mat(-0.9,0.9)]},
+  sp_klattring:{n:'Klättring',mus:['Grepp','Rygg','Ben'],hi:['fa','back','ua'],anchor:'hip',cyc:true,f:[{px:0,py:1.15,t:95,hLy:2.05,hRy:1.6,fLy:0.6,fRy:0.9},{px:0,py:1.32,t:95,hLy:1.75,hRy:2.2,fLy:0.95,fRy:0.75}],
+    hand:(K,J,s)=>({t:[0.3,s<0?K.hLy:K.hRy,0.27*s],pole:[-1,-0.4,0.6*s]}),leg:(K,J,s)=>({t:[0.28,s<0?K.fLy:K.fRy,0.18*s],pole:[1,0.3,0.4*s]}),
+    eq:(K,J)=>wallE(0.34,2.7,[[0.34,1.75,-0.27],[0.34,2.05,-0.27],[0.34,1.6,0.27],[0.34,2.2,0.27],[0.34,0.6,-0.18],[0.34,0.95,-0.18],[0.34,0.9,0.18],[0.34,0.75,0.18],[0.34,2.45,-0.1],[0.34,1.3,0.45]])},
+  sp_bouldering:{n:'Bouldering',mus:['Grepp','Rygg','Ben'],hi:['fa','back','ua'],anchor:'hip',cyc:true,f:[{px:0,py:0.95,t:95,hLy:1.85,hRy:1.4,fLy:0.4,fRy:0.7},{px:0,py:1.1,t:95,hLy:1.55,hRy:2.0,fLy:0.75,fRy:0.55}],
+    hand:(K,J,s)=>({t:[0.3,s<0?K.hLy:K.hRy,0.27*s],pole:[-1,-0.4,0.6*s]}),leg:(K,J,s)=>({t:[0.28,s<0?K.fLy:K.fRy,0.18*s],pole:[1,0.3,0.4*s]}),
+    eq:(K,J)=>wallE(0.34,2.3,[[0.34,1.55,-0.27],[0.34,1.85,-0.27],[0.34,1.4,0.27],[0.34,2.0,0.27],[0.34,0.4,-0.18],[0.34,0.75,-0.18],[0.34,0.7,0.18],[0.34,0.55,0.18]]).concat([E.mat(-0.9,0.34)])},
+  sp_yoga:{n:'Yoga',mus:['Rörlighet','Balans','Bål'],hi:['core','thigh'],as:1,cyc:true,f:[{axR:0.1,shR:-90,thR:-90,shL:-90,thL:-90,t:90,ua:95,fa:95},{axR:0.45,shR:-95,thR:-25,thL:-128,shL:-128,ftL:-10,t:90,uaR:0,faR:0,uaL:180,faL:180},{axR:0.45,shR:-95,thR:-25,thL:-128,shL:-128,ftL:-10,t:90,uaR:0,faR:0,uaL:180,faL:180},{axR:0.1,shR:-90,thR:-90,shL:-90,thL:-90,t:90,ua:95,fa:95}],eq:()=>[E.mat(-1.0,1.0)]},
+  sp_pilates:{n:'Pilates',mus:['Mage','Bål'],hi:['core'],anchor:'hip',cyc:true,f:[{px:0,py:0.12,t:158,th:40,sh:40,ft:40,ua:-8,fa:-8},{px:0,py:0.12,t:158,th:40,sh:40,ft:40,ua:4,fa:4}],eq:()=>[E.mat(-1.0,1.0)]},
+  sp_rorlighet:{n:'Stretching och rörlighet',mus:['Baksida lår','Rygg','Rörlighet'],hi:['thigh','back'],f:[{t:90,ua:-90,fa:-90},{t:-62,sh:-88,th:-88,ua:-95,fa:-95,hd:-20}],eq:()=>[E.mat(-0.9,0.9)]},
+  sp_dans:{n:'Dans',mus:['Kondition','Koordination','Ben'],hi:['thigh','delt'],anchor:'hip',cyc:true,f:[
+    {px:0,py:0.92,t:92,thR:-90,thzR:14,shR:-90,shzR:10,thL:-90,shL:-90,uaR:130,uazR:30,faR:150,uaL:-80,uazL:20,faL:-60},
+    {px:0,py:0.96,t:90,th:-90,sh:-90,ua:-60,uaz:20,fa:-20},
+    {px:0,py:0.92,t:92,thL:-90,thzL:14,shL:-90,shzL:10,thR:-90,shR:-90,uaL:130,uazL:30,faL:150,uaR:-80,uazR:20,faR:-60},
+    {px:0,py:0.96,t:90,th:-90,sh:-90,ua:-60,uaz:20,fa:-20}]},
+  sp_gruppass:{n:'Gruppträning',mus:['Kondition','Helkropp'],hi:['thigh','delt','core'],anchor:'hip',f:[{px:0,py:0.95,th:-90,sh:-90,ua:-90,uaz:8,fa:-90,faz:8},{px:0,py:1.02,th:-90,thz:14,sh:-90,shz:14,ua:-90,uaz:165,fa:-90,faz:172}]},
+  sp_crossfit:{n:'Crossfit',mus:['Helkropp','Ben','Axlar'],hi:['thigh','delt','core'],f:[{sh:-112,th:-2,t:55},{sh:-90,th:-90,t:92}],
+    hand:(K,J,s)=>({t:rel(J,K,0.25,0.03+0.55*K._u,0.15*s),pole:[0,-1,0.6*s]}),eq:(K,J)=>[ballE(v3(hc(J),[0.06,0.1+0.22*K._u*K._u,0]),0.13)]},
+  sp_cirkel:{n:'Cirkelträning',mus:['Helkropp','Kondition','Bål'],hi:['core','thigh'],anchor:'hip',cyc:true,f:[{px:0,py:0.48,t:18,thR:205,shR:205,ftR:-70,thL:-55,shL:-150,ua:-98,fa:-92},{px:0,py:0.48,t:18,thL:205,shL:205,ftL:-70,thR:-55,shR:-150,ua:-98,fa:-92}],eq:()=>[E.mat(-1.0,0.8)]},
+  sp_gymnastik:{n:'Gymnastik',mus:['Axlar','Bål','Balans'],hi:['delt','core'],anchor:'hip',cyc:true,f:[{px:0,py:0.95,t:90,th:-90,sh:-90,ua:92,fa:92},{px:0.3,py:1.07,t:-90,thR:85,thL:95,sh:90,ft:90,ua:-90,fa:-90},{px:0.3,py:1.07,t:-90,thR:95,thL:85,sh:90,ft:90,ua:-90,fa:-90},{px:0,py:0.95,t:90,th:-90,sh:-90,ua:92,fa:92}],eq:()=>[E.mat(-0.9,1.0)]},
+  sp_friidrott:{n:'Friidrott',mus:['Ben','Snabbhet','Rörlighet'],hi:['thigh','shin'],anchor:'hip',cyc:true,f:[runF[0],{px:0,py:1.05,t:50,thR:0,shR:0,ftR:60,thL:-150,thzL:65,shL:-100,shzL:75,uaL:0,faL:0,uaR:-140,faR:-100}],
+    eq:()=>[polyE([[0.35,0,-0.45],[0.35,0.84,-0.45],[0.35,0.84,0.45],[0.35,0,0.45]],{al:0.6,w:1.8})]},
+  sp_parkour:{n:'Parkour',mus:['Ben','Explosivitet','Bål'],hi:['thigh','glute'],anchor:'hip',cyc:true,f:[{px:-0.35,py:0.55,t:50,th:-5,sh:-110,ua:-140,fa:-140},{px:0.1,py:1.3,t:80,th:-20,sh:-150,ft:-40,ua:60,fa:60},{px:0.45,py:1.05,t:60,th:-20,sh:-110,ua:-40,fa:-30},{px:0.1,py:1.3,t:80,th:-20,sh:-150,ft:-40,ua:60,fa:60}],eq:()=>[E.box([0.25,0,-0.4],[0.8,0.5,0.4])]},
+  sp_ridning:{n:'Ridning',mus:['Bål','Balans','Insida lår'],hi:['core','thigh'],anchor:'hip',cyc:true,f:[{px:-0.05,py:1.42,t:86,th:-58,thz:26,sh:-110,shz:10,ft:-10},{px:-0.05,py:1.48,t:88,th:-58,thz:26,sh:-110,shz:10,ft:-10}],
+    hand:(K,J,s)=>({t:[0.3,1.52,0.08*s],pole:[0,-1,0.5*s]}),eq:(K,J)=>horseE(K._t).concat([polyE([J.S[-1].hand,[0.95,1.75,0],J.S[1].hand],{al:0.4,w:1})])},
+  sp_surf:{n:'Surfing',mus:['Balans','Ben','Bål'],hi:['thigh','core'],as:1,f:[{axR:0.35,shR:-100,thR:-60,thL:-118,shL:-80,ftL:-10,t:68,ua:-90,uaz:80,fa:-90,faz:84},{axR:0.35,shR:-104,thR:-50,thL:-125,shL:-78,ftL:-10,t:62,ua:-90,uaz:70,fa:-90,faz:80}],
+    postK:K=>{const a=9*Math.sin(K._t*Math.PI*2)*D2R,c=Math.cos(a),sn=Math.sin(a);return p=>[p[0],p[1]*c-p[2]*sn+0.05,p[1]*sn+p[2]*c]},
+    eq:(K,J)=>[polyE(ellXZ(0,0.09,0,0.95,0.24),{al:0.7,w:2,fill:0.05})].concat(waterE(0.04,K._t,1.6))},
+  sp_skate:{n:'Skateboard',mus:['Balans','Ben'],hi:['thigh','core'],as:-1,cyc:true,f:[{axL:0.15,ayL:0.17,shL:-98,thL:-75,thR:-70,shR:-88,t:80,uaL:-70,uazL:30,faL:-50,uaR:-110,uazR:20,faR:-80},{axL:0.15,ayL:0.17,shL:-98,thL:-75,thR:-118,shR:-92,t:78,uaL:-70,uazL:30,faL:-50,uaR:-80,uazR:20,faR:-60}],
+    eq:()=>[polyE([[-0.2,0.12,-0.12],[0.55,0.12,-0.12],[0.55,0.12,0.12],[-0.2,0.12,0.12]],{close:true,al:0.7,w:2,fill:0.06}),ringE([-0.1,0.05,-0.1],0.045,'xy'),ringE([-0.1,0.05,0.1],0.045,'xy'),ringE([0.45,0.05,-0.1],0.045,'xy'),ringE([0.45,0.05,0.1],0.045,'xy')]},
+  sp_skridsko:{n:'Skridskor',mus:['Ben','Säte','Balans'],hi:['thigh','glute'],anchor:'hip',cyc:true,f:[{px:0,py:0.8,t:58,thR:-100,thzR:35,shR:-95,shzR:30,thL:-62,shL:-100,uaR:-60,faR:-40,uaL:-130,faL:-120},{px:0,py:0.82,t:58,thR:-80,shR:-95,thL:-80,shL:-95,ua:-90,fa:-80},{px:0,py:0.8,t:58,thL:-100,thzL:35,shL:-95,shzL:30,thR:-62,shR:-100,uaL:-60,faL:-40,uaR:-130,faR:-120},{px:0,py:0.82,t:58,thR:-80,shR:-95,thL:-80,shL:-95,ua:-90,fa:-80}],
+    postK:K=>{const a=7*Math.sin(K._t*Math.PI*2)*D2R,c=Math.cos(a),sn=Math.sin(a);return p=>[p[0],p[1]*c-p[2]*sn,p[1]*sn+p[2]*c]},eq:(K,J)=>bladesE(J)},
+  sp_utfor:{n:'Utförsåkning',mus:['Framsida lår','Säte','Bål'],hi:['thigh','glute','core'],anchor:'hip',f:[{px:0,py:0.72,t:60,th:-52,sh:-108,ua:-55,fa:-25,thz:-6,shz:-6},{px:0,py:0.7,t:62,th:-52,sh:-108,ua:-55,fa:-25,thz:6,shz:6}],
+    postK:K=>{const a=(14*K._u-7)*D2R,c=Math.cos(a),sn=Math.sin(a);return p=>[p[0],p[1]*c-p[2]*sn,p[1]*sn+p[2]*c+0.15*(K._u-0.5)]},eq:(K,J)=>skisE(J).concat(polesE(J,0.35))},
+  sp_langd:{n:'Längdskidor',mus:['Helkropp','Kondition'],hi:['thigh','ua','core'],anchor:'hip',cyc:true,f:gait(30,40,45,0.03,0.9,80),eq:(K,J)=>skisE(J).concat(polesE(J,0.45))},
+  sp_vandring:{n:'Vandring',mus:['Ben','Kondition'],hi:['thigh','shin'],anchor:'hip',cyc:true,f:walkF,eq:(K,J)=>[E.box(v3(J.Sc,[-0.32,-0.38,-0.17]),v3(J.Sc,[-0.1,0.05,0.17])),polyE([J.S[1].hand,[J.S[1].hand[0]+0.15,0.01,J.S[1].hand[2]+0.05]],{w:1.6,al:0.65})]},
+  sp_orient:{n:'Orientering',mus:['Ben','Kondition','Kartläsning'],hi:['thigh','shin'],anchor:'hip',cyc:true,f:withArmR(runF,{uaL:-60,faL:20}),eq:(K,J)=>{const h=J.S[-1].hand;return [polyE([v3(h,[-0.05,0.02,-0.1]),v3(h,[0.12,0.06,-0.1]),v3(h,[0.12,0.06,0.08]),v3(h,[-0.05,0.02,0.08])],{close:true,al:0.7,fill:0.08})]}},
+  sp_mtb:{n:'Mountainbike',mus:['Ben','Kondition','Balans'],hi:['thigh','shin'],anchor:'hip',cyc:true,f:[{px:0,py:1.02,t:48},{px:0,py:1.02,t:48}],
+    leg:(K,J,s)=>{const a=(K._t*360+(s>0?0:180))*D2R;return {t:[0.28+Math.cos(a)*0.17,0.38+Math.sin(a)*0.17,0.15*s],pole:[1,0.3,0]}},hand:(K,J,s)=>({t:[0.72,1.1,0.32*s],pole:[-0.5,-1,0.3*s]}),
+    eq:()=>[E.circ([-0.42,0.36,0],0.34),E.circ([0.98,0.36,0],0.34),E.circ([0.28,0.38,0],0.17),polyE([[-0.42,0.36,0],[0.28,0.38,0],[0.7,1.0,0],[0.98,0.36,0]],{al:0.6,w:2}),polyE([[0.28,0.38,0],[-0.02,0.95,0]],{al:0.6,w:2}),polyE([[0.7,1.06,-0.34],[0.7,1.06,0.34]],{al:0.7,w:2})]},
+  sp_paddling:{n:'Kajak och paddling',mus:['Rygg','Axlar','Bål'],hi:['back','delt','core'],anchor:'hip',cyc:true,f:[{px:0,py:0.32,t:88,th:5,sh:0,ft:70,pr:0},{px:0,py:0.32,t:88,th:5,sh:0,ft:70,pr:1}],
+    hand:(K,J,s)=>{const r=s<0?K.pr:1-K.pr;return {t:v3(J.Sc,[0.3+0.15*(1-r),-0.12+0.32*r,0.28*s]),pole:[0,-1,0.6*s]}},
+    eq:(K,J)=>{const a=J.S[-1].hand,b=J.S[1].hand,d=vn(vsub(b,a)),e1=v3(a,vs(d,-0.55)),e2=v3(b,vs(d,0.55));return [polyE([e1,e2],{w:2.2,al:0.8}),ringE(e1,0.1,'xy',{al:0.7}),ringE(e2,0.1,'xy',{al:0.7}),polyE(ellXZ(0.05,0.22,0,1.25,0.3,32),{al:0.7,w:2,fill:0.05})].concat(waterE(0.16,K._t,1.6))}},
+  ellip:{n:'Crosstrainer',mus:['Ben','Kondition','Armar'],hi:['thigh','ua'],anchor:'hip',cyc:true,f:[{px:0,py:1.25,t:86},{px:0,py:1.25,t:86}],
+    leg:(K,J,s)=>{const a=(K._t*360+(s>0?0:180))*D2R;return {t:[0.08+Math.cos(a)*0.24,0.45+Math.sin(a)*0.08,0.14*s],pole:[1,0.2,0]}},
+    hand:(K,J,s)=>{const a=(K._t*360+(s>0?180:0))*D2R;return {t:[0.38+Math.cos(a)*0.14,1.22,0.26*s],pole:[0,-1,0.6*s]}},
+    eq:(K,J)=>[-1,1].map(s=>polyE([[0.55,0.2,0.26*s],J.S[s].hand],{al:0.6,w:2})).concat([-1,1].map(s=>polyE([v3(J.S[s].ankle,[-0.12,-0.06,0]),v3(J.S[s].ankle,[0.2,-0.06,0])],{w:3,al:0.8})),[polyE([[-0.6,0.05,0],[0.75,0.05,0],[0.75,1.0,0]],{al:0.5,w:2}),E.circ([-0.55,0.3,0],0.22)])},
+  swim:{n:'Simning',mus:['Helkropp','Kondition','Axlar'],hi:['delt','back','ua'],anchor:'hip',cyc:true,f:[{px:0,py:0.5,t:0,th:180,sh:180,ft:180,hd:-8},{px:0,py:0.5,t:0,th:180,sh:180,ft:180,hd:-8}],
+    mod:K=>{const a=-360*K._t;K.uaR=a;K.faR=a-15;K.uaL=a+180;K.faL=a+165;const f=10*Math.sin(K._t*Math.PI*8);K.thR=180+f;K.thL=180-f;K.shR=180+f*1.4;K.shL=180-f*1.4},eq:(K,J)=>waterE(0.56,K._t,1.7)}
+};
+SP.sp_bandy=Object.assign({},SP.sp_ishockey,{n:'Bandy',eq:(K,J)=>stickE(J).concat(bladesE(J),[ballE(bladeTip(J),0.05)])});
+SP.sp_amfotboll=Object.assign({},SP.sp_rugby,{n:'Amerikansk fotboll'});
+SP.sp_mma=Object.assign({},SP.sp_kickboxning,{n:'MMA',mus:['Helkropp','Kondition','Bål']});
+Object.assign(HOLO,SP);
+
 const HOLOS=[];let holoRAF=0,holoLast=0;
 function holoHTML(id){const h=HOLO[id];if(!h)return '';return `<div class="holo" data-ex="${id}"><canvas aria-label="3D-hologram av ${esc(h.n)}" role="img"></canvas><div class="hctl"><button class="hb" data-h="play" aria-label="Pausa">❚❚</button><button class="hb" data-h="slow">Slow</button><button class="hb on" data-h="spin">Snurra</button><span class="hhint">Dra för att vrida</span></div><div class="hmus">${h.mus.map(m=>`<span>${esc(m)}</span>`).join('')}</div></div>`}
 function holoEq(X,K,J){return X.eq?X.eq(K,J):[]}
 function eqPts(e,J){
   if(e.k==='bar')return [v3(e.c,[0,e.r,-e.w]),v3(e.c,[0,-e.r,e.w])];if(e.k==='box')return [e.a,e.b];if(e.k==='quad')return e.p;if(e.k==='line'||e.k==='cable')return [e.a,e.b];if(e.k==='circ')return [v3(e.c,[e.r,e.r,0]),v3(e.c,[-e.r,-e.r,0])];
-  if(e.k==='pull')return [v3(e.c,[0,0.05,-e.w]),[e.c[0],0,e.w]];if(e.k==='dip')return [[-0.4,0,-0.3],[0.45,1.3,0.3]];if(e.k==='tread')return [[-0.8,0,-0.35],[0.8,1.2,0.35]];return [e.c||[0,0,0]]}
+  if(e.k==='pull')return [v3(e.c,[0,0.05,-e.w]),[e.c[0],0,e.w]];if(e.k==='poly')return e.p;if(e.k==='ball')return [v3(e.c,[e.r,e.r,0]),v3(e.c,[-e.r,-e.r,0])];if(e.k==='ringP')return [v3(e.c,[e.r,e.r,0]),v3(e.c,[-e.r,-e.r,0])];if(e.k==='dip')return [[-0.4,0,-0.3],[0.45,1.3,0.3]];if(e.k==='tread')return [[-0.8,0,-0.35],[0.8,1.2,0.35]];return [e.c||[0,0,0]]}
 function holoFit(X){let x0=1e9,x1=-1e9,y0=0,y1=-1e9,r=0;const pts=[];
-  for(let i=0;i<10;i++){const K=kf(X,i/10),J=body(X,K);pts.push(J.P,J.Sc,J.head,v3(J.head,[0,0.12,0]));for(const s of [-1,1])for(const k in J.S[s])pts.push(J.S[s][k]);holoEq(X,K,J).forEach(e=>eqPts(e,J).forEach(p=>pts.push(p)))}
+  for(let i=0;i<10;i++){const K=kf(X,i/10),J=body(X,K);for(const B of J.two?[J,J.two]:[J]){pts.push(B.P,B.Sc,B.head,v3(B.head,[0,0.12,0]));for(const s of [-1,1])for(const k in B.S[s])pts.push(B.S[s][k])}holoEq(X,K,J).forEach(e=>eqPts(e,J).forEach(p=>pts.push(p)))}
   for(const p of pts){x0=Math.min(x0,p[0]);x1=Math.max(x1,p[0]);y1=Math.max(y1,p[1]);y0=Math.min(y0,p[1])}const cx=(x0+x1)/2;for(const p of pts)r=Math.max(r,Math.hypot(p[0]-cx,p[2]));return {cx,y0,y1,r:Math.max(r,0.6)}}
 const HFIT={};
 function drawThumbs(root){(root||document).querySelectorAll('canvas.hth:not([data-d])').forEach(cv=>{const X=HOLO[cv.dataset.hx];if(!X)return;cv.dataset.d='1';const d=Math.min(2,window.devicePixelRatio||1),W=60,H=42;cv.width=W*d;cv.height=H*d;const ctx=cv.getContext('2d');ctx.setTransform(d,0,0,d,0,0);
@@ -904,11 +1023,15 @@ function holoDraw(o){
       else if(e.k==='roll'){l3(v3(e.c,[0,0,-0.24]),v3(e.c,[0,0,0.24]),5,0.5);ring(v3(e.c,[0,0,-0.24]),0.05,'xy',0.6);ring(v3(e.c,[0,0,0.24]),0.05,'xy',0.6)}
       else if(e.k==='tread'){const y=0.06;[[-0.75,0.75]].forEach(()=>{l3([-0.75,y,-0.3],[0.75,y,-0.3],1.4,0.45);l3([-0.75,y,0.3],[0.75,y,0.3],1.4,0.45);l3([-0.75,y,-0.3],[-0.75,y,0.3],1.4,0.45);l3([0.75,y,-0.3],[0.75,y,0.3],1.4,0.45)});
         for(let i=0;i<6;i++){const xx=-0.75+((i/6+K._t*1.5)%1)*1.5;l3([xx,y,-0.28],[xx,y,0.28],1,0.18)}for(const s of [-1,1])l3([0.75,0,0.3*s],[0.78,1.1,0.3*s],1.4,0.35);l3([0.78,1.1,-0.3],[0.78,1.1,0.3],1.8,0.5)}
+      else if(e.k==='ball'){ring(e.c,e.r,'xy',0.8,2);ring(e.c,e.r,'yz',0.45,1.2);ring(e.c,e.r,'xz',0.3,1)}
+      else if(e.k==='poly'){const q=e.p.map(pr);c.strokeStyle=`rgba(${A},${e.al||0.5})`;c.lineWidth=(e.w||1.5)*k;c.beginPath();q.forEach((p,i)=>i?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));if(e.close)c.closePath();if(e.fill){c.fillStyle=`rgba(${A},${e.fill})`;c.fill()}c.stroke()}
+      else if(e.k==='ringP')ring(e.c,e.r,e.pl||'xy',e.al||0.55,e.w||1.5)
       else if(e.k==='rope'){const hl=J.S[-1].hand,hr=J.S[1].hand,a=K._t*2*Math.PI,m=[F.cx+Math.sin(a)*0.35,0.95+Math.cos(a)*1.0,0],mid=vs(v3(hl,hr),0.5),ctl=vsub(vs(m,2),mid),pa=pr(hl),pb=pr(hr),pc=pr(ctl);c.strokeStyle=`rgba(${A},.6)`;c.lineWidth=1.4;c.beginPath();c.moveTo(pa[0],pa[1]);c.quadraticCurveTo(pc[0],pc[1],pb[0],pb[1]);c.stroke()}
     }});
   }
   /* kropp */
   const hi=k=>X.hi.includes(k);
+  const drawBody=J=>{
   for(const s of [-1,1]){const B=J.S[s],Q={};for(const k in B)Q[k]=pr(B[k]);
     const seg=(a,b,key,w)=>segs.push({d:(a[2]+b[2])/2,f:()=>{const on=hi(key);c.shadowBlur=k*on?18:10;c.shadowColor=on?`rgba(${HOT},.95)`:`rgba(${A},.9)`;const ww=w*(a[3]+b[3])/2;ln(a,b,ww,on?0.35+0.25*pulse:0.28,on?HOT:null);ln(a,b,ww*0.42,0.88,on?'250,255,225':null)}});
     seg(Q.hip,Q.knee,'thigh',13);seg(Q.knee,Q.ankle,'shin',10);seg(Q.ankle,Q.toe,'foot',7);seg(Q.sh,Q.el,'ua',10);seg(Q.el,Q.hand,'fa',8);
@@ -920,6 +1043,8 @@ function holoDraw(o){
     c.fillStyle=on?`rgba(${HOT},${0.12+0.14*pulse})`:`rgba(${A},.08)`;c.strokeStyle=`rgba(${A},.85)`;c.lineWidth=2*k;c.beginPath();q.forEach((p,i)=>i?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));c.closePath();c.fill();c.stroke();
     const n=pr(J.neck),hh=pr(J.head);ln(n,hh,6*n[3],0.6);c.fillStyle=`rgba(${A},.14)`;c.beginPath();c.arc(hh[0],hh[1],0.11*S*hh[3],0,7);c.fill();c.stroke();
     if(on){const m=[(q[0][0]+q[1][0]+q[2][0]+q[3][0])/4,(q[0][1]+q[1][1]+q[2][1]+q[3][1])/4];c.fillStyle=`rgba(250,255,225,${0.3+0.3*pulse})`;c.beginPath();c.arc(m[0],m[1],5*k,0,7);c.fill()}}});
+  };
+  drawBody(J);if(J.two)drawBody(J.two);
   segs.sort((a,b)=>b.d-a.d).forEach(s=>s.f());
   c.shadowBlur=0;c.globalCompositeOperation='source-over';
 }
