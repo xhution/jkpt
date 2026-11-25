@@ -255,21 +255,34 @@ body.locked #app{visibility:hidden}
 .urow select{font-size:15px;padding:6px 8px}
 .invbox{display:flex;flex-direction:column;gap:6px;background:var(--bg);border:1px solid var(--acc);border-radius:12px;padding:12px}
 .code.sm2{font-size:18px}
-.holo{position:relative;border-radius:16px;overflow:hidden;background:radial-gradient(120% 80% at 50% 95%,rgba(182,247,0,.16),rgba(182,247,0,0) 60%),#050605;border:1px solid rgba(182,247,0,.35);max-width:520px}
-.holo canvas{display:block;width:100%;aspect-ratio:1/1.05;touch-action:pan-y;cursor:grab}
-.holo::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(182,247,0,.05) 0 1px,transparent 1px 3px);animation:hflick 3s steps(2) infinite}
+.holo{border-radius:18px;overflow:hidden;background:#030403;border:1px solid rgba(182,247,0,.28);max-width:520px}
+.hstage{position:relative;background:radial-gradient(110% 70% at 50% 88%,rgba(182,247,0,.13),rgba(182,247,0,0) 62%)}
+.holo canvas{display:block;width:100%;aspect-ratio:1/1.08;touch-action:pan-y;cursor:grab}
+.hstage::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(182,247,0,.05) 0 1px,transparent 1px 3px);animation:hflick 3s steps(2) infinite}
 @keyframes hflick{0%,96%{opacity:1}97%{opacity:.5}100%{opacity:1}}
 .hctl{position:absolute;left:8px;right:8px;top:8px;display:flex;gap:6px;align-items:center;z-index:2;flex-wrap:wrap}
 .hb{min-height:34px;min-width:44px;padding:0 10px;border-radius:9px;border:1px solid rgba(182,247,0,.5);background:rgba(5,6,5,.7);color:var(--acc);font:700 13px Barlow,sans-serif;cursor:pointer}
 .hb.on{background:var(--acc);color:#0a0a0a}
 .hhint{margin-left:auto;font-size:12px;color:rgba(182,247,0,.7)}
-.hmus{position:absolute;left:8px;right:8px;bottom:8px;display:flex;gap:6px;flex-wrap:wrap;z-index:2}
-.hmus span{font:700 12px Barlow,sans-serif;color:#eaffb0;background:rgba(5,6,5,.75);border:1px solid rgba(234,255,176,.5);border-radius:12px;padding:2px 8px}
+.hleg{display:flex;align-items:center;gap:10px;padding:10px 14px 12px;border-bottom:1px solid rgba(255,255,255,.08)}
+.hmu{flex:1;display:flex;flex-direction:column;gap:4px;font:700 16px Barlow,sans-serif;color:#f2f5ef}
+.hmu div{display:flex;align-items:center;gap:9px}.hmu div+div{font-size:14px;color:#cfd8cc}
+.hmu i{width:8px;height:8px;border-radius:50%;flex:none}.hmu .dp{background:#b6f700;box-shadow:0 0 8px #b6f700}.hmu .ds{background:#2ee28c;box-shadow:0 0 8px #2ee28c}
+.h360{flex:none;min-height:40px;padding:0 14px;border-radius:20px;border:1.5px solid rgba(182,247,0,.55);background:transparent;color:var(--acc);font:800 14px "Barlow Condensed",Barlow,sans-serif;letter-spacing:.06em;cursor:pointer}
+.h360.on{background:rgba(182,247,0,.14)}
+.hstat{display:grid;grid-template-columns:repeat(3,1fr);padding:12px 6px 4px}
+.hstat div{padding:0 10px}.hstat div+div{border-left:1px solid rgba(255,255,255,.1)}
+.hstat small{display:block;font:800 11px Barlow,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#8d978a}
+.hstat b{display:block;font:800 30px/1.15 "Barlow Condensed",Barlow,sans-serif;color:#f2f5ef}.hstat b.hl{color:var(--acc)}
+.hnote{font-size:12px;color:#8d978a;padding:0 16px 8px}
+.hspd{display:flex;align-items:center;gap:12px;padding:10px 14px 14px;border-top:1px solid rgba(255,255,255,.08)}
+.hspd small{font:800 11px Barlow,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#8d978a}
+.hspd input{flex:1;accent-color:#b6f700;min-height:32px}.hspd span{font:800 15px Barlow,sans-serif;color:#f2f5ef;min-width:38px;text-align:right}
 .phd{margin-top:8px}
 .thw{position:relative;display:inline-block;flex:none}
 canvas.hth{background:radial-gradient(120% 90% at 50% 100%,rgba(182,247,0,.18),rgba(182,247,0,0) 65%),#050605;border:1px solid rgba(182,247,0,.35);width:60px;height:42px;display:block}
 .b3d{position:absolute;right:-4px;top:-5px;background:var(--acc);color:#0a0a0a;font:800 10px Barlow,sans-serif;border-radius:5px;padding:0 4px}
-@media (prefers-reduced-motion:reduce){.holo::after{animation:none}}
+@media (prefers-reduced-motion:reduce){.hstage::after{animation:none}}
 .dwrap{position:relative}
 .p3d{position:absolute;right:8px;bottom:8px;min-height:32px;padding:0 10px;border-radius:9px;border:1px solid rgba(182,247,0,.6);background:rgba(5,6,5,.78);color:var(--acc);font:700 13px Barlow,sans-serif;cursor:pointer}
 .mdr .p3d{display:none}
@@ -1127,7 +1140,15 @@ const MORE2={
 Object.assign(HOLO,MORE2);
 
 const HOLOS=[];let holoRAF=0,holoLast=0;
-function holoHTML(id){const h=HOLO[id];if(!h)return '';return `<div class="holo" data-ex="${id}"><canvas aria-label="3D-hologram av ${esc(h.n)}" role="img"></canvas><div class="hctl"><button class="hb" data-h="play" aria-label="Pausa">❚❚</button><button class="hb" data-h="slow">Slow</button><button class="hb on" data-h="spin">Snurra</button><span class="hhint">Dra för att vrida</span></div><div class="hmus">${h.mus.map(m=>`<span>${esc(m)}</span>`).join('')}</div></div>`}
+function holoStats(id){const e=LIB.find(x=>x.id===id);if(!e||e.t==='sp'||e.t==='c')return null;
+  if(e.t==='t')return [['Håll','20–60 s',1],['Vila','60 s'],['RPE','7–8']];
+  if(e.t==='bw')return [['Tempo','2-0-2',1],['Vila','60 s'],['RIR','1–3']];
+  const big=['Ben','Rygg','Bröst','Helkropp'].includes(e.g);return big?[['Tempo','3-1-1',1],['Vila','120 s'],['RIR','1–3']]:[['Tempo','2-1-2',1],['Vila','75 s'],['RIR','1–2']]}
+function holoHTML(id){const h=HOLO[id];if(!h)return '';const st=holoStats(id),[p,...sec]=h.mus;
+  return `<div class="holo" data-ex="${id}"><div class="hstage"><canvas aria-label="3D-hologram av ${esc(h.n)}" role="img"></canvas><div class="hctl"><button class="hb" data-h="play" aria-label="Pausa">❚❚</button><span class="hhint">Dra för att vrida</span></div></div>
+  <div class="hleg"><div class="hmu"><div><i class="dp"></i>${esc(p||'')}</div>${sec.length?`<div><i class="ds"></i>${sec.map(esc).join(' · ')}</div>`:''}</div><button class="h360 on" data-h="spin" aria-label="Snurra runt">⟳ 360°</button></div>
+  ${st?`<div class="hstat">${st.map(([a,b,hl])=>`<div><small>${a}</small><b${hl?' class="hl"':''}>${b}</b></div>`).join('')}</div><div class="hnote">Riktvärden, anpassa efter mål och dagsform.</div>`:''}
+  <label class="hspd"><small>Fart</small><input type="range" min="0.25" max="1.5" step="0.05" value="1" aria-label="Uppspelningsfart"><span>1.0×</span></label></div>`}
 function holoEq(X,K,J){return X.eq?X.eq(K,J):[]}
 function eqPts(e,J){
   if(e.k==='bar')return [v3(e.c,[0,e.r,-e.w]),v3(e.c,[0,-e.r,e.w])];if(e.k==='box')return [e.a,e.b];if(e.k==='quad')return e.p;if(e.k==='line'||e.k==='cable')return [e.a,e.b];if(e.k==='circ')return [v3(e.c,[e.r,e.r,0]),v3(e.c,[-e.r,-e.r,0])];
@@ -1141,16 +1162,17 @@ function drawThumbs(root){(root||document).querySelectorAll('canvas.hth:not([dat
 function mountHolos(root){
   drawThumbs(root);
   (root||document).querySelectorAll('.holo:not([data-m])').forEach(el=>{
-    el.dataset.m='1';const cv=el.querySelector('canvas'),X=HOLO[el.dataset.ex];if(!X)return;const o={el,cv,ctx:cv.getContext('2d'),X,fit:HFIT[el.dataset.ex]||(HFIT[el.dataset.ex]=holoFit(X)),yaw:-0.55,t:0,play:true,speed:1,spin:true,drag:null,W:0,H:0};
+    el.dataset.m='1';const cv=el.querySelector('canvas'),X=HOLO[el.dataset.ex];const spinB=el.querySelector('[data-h=spin]');if(!X)return;const o={el,cv,ctx:cv.getContext('2d'),X,fit:HFIT[el.dataset.ex]||(HFIT[el.dataset.ex]=holoFit(X)),yaw:-0.55,t:0,play:true,speed:1,spin:true,drag:null,W:0,H:0};
     const ro=new ResizeObserver(()=>{const r=cv.getBoundingClientRect(),d=Math.min(2,window.devicePixelRatio||1);o.W=r.width;o.H=r.height;cv.width=Math.round(r.width*d);cv.height=Math.round(r.height*d);o.ctx.setTransform(d,0,0,d,0,0)});ro.observe(cv);o.ro=ro;
-    cv.addEventListener('pointerdown',e=>{o.drag={x:e.clientX,yaw:o.yaw};o.spin=false;el.querySelector('[data-h=spin]').classList.remove('on');try{cv.setPointerCapture(e.pointerId)}catch(_){}});
+    cv.addEventListener('pointerdown',e=>{o.drag={x:e.clientX,yaw:o.yaw};o.spin=false;spinB.classList.remove('on');try{cv.setPointerCapture(e.pointerId)}catch(_){}});
     cv.addEventListener('pointermove',e=>{if(o.drag)o.yaw=o.drag.yaw+(e.clientX-o.drag.x)*0.012});
     const up=()=>{o.drag=null};cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
-    el.querySelector('.hctl').addEventListener('click',e=>{const b=e.target.closest('[data-h]');if(!b)return;e.stopPropagation();const k=b.dataset.h;
+    const rg=el.querySelector('.hspd input'),rl=el.querySelector('.hspd span');rg.addEventListener('input',()=>{o.speed=+rg.value;rl.textContent=o.speed.toFixed(1)+'×'});
+    el.addEventListener('click',e=>{const b=e.target.closest('[data-h]');if(!b)return;e.stopPropagation();const k=b.dataset.h;
       if(k==='play'){o.play=!o.play;b.textContent=o.play?'❚❚':'▶';b.setAttribute('aria-label',o.play?'Pausa':'Spela')}
       if(k==='slow'){o.speed=o.speed===1?0.4:1;b.classList.toggle('on',o.speed<1)}
       if(k==='spin'){o.spin=!o.spin;b.classList.toggle('on',o.spin)}});
-    if(matchMedia('(prefers-reduced-motion: reduce)').matches){o.spin=false;el.querySelector('[data-h=spin]').classList.remove('on')}
+    if(matchMedia('(prefers-reduced-motion: reduce)').matches){o.spin=false;spinB.classList.remove('on')}
     HOLOS.push(o);
   });
   if(HOLOS.length&&!holoRAF)holoRAF=requestAnimationFrame(holoTick);
@@ -1163,30 +1185,62 @@ function holoTick(ts){
     if(o.play)o.t+=dt*o.speed/(o.X.cyc?1.6:2.6);if(o.spin&&!o.drag)o.yaw+=dt*0.35;holoDraw(o)}
   holoRAF=HOLOS.length?requestAnimationFrame(holoTick):0;
 }
+/* punktmoln för kroppen (samma för alla övningar) */
+const PCM=(()=>{let sd=11;const R=()=>{sd=(sd*16807)%2147483647;return (sd-1)/2147483646};const L=[];
+  const sph=()=>{const z=2*R()-1,p=R()*6.2832,r=Math.sqrt(1-z*z);return [z,r*Math.cos(p),r*Math.sin(p)]};
+  const limb=(name,a,b,r0,r1,bul,n,reg)=>{for(const s of [-1,1]){const P=[];for(let i=0;i<n;i++){const t=R(),th=R()*6.2832;P.push([t,Math.cos(th),Math.sin(th)])}L.push({ty:'limb',name,s,a,b,r0,r1,bul,P,reg})}};
+  limb('thigh','hip','knee',0.1,0.066,0.018,620,q=>q[0]<0.22?['thigh','glute']:['thigh']);
+  limb('shin','knee','ankle',0.064,0.04,0.02,430,()=>['shin']);
+  limb('foot','ankle','toe',0.042,0.03,0,130,()=>[]);
+  limb('ua','sh','el',0.064,0.047,0.012,340,q=>q[0]<0.32?['delt','ua']:['ua']);
+  limb('fa','el','hand',0.05,0.034,0.01,250,()=>['fa']);
+  for(const s of [-1,1]){const P=[];for(let i=0;i<80;i++)P.push(sph());L.push({ty:'ball',name:'hand',s,a:'el',b:'hand',r:0.045,P,reg:()=>[]})}
+  const lerpT=tab=>t=>{for(let i=1;i<tab.length;i++)if(t<=tab[i][0]){const a=tab[i-1],b=tab[i],u=(t-a[0])/(b[0]-a[0]);return a[1]+(b[1]-a[1])*u}return tab[tab.length-1][1]};
+  const TP=[];for(let i=0;i<1900;i++){const t=R(),th=R()*6.2832;TP.push([t,Math.cos(th),Math.sin(th)])}
+  L.push({ty:'torso',P:TP,w:lerpT([[0,0.165],[0.12,0.175],[0.35,0.145],[0.6,0.17],[0.85,0.205],[0.95,0.185],[1,0.12]]),dp:lerpT([[0,0.1],[0.15,0.11],[0.4,0.095],[0.7,0.12],[0.9,0.1],[1,0.072]]),
+    reg:q=>{const t=q[0],c=q[1],s=q[2],k=[];if(s>0.3&&t>0.6&&t<0.93&&Math.abs(c)<0.9)k.push('chest');if(s>0.15&&t>0.08&&t<0.6)k.push('core');if(Math.abs(c)>0.7&&t>0.15&&t<0.55)k.push('core');
+      if(s<-0.15&&t>0.3)k.push('back');if(Math.abs(c)>0.75&&t>0.5&&t<0.88&&s<0.2)k.push('back');if(s<-0.1&&t<0.24)k.push('glute');if(t>0.84&&Math.abs(c)>0.72)k.push('delt');return k}});
+  const HP=[];for(let i=0;i<560;i++)HP.push(sph());L.push({ty:'head',P:HP});
+  const NP=[];for(let i=0;i<70;i++){const th=R()*6.2832;NP.push([R(),Math.cos(th),Math.sin(th)])}L.push({ty:'neck',P:NP});
+  return L})();
 function holoDraw(o){
   const X=o.X,K=kf(X,o.t),J=body(X,K),c=o.ctx,W=o.W,H=o.H,F=o.fit;
-  const k=o.k||1,T0=o.mini?3:50,B0=o.mini?3:40,Ha=H-T0-B0,S=Math.min(W/(2*F.r*1.1),Ha/((F.y1-F.y0)*1.15)),cy=(F.y0+F.y1)/2,sy=T0+Ha/2;
-  const pitch=-0.2,cp=Math.cos(pitch),sp=Math.sin(pitch),cyw=Math.cos(o.yaw),syw=Math.sin(o.yaw),D=4.2;
+  const RR=Math.max(0.75,Math.min(1.15,F.r*1.08)),k=o.k||1,T0=o.mini?2:48,B0=o.mini?2:8,Ha=H-T0-B0,Y0=F.y0-RR*0.36,S=Math.min(W/(2*RR*1.06),Ha/((F.y1-Y0)*1.08)),cy=(Y0+F.y1)/2,sy=T0+Ha/2;
+  const pitch=-0.3,cp=Math.cos(pitch),sp=Math.sin(pitch),cyw=Math.cos(o.yaw),syw=Math.sin(o.yaw),D=4.2;
   const pr=p=>{const x=p[0]-F.cx,y=p[1]-cy,z=p[2];const x1=x*cyw-z*syw,z1=x*syw+z*cyw;const y2=y*cp-z1*sp,z2=y*sp+z1*cp;const f=D/(D+z2);return [W/2+x1*f*S,sy-y2*f*S,z2,f]};
   c.clearRect(0,0,W,H);c.globalCompositeOperation='lighter';c.lineCap='round';c.lineJoin='round';c.shadowBlur=0;
   const A='182,247,0',HOT='235,255,170',pulse=0.55+0.45*Math.sin(o.t*2*Math.PI*2);
-  const ln=(a,b,w,al,col)=>{c.strokeStyle=`rgba(${col||A},${al})`;c.lineWidth=w*k;c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.stroke()};
+  let EQ=0;const EA='196,232,204';
+  const ln=(a,b,w,al,col)=>{if(EQ&&!col){c.strokeStyle=`rgba(${EA},${al*0.55})`;c.lineWidth=Math.max(0.8,w*k*0.6);c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.stroke();c.setLineDash([0.01,(o.mini?2.5:4.5)]);c.strokeStyle=`rgba(232,255,226,${Math.min(1,al*1.5)})`;c.lineWidth=Math.max(1,w*k*0.75);c.stroke();c.setLineDash([]);return}
+    c.strokeStyle=`rgba(${col||A},${al})`;c.lineWidth=w*k;c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.stroke()};
   const l3=(a,b,w,al)=>ln(pr(a),pr(b),w,al);
   const ring=(cn,r,pl,al,w)=>{c.strokeStyle=`rgba(${A},${al})`;c.lineWidth=(w||1.5)*k;c.beginPath();for(let i=0;i<=24;i++){const a=i/24*Math.PI*2,q=pl==='xz'?[cn[0]+Math.cos(a)*r,cn[1],cn[2]+Math.sin(a)*r]:pl==='yz'?[cn[0],cn[1]+Math.cos(a)*r,cn[2]+Math.sin(a)*r]:[cn[0]+Math.cos(a)*r,cn[1]+Math.sin(a)*r,cn[2]],s=pr(q);i?c.lineTo(s[0],s[1]):c.moveTo(s[0],s[1])}c.stroke()};
   /* golv */
-  const gx=F.cx;if(!o.mini)for(let i=-4;i<=4;i++){l3([gx+i*0.3,0,-1.2],[gx+i*0.3,0,1.2],1,0.12);l3([gx-1.2,0,i*0.3],[gx+1.2,0,i*0.3],1,0.12)}
-  ring([gx,0,0],1.15,'xz',0.35);
+  const gx=F.cx;
+  {const ell=(r,al,w,dash,glow)=>{c.setLineDash(dash||[]);c.strokeStyle=`rgba(${A},${al})`;c.lineWidth=w*k;c.shadowBlur=glow?14*k:0;c.shadowColor=`rgba(${A},.9)`;c.beginPath();for(let i=0;i<=48;i++){const a=i/48*Math.PI*2,q=pr([gx+Math.cos(a)*r,0,Math.sin(a)*r]);i?c.lineTo(q[0],q[1]):c.moveTo(q[0],q[1])}c.stroke();c.setLineDash([]);c.shadowBlur=0};
+   ell(RR,0.85,o.mini?1.6:3.2,null,!o.mini);if(!o.mini){ell(RR*0.86,0.45,1.6,[10,9]);ell(RR*0.6,0.22,1.2)}}
   const segs=[];
   /* utrustning */
+  const disc=(cn,r,pl,al)=>{const pts=[];for(let i=0;i<14;i++){const a=i/14*Math.PI*2,q=pl==='xy'?[cn[0]+Math.cos(a)*r,cn[1]+Math.sin(a)*r,cn[2]]:[cn[0],cn[1]+Math.cos(a)*r,cn[2]+Math.sin(a)*r];pts.push(pr(q))}
+    const ce=pr(cn),g=c.createRadialGradient(ce[0],ce[1],0,ce[0],ce[1],r*S*ce[3]*1.1);g.addColorStop(0,`rgba(${A},${al})`);g.addColorStop(1,`rgba(${A},${al*0.35})`);c.fillStyle=g;c.beginPath();pts.forEach((p,i)=>i?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));c.closePath();c.fill();c.strokeStyle=`rgba(225,255,190,${al+0.2})`;c.lineWidth=1*k;c.stroke();
+    if(!o.mini){c.fillStyle='rgba(240,255,220,.9)';for(let i=0;i<10;i++){const a=i*2.4+0.3,rr=r*((i*0.37)%1),q=pr(pl==='xy'?[cn[0]+Math.cos(a)*rr,cn[1]+Math.sin(a)*rr,cn[2]]:[cn[0],cn[1]+Math.cos(a)*rr,cn[2]+Math.sin(a)*rr]);c.fillRect(q[0]-0.7,q[1]-0.7,1.4,1.4)}}};
+  const hexdb=(cn)=>{for(const zz of [-0.115,0.115]){const ce=v3(cn,[0,0,zz]),face=[];for(const dz of [-0.028,0.028]){const f=[];for(let i=0;i<6;i++){const a=i/6*Math.PI*2+0.52;f.push(pr(v3(ce,[Math.cos(a)*0.078,Math.sin(a)*0.078,dz])))}face.push(f)}
+      c.fillStyle=`rgba(${A},.16)`;for(let i=0;i<6;i++){const j=(i+1)%6;c.beginPath();c.moveTo(face[0][i][0],face[0][i][1]);c.lineTo(face[0][j][0],face[0][j][1]);c.lineTo(face[1][j][0],face[1][j][1]);c.lineTo(face[1][i][0],face[1][i][1]);c.closePath();c.fill()}
+      disc(ce,0.078,'xy',0.38);for(const f of face){c.strokeStyle='rgba(225,255,190,.75)';c.lineWidth=1*k;c.beginPath();f.forEach((p,i)=>i?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));c.closePath();c.stroke()}}
+    const a=pr(v3(cn,[0,0,-0.09])),b=pr(v3(cn,[0,0,0.09]));c.strokeStyle=`rgba(${A},.85)`;c.lineWidth=2.4*k;c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.stroke()};
   for(const e of holoEq(X,K,J)){
     const z=e.c?pr(e.c)[2]:0;
-    segs.push({d:z+0.01,f:()=>{c.shadowBlur=k*8;c.shadowColor=`rgba(${A},.7)`;
+    segs.push({d:z+0.01,f:()=>{c.globalCompositeOperation='lighter';EQ=1;c.shadowBlur=0;
+      if(e.k==='db'){EQ=0;hexdb(e.c);return}
+      if(e.k==='kb'){EQ=0;const ce=v3(e.c,[0,-0.14,0]);disc(ce,0.11,'xy',0.42);disc(ce,0.11,'yz',0.18);l3(v3(e.c,[0,0,-0.06]),v3(e.c,[0,-0.05,-0.08]),1.6,0.7);l3(v3(e.c,[0,0,0.06]),v3(e.c,[0,-0.05,0.08]),1.6,0.7);l3(v3(e.c,[0,0,-0.06]),v3(e.c,[0,0,0.06]),2,0.8);return}
+      if(e.k==='bar'){EQ=0;l3(v3(e.c,[0,0,-e.w]),v3(e.c,[0,0,e.w]),2,0.75);if(e.r)for(const zz of [e.w-0.14,e.w-0.06]){disc(v3(e.c,[0,0,-zz]),e.r,'xy',0.16);disc(v3(e.c,[0,0,zz]),e.r,'xy',0.16)}return}
+      if(e.k==='ball'){EQ=0;disc(e.c,e.r,'xy',0.4);ring(e.c,e.r,'yz',0.35,1);return}
       if(e.k==='bar'){l3(v3(e.c,[0,0,-e.w]),v3(e.c,[0,0,e.w]),2.2,0.75);if(e.r)for(const zz of [e.w-0.14,e.w-0.06]){ring(v3(e.c,[0,0,-zz]),e.r,'xy',0.55);ring(v3(e.c,[0,0,zz]),e.r,'xy',0.55)}}
       else if(e.k==='db'){l3(v3(e.c,[0,0,-0.13]),v3(e.c,[0,0,0.13]),2.4,0.8);for(const zz of [-0.11,-0.08,0.08,0.11])ring(v3(e.c,[0,0,zz]),0.075,'xy',0.6,1.4)}
       else if(e.k==='kb'){ring(v3(e.c,[0,-0.14,0]),0.11,'xy',0.7,2);ring(v3(e.c,[0,-0.14,0]),0.11,'yz',0.5,1.4);l3(v3(e.c,[0,0,-0.06]),v3(e.c,[0,-0.05,-0.08]),1.6,0.6);l3(v3(e.c,[0,0,0.06]),v3(e.c,[0,-0.05,0.08]),1.6,0.6);l3(v3(e.c,[0,0,-0.06]),v3(e.c,[0,0,0.06]),2,0.7)}
       else if(e.k==='box'){const a=e.a,b=e.b,C=[];for(const x of [a[0],b[0]])for(const y of [a[1],b[1]])for(const zz of [a[2],b[2]])C.push(pr([x,y,zz]));[[0,1],[2,3],[4,5],[6,7],[0,2],[1,3],[4,6],[5,7],[0,4],[1,5],[2,6],[3,7]].forEach(([i,j])=>ln(C[i],C[j],1.3,0.4));
         if(e.legs)for(const x of [a[0]+0.06,b[0]-0.06])for(const zz of [a[2]+0.04,b[2]-0.04])l3([x,a[1],zz],[x,0,zz],1.1,0.28)}
-      else if(e.k==='quad'){const q=e.p.map(pr);c.fillStyle=`rgba(${A},${e.dim?0.04:0.07})`;c.strokeStyle=`rgba(${A},${e.dim?0.22:0.45})`;c.lineWidth=1.3;c.beginPath();q.forEach((p,i)=>i?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));c.closePath();c.fill();c.stroke()}
+      else if(e.k==='quad'){const q=e.p.map(pr);c.fillStyle=`rgba(${EA},${e.dim?0.035:0.06})`;c.strokeStyle=`rgba(${EA},${e.dim?0.25:0.42})`;c.lineWidth=1.3;c.beginPath();q.forEach((p,i)=>i?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));c.closePath();c.fill();c.stroke()}
       else if(e.k==='line')l3(e.a,e.b,1.6,0.45);
       else if(e.k==='circ')ring(e.c,e.r,e.pl,0.45,1.5);
       else if(e.k==='cable'){l3(e.a,e.b,1.1,0.55);ring(e.a,0.05,'xy',0.6);l3([e.a[0]+0.06,0,-0.12],[e.a[0]+0.06,Math.max(e.a[1],2.1),-0.12],1.4,0.3);l3([e.a[0]+0.06,0,0.12],[e.a[0]+0.06,Math.max(e.a[1],2.1),0.12],1.4,0.3)}
@@ -1201,24 +1255,58 @@ function holoDraw(o){
       else if(e.k==='rope'){const hl=J.S[-1].hand,hr=J.S[1].hand,a=K._t*2*Math.PI,m=[F.cx+Math.sin(a)*0.35,0.95+Math.cos(a)*1.0,0],mid=vs(v3(hl,hr),0.5),ctl=vsub(vs(m,2),mid),pa=pr(hl),pb=pr(hr),pc=pr(ctl);c.strokeStyle=`rgba(${A},.6)`;c.lineWidth=1.4;c.beginPath();c.moveTo(pa[0],pa[1]);c.quadraticCurveTo(pc[0],pc[1],pb[0],pb[1]);c.stroke()}
     }});
   }
-  /* kropp */
-  const hi=k=>X.hi.includes(k);
+  /* kropp: partikelmoln */
+  const prim=X.hi[0],keyMat=ks=>ks.includes(prim)?1:ks.some(k=>X.hi.includes(k))?2:0;
+  const COLS=['206,236,212','182,247,0','46,226,140'];
+  const rot=n=>{const x1=n[0]*cyw-n[2]*syw,z1=n[0]*syw+n[2]*cyw;return n[1]*sp+z1*cp};
+  const dens=o.mini?4:1,psz=Math.max(0.8,Math.min(1.7,S*0.0068))*(o.mini?0.9:1);
+  const hull=pts=>{if(pts.length<3)return pts;pts=pts.slice().sort((a,b)=>a[0]-b[0]||a[1]-b[1]);const cr=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]);const lo=[],up=[];for(const p of pts){while(lo.length>1&&cr(lo[lo.length-2],lo[lo.length-1],p)<=0)lo.pop();lo.push(p)}for(let i=pts.length-1;i>=0;i--){const p=pts[i];while(up.length>1&&cr(up[up.length-2],up[up.length-1],p)<=0)up.pop();up.push(p)}return lo.slice(0,-1).concat(up.slice(0,-1))};
+  const tw=o.t*1.3;
+  const partItem=(W3,N3,mats,dz)=>{
+    /* W3: världskoordinater, N3: normaler, mats: material per punkt */
+    const P2=[],hp=[];let i=0;
+    for(;i<W3.length;i++){const q=pr(W3[i]);P2.push(q);if(i%3===0)hp.push(q)}
+    segs.push({d:dz,f:()=>{
+      const h=hull(hp);if(h.length>2){c.globalCompositeOperation='source-over';c.fillStyle='rgba(4,7,4,.94)';c.beginPath();h.forEach((p,j)=>j?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));c.closePath();c.fill();
+        c.strokeStyle='rgba(4,7,4,.94)';c.lineWidth=psz*2;c.stroke()}
+      c.globalCompositeOperation='lighter';
+      /* glöd bakom aktiva muskler */
+      for(const m of [1,2]){let sx=0,sy=0,n=0;for(let j=0;j<P2.length;j++)if(mats[j]===m&&rot(N3[j])<0.1){sx+=P2[j][0];sy+=P2[j][1];n++}
+        if(n>6){const cx=sx/n,cy2=sy/n;let rr=0;for(let j=0;j<P2.length;j++)if(mats[j]===m)rr+=Math.hypot(P2[j][0]-cx,P2[j][1]-cy2);rr=Math.min(rr/n*1.5+4,S*0.32);
+          const g=c.createRadialGradient(cx,cy2,0,cx,cy2,rr);g.addColorStop(0,`rgba(${COLS[m]},${(m===1?0.42:0.3)*(0.75+0.25*pulse)})`);g.addColorStop(1,`rgba(${COLS[m]},0)`);c.fillStyle=g;c.beginPath();c.arc(cx,cy2,rr,0,7);c.fill()}}
+      /* partiklar i hinkar: material × ljusstyrka */
+      const B=[[],[],[]].map(()=>[[],[],[],[]]);
+      for(let j=0;j<P2.length;j++){const nz=rot(N3[j]);if(nz>0.18)continue;const m=mats[j],rim=1-Math.min(1,Math.abs(nz)),sp=((j*0.6180339+tw)%1)<0.05?3:0;
+        let lv=m?Math.min(3,1+Math.round(rim*2)):Math.min(3,Math.round(rim*rim*2.6));lv=Math.max(lv,sp);B[m][lv].push(P2[j])}
+      const AL=[[0.24,0.42,0.68,0.95],[0.62,0.82,0.95,1],[0.5,0.7,0.88,1]];
+      for(let m=0;m<3;m++)for(let lv=0;lv<4;lv++){const L=B[m][lv];if(!L.length)continue;c.fillStyle=lv===3&&m===0?'rgba(235,255,235,.95)':`rgba(${COLS[m]},${AL[m][lv]})`;c.beginPath();const z=psz*(m?1.15:1);for(const p of L){const s=z*p[3];c.rect(p[0]-s/2,p[1]-s/2,s,s)}c.fill()}
+    }});
+  };
   const drawBody=J=>{
-  for(const s of [-1,1]){const B=J.S[s],Q={};for(const k in B)Q[k]=pr(B[k]);
-    const seg=(a,b,key,w)=>segs.push({d:(a[2]+b[2])/2,f:()=>{const on=hi(key);c.shadowBlur=k*on?18:10;c.shadowColor=on?`rgba(${HOT},.95)`:`rgba(${A},.9)`;const ww=w*(a[3]+b[3])/2;ln(a,b,ww,on?0.35+0.25*pulse:0.28,on?HOT:null);ln(a,b,ww*0.42,0.88,on?'250,255,225':null)}});
-    seg(Q.hip,Q.knee,'thigh',13);seg(Q.knee,Q.ankle,'shin',10);seg(Q.ankle,Q.toe,'foot',7);seg(Q.sh,Q.el,'ua',10);seg(Q.el,Q.hand,'fa',8);
-    for(const jk of ['knee','ankle','el','hand'])segs.push({d:Q[jk][2],f:()=>{c.shadowBlur=k*10;c.shadowColor=`rgba(${A},.9)`;c.fillStyle=`rgba(${A},.9)`;c.beginPath();c.arc(Q[jk][0],Q[jk][1],2.6*Q[jk][3]*k,0,7);c.fill()}});
-    for(const [jk,key,r] of [['hip','glute',11],['sh','delt',9]])if(hi(key))segs.push({d:Q[jk][2],f:()=>{c.shadowBlur=k*22;c.shadowColor=`rgba(${HOT},.95)`;c.fillStyle=`rgba(${HOT},${0.22+0.25*pulse})`;c.beginPath();c.arc(Q[jk][0],Q[jk][1],r*Q[jk][3]*k,0,7);c.fill()}});
-  }
-  const q=[pr(J.S[-1].sh),pr(J.S[1].sh),pr(J.S[1].hip),pr(J.S[-1].hip)],tz=q.reduce((a,b)=>a+b[2],0)/4;
-  segs.push({d:tz,f:()=>{const on=hi('chest')||hi('back')||hi('core');c.shadowBlur=k*on?24:12;c.shadowColor=on?`rgba(${HOT},.9)`:`rgba(${A},.8)`;
-    c.fillStyle=on?`rgba(${HOT},${0.12+0.14*pulse})`:`rgba(${A},.08)`;c.strokeStyle=`rgba(${A},.85)`;c.lineWidth=2*k;c.beginPath();q.forEach((p,i)=>i?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));c.closePath();c.fill();c.stroke();
-    const n=pr(J.neck),hh=pr(J.head);ln(n,hh,6*n[3],0.6);c.fillStyle=`rgba(${A},.14)`;c.beginPath();c.arc(hh[0],hh[1],0.11*S*hh[3],0,7);c.fill();c.stroke();
-    if(on){const m=[(q[0][0]+q[1][0]+q[2][0]+q[3][0])/4,(q[0][1]+q[1][1]+q[2][1]+q[3][1])/4];c.fillStyle=`rgba(250,255,225,${0.3+0.3*pulse})`;c.beginPath();c.arc(m[0],m[1],5*k,0,7);c.fill()}}});
+    const up=vn(vsub(J.neck,J.P)),side=vn(vsub(J.S[1].sh,J.S[-1].sh)),fwd=vn([up[1]*side[2]-up[2]*side[1],up[2]*side[0]-up[0]*side[2],up[0]*side[1]-up[1]*side[0]]);
+    const XM=X._pm||(X._pm={});
+    for(const pt of PCM){if(pt.ty==='torso'||pt.ty==='head'||pt.ty==='neck')continue;
+      const B=J.S[pt.s],a=B[pt.a],b=B[pt.b];if(!a||!b)continue;const d=vsub(b,a),L=vlen(d)||1e-3,ax=vs(d,1/L);
+      let ref=Math.abs(vdot(ax,side))>0.9?fwd:side;let u=vn(vsub(ref,vs(ax,vdot(ref,ax)))),v=[ax[1]*u[2]-ax[2]*u[1],ax[2]*u[0]-ax[0]*u[2],ax[0]*u[1]-ax[1]*u[0]];
+      const key=pt.name+pt.s,mats=XM[key]||(XM[key]=pt.P.map(q=>keyMat(pt.reg(q))));
+      const W3=[],N3=[],M=[];for(let i=0;i<pt.P.length;i+=dens){const q=pt.P[i];let r,pos;
+        if(pt.ty==='ball'){const n=[q[0],q[1],q[2]];pos=v3(v3(b,vs(ax,0.025)),vs(v3(v3(vs(ax,n[0]),vs(u,n[1])),vs(v,n[2])),pt.r));W3.push(pos);N3.push(v3(v3(vs(ax,n[0]),vs(u,n[1])),vs(v,n[2])));M.push(mats[i]);continue}
+        r=pt.r0+(pt.r1-pt.r0)*q[0]+pt.bul*Math.sin(Math.PI*q[0]);const n=v3(vs(u,q[1]),vs(v,q[2]));W3.push(v3(v3(a,vs(d,q[0])),vs(n,r)));N3.push(n);M.push(mats[i])}
+      partItem(W3,N3,M,(pr(a)[2]+pr(b)[2])/2)}
+    /* bål */
+    const T=PCM.find(p=>p.ty==='torso'),bot=v3(J.P,vs(up,-0.07)),tl=vlen(vsub(J.Sc,J.P))+0.1;
+    {const mats=XM.torso||(XM.torso=T.P.map(q=>keyMat(T.reg(q))));const W3=[],N3=[],M=[];
+      for(let i=0;i<T.P.length;i+=dens){const q=T.P[i],w=T.w(q[0]),dd=T.dp(q[0]),cen=v3(bot,vs(up,q[0]*tl));W3.push(v3(v3(cen,vs(side,q[1]*w)),vs(fwd,q[2]*dd)));N3.push(vn(v3(vs(side,q[1]*dd),vs(fwd,q[2]*w))));M.push(mats[i])}
+      partItem(W3,N3,M,pr(v3(bot,vs(up,tl/2)))[2])}
+    /* nacke och huvud */
+    const hup=vn(vsub(J.head,J.neck)),hf=vn([hup[1]*side[2]-hup[2]*side[1],hup[2]*side[0]-hup[0]*side[2],hup[0]*side[1]-hup[1]*side[0]]);
+    {const Hd=PCM.find(p=>p.ty==='head'),W3=[],N3=[],M=[];for(let i=0;i<Hd.P.length;i+=dens){const q=Hd.P[i];W3.push(v3(v3(v3(J.head,vs(hup,q[0]*0.115+0.01)),vs(side,q[1]*0.085)),vs(hf,q[2]*0.095+(q[2]>0.6&&Math.abs(q[0])<0.3?0.012:0))));N3.push(v3(v3(vs(hup,q[0]),vs(side,q[1])),vs(hf,q[2])));M.push(0)}
+      const Nk=PCM.find(p=>p.ty==='neck');for(let i=0;i<Nk.P.length;i+=dens){const q=Nk.P[i],cen=v3(J.neck,vs(hup,q[0]*0.09-0.02)),n=v3(vs(side,q[1]),vs(hf,q[2]));W3.push(v3(cen,vs(n,0.052)));N3.push(n);M.push(0)}
+      partItem(W3,N3,M,pr(J.head)[2])}
   };
   drawBody(J);if(J.two)drawBody(J.two);
-  segs.sort((a,b)=>b.d-a.d).forEach(s=>s.f());
-  c.shadowBlur=0;c.globalCompositeOperation='source-over';
+  segs.sort((a,b)=>b.d-a.d).forEach(s=>{EQ=0;s.f()});
+  EQ=0;c.shadowBlur=0;c.globalCompositeOperation='source-over';
 }
 
 /* ---------- fotbollshologram: planskissen spelas upp ---------- */
