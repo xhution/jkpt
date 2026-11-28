@@ -738,7 +738,8 @@ const KD={ax:0,ay:0.08,sh:-90,th:-90,t:90,ua:-90,fa:-90,ft:0,hd:0};
 function kf(X,t){const F=X.f;let a,b,u;
   if(X.cyc){const n=F.length,x=(((t%1)+1)%1)*n,i=Math.floor(x);a=F[i];b=F[(i+1)%n];u=0.5-0.5*Math.cos(Math.PI*(x-i))}
   else{a=F[0];b=F[1]||F[0];u=0.5-0.5*Math.cos(2*Math.PI*t)}
-  const K=Object.assign({},KD);for(const k of new Set([...Object.keys(a),...Object.keys(b)])){const va=a[k]!==undefined?a[k]:(b[k]!==undefined?b[k]:KD[k]),vb=b[k]!==undefined?b[k]:va;K[k]=va+(vb-va)*u}
+  const V=(fr,k)=>{if(fr[k]!==undefined)return fr[k];const m=/^(.+)[RL]$/.exec(k);if(m&&fr[m[1]]!==undefined)return fr[m[1]];return undefined};
+  const K=Object.assign({},KD);for(const k of new Set([...Object.keys(a),...Object.keys(b)])){let va=V(a,k),vb=V(b,k);if(va===undefined)va=vb!==undefined?vb:KD[k];if(vb===undefined)vb=va;K[k]=va+(vb-va)*u}
   K._t=t;K._u=u;if(X.mod)X.mod(K);return K}
 /* punkter relativt bålen: fram (f), upp längs bålen (u), sida (z) */
 const rel=(J,K,f,u,z)=>{const fd=dir3(K.t-90,0,1);return [J.Sc[0]+J.td[0]*u+fd[0]*f,J.Sc[1]+J.td[1]*u+fd[1]*f,z]};
@@ -748,7 +749,7 @@ function body(X,K){
   if(X.anchor==='hip')P=[K.px,K.py,0];
   else if(X.anchor==='sc')P=vsub([K.sx,K.sy,0],vs(td,HL.t-0.04));
   else{const s=X.as||1;const ank=[g('ax',s),g('ay',s),0.13*s];const knee=vsub(ank,vs(dir3(g('sh',s),g('shz',s),s),HL.sh));const hip=vsub(knee,vs(dir3(g('th',s),g('thz',s),s),HL.th));P=[hip[0],hip[1],0]}
-  const Sc=v3(v3(P,vs(td,HL.t-0.04)),[0,K.sy||0,0]),neck=v3(P,vs(td,HL.t)),head=v3(neck,vs(dir3(K.t+(K.hd||0),0,1),0.17));
+  const Sc=v3(v3(P,vs(td,HL.t-0.04)),[0,X.anchor==='sc'?0:(K.sy||0),0]),neck=v3(P,vs(td,HL.t)),head=v3(neck,vs(dir3(K.t+(K.hd||0),0,1),0.17));
   const J={P,Sc,neck,head,td,S:{}};
   for(const s of [-1,1]){
     const hip=v3(P,[0,0,0.11*s]);let knee,ankle;const lt=X.leg&&X.leg(K,J,s);
@@ -792,7 +793,7 @@ const HOLO={
   bwsquat:{n:'Knäböj, kroppsvikt',mus:['Framsida lår','Säte'],hi:['thigh','glute'],f:[{sh:-90,th:-90,t:90,ua:-75,fa:-75},{sh:-112,th:-2,t:52,ua:5,fa:5}]},
   pistol:{n:'Pistol squat',mus:['Framsida lår','Säte','Balans'],hi:['thigh','glute','core'],as:1,f:[{shR:-90,thR:-90,shL:-90,thL:-80,t:90,ua:-60,fa:-60},{shR:-115,thR:10,thL:12,shL:6,t:52,ua:8,fa:8}]},
   legpress:{n:'Benpress',mus:['Framsida lår','Säte'],hi:['thigh','glute'],anchor:'hip',f:[{px:0,py:0.55,t:135,th:80,sh:5,ft:130,ua:-110,fa:-60},{px:0,py:0.55,t:135,th:40,sh:40,ft:130,ua:-110,fa:-60}],
-    eq:(K,J)=>{const a=J.S[1].ankle,b=J.S[-1].ankle,c=vs(v3(a,b),0.5),u=dir3(130,0,1);return [E.quad([v3(v3(c,vs(u,0.28)),[0,0,-0.32]),v3(v3(c,vs(u,0.28)),[0,0,0.32]),v3(v3(c,vs(u,-0.12)),[0,0,0.32]),v3(v3(c,vs(u,-0.12)),[0,0,-0.32])]),E.line([0.1,0.42,0],[0.95,1.2,0]),E.quad([[0.05,0.48,-0.2],[0.05,0.48,0.2],[-0.5,1.0,0.2],[-0.5,1.0,-0.2]])]}},
+    eq:(K,J)=>{const a=J.S[1].ankle,b=J.S[-1].ankle,c=vs(v3(a,b),0.5),u=dir3(130,0,1);return [E.quad([v3(v3(c,vs(u,0.28)),[0,0,-0.32]),v3(v3(c,vs(u,0.28)),[0,0,0.32]),v3(v3(c,vs(u,-0.12)),[0,0,0.32]),v3(v3(c,vs(u,-0.12)),[0,0,-0.32])]),E.line([0.1,0.42,0],[0.95,1.2,0]),E.quad([[0.05,0.48,-0.2],[0.05,0.48,0.2],[-0.5,1.0,0.2],[-0.5,1.0,-0.2]]),E.line([0.05,0.48,-0.2],[0.05,0,-0.2]),E.line([0.05,0.48,0.2],[0.05,0,0.2]),E.line([-0.5,1.0,-0.2],[-0.5,0,-0.2]),E.line([-0.5,1.0,0.2],[-0.5,0,0.2]),E.line([0.95,1.2,0],[0.95,0,0]),E.line([-0.5,0,0],[0.95,0,0])]}},
   legcurl:{n:'Lårcurl',mus:['Baksida lår'],hi:['thigh'],anchor:'hip',f:[{px:0,py:0.58,t:0,th:180,sh:180,ft:-90,ua:-100,fa:-40,hd:-10},{px:0,py:0.58,t:0,th:180,sh:85,ft:180,ua:-100,fa:-40,hd:-10}],
     eq:(K,J)=>[E.bench(-0.95,0.6,0.53,0.17),{k:'roll',c:v3(vs(v3(J.S[1].ankle,J.S[-1].ankle),0.5),[0,0.05,0])}]},
   legext:{n:'Benspark',mus:['Framsida lår'],hi:['thigh'],anchor:'hip',f:[{px:0,py:0.55,t:95,th:0,sh:-88,ft:0,ua:-95,fa:-50},{px:0,py:0.55,t:95,th:0,sh:-5,ft:85,ua:-95,fa:-50}],
@@ -837,7 +838,7 @@ const HOLO={
   invrow:{n:'Inverterad rodd',mus:['Rygg','Biceps'],hi:['back','ua'],f:[{ax:-0.7,sh:205,th:205,t:25,ft:60},{ax:-0.7,sh:220,th:220,t:40,ft:60}],
     hand:(K,J,s)=>({t:[0.29,1.16,0.28*s],pole:[0,-1,0.6*s]}),eq:()=>[E.pull([0.29,1.16,0],0.6)]},
   burpee:{n:'Burpees',mus:['Helkropp','Bröst','Lår'],hi:['thigh','chest','core'],anchor:'hip',cyc:true,f:[
-    {px:0,py:0.95,t:90,th:-90,sh:-90,ft:0,ua:-90,fa:-90},{px:-0.25,py:0.53,t:45,th:-10,sh:-110,ft:0,ua:-70,fa:-90},{px:-0.3,py:0.36,t:16,th:196,sh:196,ft:-80,ua:-92,fa:-90},
+    {px:0,py:0.95,t:90,th:-90,sh:-90,ft:0,ua:-90,fa:-90},{px:-0.25,py:0.53,t:45,th:-10,sh:-110,ft:0,ua:-70,fa:-90},{px:-0.3,py:0.36,t:16,th:-164,sh:-164,ft:-80,ua:-92,fa:-90},
     {px:-0.25,py:0.53,t:45,th:-10,sh:-110,ft:0,ua:-70,fa:-90},{px:0,py:1.15,t:90,th:-90,sh:-95,ft:-60,ua:95,fa:95}]},
   situp:{n:'Situps',mus:['Mage'],hi:['core'],anchor:'hip',f:[{px:0,py:0.12,t:176,th:50,sh:-60,ua:20,fa:20,hd:-5},{px:0,py:0.12,t:78,th:50,sh:-60,ua:8,fa:8,hd:-10}],eq:()=>[E.mat(-0.75,0.7)]},
   legraise:{n:'Hängande benlyft',mus:['Mage','Höftböjare'],hi:['core','thigh'],anchor:'sc',f:[{sx:0,sy:1.73,t:90,th:-90,sh:-90,ft:0},{sx:0,sy:1.73,t:96,th:-2,sh:-2,ft:80}],
@@ -944,7 +945,7 @@ const SP={
   sp_gruppass:{n:'Gruppträning',mus:['Kondition','Helkropp'],hi:['thigh','delt','core'],anchor:'hip',f:[{px:0,py:0.95,th:-90,sh:-90,ua:-90,uaz:8,fa:-90,faz:8},{px:0,py:1.02,th:-90,thz:14,sh:-90,shz:14,ua:-90,uaz:165,fa:-90,faz:172}]},
   sp_crossfit:{n:'Crossfit',mus:['Helkropp','Ben','Axlar'],hi:['thigh','delt','core'],f:[{sh:-112,th:-2,t:55},{sh:-90,th:-90,t:92}],
     hand:(K,J,s)=>({t:rel(J,K,0.25,0.03+0.55*K._u,0.15*s),pole:[0,-1,0.6*s]}),eq:(K,J)=>[ballE(v3(hc(J),[0.06,0.1+0.22*K._u*K._u,0]),0.13)]},
-  sp_cirkel:{n:'Cirkelträning',mus:['Helkropp','Kondition','Bål'],hi:['core','thigh'],anchor:'hip',cyc:true,f:[{px:0,py:0.48,t:18,thR:205,shR:205,ftR:-70,thL:-55,shL:-150,ua:-98,fa:-92},{px:0,py:0.48,t:18,thL:205,shL:205,ftL:-70,thR:-55,shR:-150,ua:-98,fa:-92}],eq:()=>[E.mat(-1.0,0.8)]},
+  sp_cirkel:{n:'Cirkelträning',mus:['Helkropp','Kondition','Bål'],hi:['core','thigh'],anchor:'hip',cyc:true,f:[{px:0,py:0.48,t:18,thR:-155,shR:-155,ftR:-70,thL:-55,shL:-150,ua:-98,fa:-92},{px:0,py:0.48,t:18,thL:-155,shL:-155,ftL:-70,thR:-55,shR:-150,ua:-98,fa:-92}],eq:()=>[E.mat(-1.0,0.8)]},
   sp_gymnastik:{n:'Gymnastik',mus:['Axlar','Bål','Balans'],hi:['delt','core'],anchor:'hip',cyc:true,f:[{px:0,py:0.95,t:90,th:-90,sh:-90,ua:92,fa:92},{px:0.3,py:1.07,t:-90,thR:85,thL:95,sh:90,ft:90,ua:-90,fa:-90},{px:0.3,py:1.07,t:-90,thR:95,thL:85,sh:90,ft:90,ua:-90,fa:-90},{px:0,py:0.95,t:90,th:-90,sh:-90,ua:92,fa:92}],eq:()=>[E.mat(-0.9,1.0)]},
   sp_friidrott:{n:'Friidrott',mus:['Ben','Snabbhet','Rörlighet'],hi:['thigh','shin'],anchor:'hip',cyc:true,f:[runF[0],{px:0,py:1.05,t:50,thR:0,shR:0,ftR:60,thL:-150,thzL:65,shL:-100,shzL:75,uaL:0,faL:0,uaR:-140,faR:-100}],
     eq:()=>[polyE([[0.35,0,-0.45],[0.35,0.84,-0.45],[0.35,0.84,0.45],[0.35,0,0.45]],{al:0.6,w:1.8})]},
@@ -996,7 +997,7 @@ const MORE={
   sidelunge:{n:'Sidoutfall',mus:['Insida lår','Säte','Framsida lår'],hi:['thigh','glute'],anchor:'hip',f:[{px:0,py:0.9,t:88,th:-90,thz:20,sh:-90,shz:20,ua:-75,fa:-75},{px:-0.05,py:0.6,t:58,thR:-95,thzR:28,shR:-100,shzR:2,thL:-90,thzL:45,shL:-90,shzL:45,ua:0,fa:0}]},
   revlunge:XV('bwlunge',{n:'Bakåtutfall'}),
   nordic:{n:'Nordic curl',mus:['Baksida lår'],hi:['thigh'],f:[{ax:-0.43,ay:0.11,sh:180,th:-90,t:90,ft:180,ua:-60,fa:-40},{ax:-0.43,ay:0.11,sh:180,th:-135,t:45,ft:180,ua:-10,fa:0}],eq:()=>[E.mat(-0.9,0.8),{k:'roll',c:[-0.43,0.2,0]}]},
-  glkick:{n:'Glute kickback',mus:['Säte'],hi:['glute'],anchor:'hip',f:[quadP(),Object.assign(quadP(),{thR:165,shR:150,ftR:120})],eq:()=>[E.mat(-0.9,0.8)]},
+  glkick:{n:'Glute kickback',mus:['Säte'],hi:['glute'],anchor:'hip',f:[quadP(),Object.assign(quadP(),{thR:-195,shR:150,ftR:120})],eq:()=>[E.mat(-0.9,0.8)]},
   hipabd:{n:'Höftabduktion (maskin)',mus:['Säte (sida)','Höft'],hi:['glute','thigh'],anchor:'hip',f:[{px:0,py:0.52,t:100,th:0,thz:4,sh:-90,shz:4,ua:-95,fa:-50},{px:0,py:0.52,t:100,th:0,thz:34,sh:-90,shz:34,ua:-95,fa:-50}],
     eq:(K,J)=>[E.bench(-0.2,0.45,0.47,0.25),E.quad([[-0.16,0.47,-0.22],[-0.16,0.47,0.22],[-0.26,1.15,0.22],[-0.26,1.15,-0.22]]),ringE(v3(J.S[-1].knee,[0,0,-0.07]),0.08,'xy'),ringE(v3(J.S[1].knee,[0,0,0.07]),0.08,'xy')]},
   hipadd:null,
@@ -1045,13 +1046,13 @@ const MORE={
   cablecurl:XV('curl',{n:'Bicepscurl i kabel',eq:(K,J)=>{const c=hc(J);return [E.cable([0.62,0.12,0],c),E.bar(c,0.25,0)]}}),
   ohtri:{n:'Triceps overhead extension',mus:['Triceps'],hi:['ua'],f:[{ua:96,fa:95},{ua:96,fa:255}],eq:(K,J)=>[{k:'db',c:hc(J)}]},
   benchdip:{n:'Bänkdips',mus:['Triceps','Axlar'],hi:['ua','delt'],anchor:'sc',f:[{sx:-0.3,sy:1.02,t:92},{sx:-0.26,sy:0.74,t:96}],hand:(K,J,s)=>({t:[-0.33,0.46,0.22*s],pole:[-1,0.2,0.2*s]}),leg:(K,J,s)=>({t:[0.62,0.1,0.15*s],pole:[0,1,0]}),eq:()=>[E.bench(-0.6,-0.15,0.45,0.35)]},
-  kickback:{n:'Tricepskickback',mus:['Triceps'],hi:['ua'],f:[{sh:-96,th:-62,t:26,uaR:200,faR:-90},{sh:-96,th:-62,t:26,uaR:200,faR:198}],eq:(K,J)=>[{k:'db',c:J.S[1].hand}]},
+  kickback:{n:'Tricepskickback',mus:['Triceps'],hi:['ua'],f:[{sh:-96,th:-62,t:26,ua:200,fa:-90},{sh:-96,th:-62,t:26,ua:200,fa:-162}],eq:(K,J)=>E.db(J)},
   crunch:{n:'Crunches',mus:['Mage'],hi:['core'],anchor:'hip',f:[{px:0,py:0.12,t:178,th:50,sh:-60},{px:0,py:0.12,t:140,th:50,sh:-60}],mod:K=>{K.ua=K.t+25;K.fa=K.t+160},eq:()=>[E.mat(-0.75,0.7)]},
   bicycle:{n:'Cykelcrunch',mus:['Mage','Sneda magmuskler'],hi:['core'],anchor:'hip',cyc:true,f:[{px:0,py:0.12,t:150,thR:70,shR:-20,thL:18,shL:18},{px:0,py:0.12,t:150,thL:70,shL:-20,thR:18,shR:18}],mod:K=>{K.ua=K.t+25;K.fa=K.t+160},eq:()=>[E.mat(-0.75,0.8)]},
   russian:{n:'Russian twist',mus:['Sneda magmuskler','Mage'],hi:['core'],anchor:'hip',f:[{px:0,py:0.12,t:125,th:40,sh:-25},{px:0,py:0.12,t:125,th:40,sh:-25}],hand:(K,J,s)=>({t:rel(J,K,0.36,-0.05,0.3*(2*K._u-1)+0.05*s),pole:[0,-1,0.4*s]}),eq:(K,J)=>[ballE(hc(J),0.11),E.mat(-0.75,0.7)]},
   abwheel:{n:'Ab wheel',mus:['Mage','Bål','Axlar'],hi:['core','delt'],f:[{ax:-0.43,ay:0.11,sh:180,th:-112,t:28,ft:180,wx:0.55},{ax:-0.43,ay:0.11,sh:180,th:-168,t:8,ft:180,wx:1.2}],hand:(K,J,s)=>({t:[K.wx,0.12,0.09*s],pole:[0,-1,0.6*s]}),eq:(K,J)=>[ringE([K.wx,0.1,0],0.1,'xy',{al:0.8,w:2.4}),E.mat(-0.8,1.3)]},
   deadbug:{n:'Dead bug',mus:['Mage','Bål'],hi:['core'],anchor:'hip',cyc:true,f:[{px:0,py:0.1,t:180,ua:90,fa:90,th:90,sh:0},{px:0,py:0.1,t:180,uaR:175,faR:175,uaL:90,faL:90,thL:12,shL:12,thR:90,shR:0},{px:0,py:0.1,t:180,ua:90,fa:90,th:90,sh:0},{px:0,py:0.1,t:180,uaL:175,faL:175,uaR:90,faR:90,thR:12,shR:12,thL:90,shL:0}],eq:()=>[E.mat(-0.9,0.8)]},
-  birddog:{n:'Bird dog',mus:['Bål','Rygg','Balans'],hi:['core','back'],anchor:'hip',cyc:true,f:[quadP(),Object.assign(quadP(),{uaR:0,faR:0,thL:180,shL:180,ftL:180}),quadP(),Object.assign(quadP(),{uaL:0,faL:0,thR:180,shR:180,ftR:180})],eq:()=>[E.mat(-0.9,0.8)]},
+  birddog:{n:'Bird dog',mus:['Bål','Rygg','Balans'],hi:['core','back'],anchor:'hip',cyc:true,f:[quadP(),Object.assign(quadP(),{uaR:0,faR:0,thL:-180,shL:180,ftL:180}),quadP(),Object.assign(quadP(),{uaL:0,faL:0,thR:-180,shR:180,ftR:180})],eq:()=>[E.mat(-0.9,0.8)]},
   superman:{n:'Superman',mus:['Ländrygg','Säte'],hi:['back','glute'],anchor:'hip',f:[{px:0,py:0.1,t:0,ua:0,fa:0,th:180,sh:180,ft:180,hd:-5},{px:0,py:0.1,t:14,ua:16,fa:16,th:166,sh:166,ft:166,hd:-5}],eq:()=>[E.mat(-1.0,1.0)]},
   pallof:{n:'Pallof press',mus:['Bål','Sneda magmuskler'],hi:['core'],f:[{t:90,sh:-95,th:-82,thz:8},{t:90,sh:-95,th:-82,thz:8}],hand:(K,J,s)=>({t:lp3(rel(J,K,0.14,-0.12,0.02*s),rel(J,K,0.52,-0.12,0.02*s),K._u),pole:[0,-1,0.4*s]}),eq:(K,J)=>[E.cable([0.15,J.Sc[1]-0.1,-1.05],hc(J))]},
   woodchop:{n:'Vedhuggaren (kabel)',mus:['Sneda magmuskler','Bål','Axlar'],hi:['core','delt'],f:[{t:88,sh:-95,th:-82,thz:8},{t:74,sh:-100,th:-70,thz:8}],hand:(K,J,s)=>({t:v3(lp3(rel(J,K,0.26,0.42,0.42),rel(J,K,0.38,-0.5,-0.32),K._u),[0,0,0.04*s]),pole:[0,-1,0.3*s]}),eq:(K,J)=>[E.cable([0.2,2.1,0.95],hc(J))]},
@@ -1086,7 +1087,7 @@ const MORE2={
   cossack:XV('sidelunge',{n:'Kosackböj',mus:['Insida lår','Säte','Rörlighet']}),
   walklunge:XV('lunge',{n:'Gående utfall'}),
   curtsy:XV('bwlunge',{n:'Curtsy lunge',mus:['Säte (sida)','Framsida lår']}),
-  slrdl:{n:'Enbens raka marklyft',mus:['Baksida lår','Säte','Balans'],hi:['thigh','glute','core'],anchor:'hip',f:[{px:0,py:0.9,t:90,thR:-90,shR:-92,thL:-92,shL:-95,ftL:-30},{px:0.02,py:0.88,t:12,thR:-84,shR:-92,thL:176,shL:178,ftL:100}],eq:(K,J)=>E.db(J)},
+  slrdl:{n:'Enbens raka marklyft',mus:['Baksida lår','Säte','Balans'],hi:['thigh','glute','core'],anchor:'hip',f:[{px:0,py:0.9,t:90,thR:-90,shR:-92,thL:-92,shL:-95,ftL:-30},{px:0.02,py:0.88,t:12,thR:-84,shR:-92,thL:-184,shL:-182,ftL:100}],eq:(K,J)=>E.db(J)},
   frogpump:XV('bridge',{n:'Frog pumps',mus:['Säte']}),
   slbridge:XV('bridge',{n:'Enbens höftlyft'}),
   deficitdl:XV('dl',{n:'Marklyft från upphöjning',eq:(K,J)=>[E.bar([J.Sc[0],J.Sc[1]-0.57,0],1,0.225),E.box([-0.3,0,-0.4],[0.35,0.06,0.4])]}),
@@ -1123,7 +1124,7 @@ const MORE2={
   flutter:{n:'Fladdersparkar',mus:['Mage','Höftböjare'],hi:['core','thigh'],anchor:'hip',cyc:true,f:[{px:0,py:0.1,t:176,thR:10,shR:10,thL:24,shL:24,ftR:80,ftL:80,ua:-4,fa:-4},{px:0,py:0.1,t:176,thR:24,shR:24,thL:10,shL:10,ftR:80,ftL:80,ua:-4,fa:-4}],eq:()=>[E.mat(-0.95,0.95)]},
   revcrunch:{n:'Omvänd crunch',mus:['Nedre mage'],hi:['core'],anchor:'hip',f:[{px:0,py:0.1,t:178,th:88,sh:2,ft:90,ua:-4,fa:-4},{px:0,py:0.16,t:186,th:128,sh:40,ft:130,ua:-6,fa:-6}],eq:()=>[E.mat(-0.95,0.8)]},
   windshield:{n:'Vindrutetorkare',mus:['Sneda magmuskler'],hi:['core'],anchor:'hip',f:[{px:0,py:0.1,t:178,th:90,sh:90,ft:90,thzR:-38,thzL:38,shzR:-38,shzL:38,ua:-4,uaz:60,fa:-4,faz:60},{px:0,py:0.1,t:178,th:90,sh:90,ft:90,thzR:38,thzL:-38,shzR:38,shzL:-38,ua:-4,uaz:60,fa:-4,faz:60}],eq:()=>[E.mat(-0.95,0.8)]},
-  lsit:{n:'L-sit',mus:['Mage','Höftböjare','Triceps'],hi:['core','thigh','ua'],anchor:'hip',f:[{px:0,py:0.16,t:92,th:2,sh:2,ft:90,ua:-90,fa:-90,uaz:8,faz:8},{px:0,py:0.18,t:92,th:4,sh:4,ft:90,ua:-90,fa:-90,uaz:8,faz:8}],eq:()=>[E.box([-0.12,0,-0.32],[0.12,0.1,-0.24]),E.box([-0.12,0,0.24],[0.12,0.1,0.32])]},
+  lsit:{n:'L-sit',mus:['Mage','Höftböjare','Triceps'],hi:['core','thigh','ua'],anchor:'hip',f:[{px:0,py:0.23,t:92,th:2,sh:2,ft:90,ua:-90,fa:-90,uaz:8,faz:8},{px:0,py:0.25,t:92,th:4,sh:4,ft:90,ua:-90,fa:-90,uaz:8,faz:8}],eq:()=>[E.box([-0.12,0,-0.32],[0.12,0.1,-0.24]),E.box([-0.12,0,0.24],[0.12,0.1,0.32])]},
   copenhagen:XV('splank',{n:'Copenhagenplanka',mus:['Insida lår','Sneda magmuskler'],hi:['core','thigh']}),
   shouldertap:XV('pushup',{n:'Planka med axelklapp',mus:['Bål','Axlar'],hi:['core','delt'],f:[{ax:-0.85,sh:198,th:198,t:18,ft:-65},{ax:-0.85,sh:198,th:198,t:19,ft:-65}]}),
   suitcase:XV('farmer',{n:'Resväskebärning',mus:['Sneda magmuskler','Grepp','Bål'],hi:['core','fa'],eq:(K,J)=>[{k:'kb',c:J.S[1].hand}]}),
@@ -1131,7 +1132,7 @@ const MORE2={
   kbclean:{n:'Kettlebell clean',mus:['Säte','Baksida lår','Grepp'],hi:['glute','thigh','fa'],anchor:'foot',f:[{sh:-96,th:-60,t:30},{sh:-90,th:-90,t:92}],hand:(K,J,s)=>{const u=K._u,lo=[J.P[0]-0.05,J.P[1]-0.25,0.06*s],hi=rel(J,K,0.18,-0.06,0.08*s);return {t:lp3(lo,hi,u),pole:[u>0.5?1:-1,-0.3,0.4*s]}},eq:(K,J)=>[{k:'kb',c:hc(J)}]},
   kbsnatch:XV('kbswing',{n:'Kettlebell snatch',mus:['Säte','Axlar','Kondition'],hi:['glute','delt','core'],f:[{sh:-96,th:-60,t:30,ua:-112,fa:-118},{sh:-90,th:-90,t:92,ua:86,fa:88}]}),
   wallball:XV('thruster',{n:'Wall balls',eq:(K,J)=>[{k:'ball',c:v3(hc(J),[0.06,0.05,0]),r:0.13} ]}),
-  devilpress:XV('burpee',{n:'Devil press',mus:['Helkropp','Axlar','Kondition']}),
+  devilpress:XV('burpee',{n:'Devil press',mus:['Helkropp','Axlar','Kondition'],eq:(K,J)=>E.db(J)}),
   jjack:{n:'Hampelmannen',mus:['Kondition','Axlar','Vader'],hi:['shin','delt'],anchor:'hip',cyc:true,f:[{px:0,py:0.94,t:90,th:-90,thz:3,sh:-90,shz:3,ua:90,uaz:174,fa:90,faz:176},{px:0,py:1.0,t:90,th:-90,thz:16,sh:-90,shz:16,ua:90,uaz:14,fa:90,faz:8}]},
   sprint:XV('run',{n:'Intervallsprint'}),
   shadowbox:XV('sp_boxning',{n:'Skuggboxning'}),
